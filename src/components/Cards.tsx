@@ -19,10 +19,10 @@ export function ContentCard({ item, onOpen }: { item: ContentRecord; onOpen: () 
         {item.coverImageUrl && <img src={item.coverImageUrl} alt={item.title} className="h-full w-full object-cover" loading="lazy" />}
       </div>
       <div className="p-4">
-        <p className="text-xs text-muted">{item.category}</p>
+        <p className="text-xs text-muted">{item.contentType}</p>
         <h3 className="mt-1 text-lg font-semibold">{item.title}</h3>
         <p className="mt-2 text-sm text-muted">{item.excerpt}</p>
-        <div className="mt-3 flex flex-wrap gap-2">{item.tags.map((tag) => <span key={tag} className="rounded-full bg-white/10 px-2 py-1 text-xs">#{tag}</span>)}</div>
+        <div className="mt-3 flex items-center gap-2 text-xs"><span className="rounded-full bg-white/10 px-2 py-1">{item.status}</span></div>
         <button onClick={onOpen} className="mt-4 rounded-lg bg-white/10 px-3 py-2 text-sm hover:bg-white/20">Read</button>
       </div>
     </motion.article>

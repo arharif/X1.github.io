@@ -1,9 +1,10 @@
-export type ThemeMode = 'dark' | 'light' | 'purple';
+export type ThemeMode = 'dark' | 'light' | 'purple' | 'rainbow';
 
 export const themeMap: Record<ThemeMode, string> = {
   dark: 'theme-dark',
   light: 'theme-light',
   purple: 'theme-purple',
+  rainbow: 'theme-rainbow',
 };
 
 export const initTheme = (): ThemeMode => {

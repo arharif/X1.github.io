@@ -1,17 +1,18 @@
-import { createContext, PropsWithChildren, useContext, useMemo, useState } from 'react';
+import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
 import { appEnv, isSupabaseConfigured } from '@/lib/env';
-import { AuthSession, supabaseAuthLogin, supabaseLogout } from '@/lib/supabase';
+import { AuthSession, getUser, sendOtpEmail, supabaseLogout, verifyOtpEmail } from '@/lib/supabase';
 
-interface AuthContextValue {
+interface AuthCtx {
   session: AuthSession | null;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
   isAdmin: boolean;
+  loading: boolean;
+  sendOtp: (email: string) => Promise<void>;
+  verifyOtp: (email: string, otp: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
-const storageKey = 'arharif-admin-session';
+const Ctx = createContext<AuthCtx | undefined>(undefined);
+const storageKey = 'arharif-auth';
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<AuthSession | null>(() => {
@@ -20,18 +21,45 @@ export function AuthProvider({ children }: PropsWithChildren) {
   });
   const [loading, setLoading] = useState(false);
 
-  const isAdmin = Boolean(session?.user.email && appEnv.adminEmails.includes(session.user.email.toLowerCase()));
+  useEffect(() => {
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const token = hash.get('access_token');
+    const refresh = hash.get('refresh_token');
+    const type = hash.get('token_type') || 'bearer';
+    const expires = Number(hash.get('expires_in') || 3600);
+    if (token && refresh) {
+      getUser(token)
+        .then((user) => {
+          const next: AuthSession = { access_token: token, refresh_token: refresh, token_type: type, expires_in: expires, user };
+          setSession(next);
+          localStorage.setItem(storageKey, JSON.stringify(next));
+          history.replaceState(null, '', window.location.pathname + window.location.search);
+        })
+        .catch(() => undefined);
+    }
+  }, []);
 
-  const value = useMemo<AuthContextValue>(
+  const isAdmin = session?.user.email?.toLowerCase() === appEnv.adminEmail;
+
+  const value = useMemo<AuthCtx>(
     () => ({
       session,
+      isAdmin: Boolean(isAdmin),
       loading,
-      isAdmin,
-      login: async (email, password) => {
-        if (!isSupabaseConfigured) throw new Error('Supabase env is not configured.');
+      sendOtp: async (email) => {
+        if (!isSupabaseConfigured) throw new Error('Supabase env vars missing.');
         setLoading(true);
         try {
-          const next = await supabaseAuthLogin(email, password);
+          await sendOtpEmail(email);
+        } finally {
+          setLoading(false);
+        }
+      },
+      verifyOtp: async (email, otp) => {
+        if (!isSupabaseConfigured) throw new Error('Supabase env vars missing.');
+        setLoading(true);
+        try {
+          const next = await verifyOtpEmail(email, otp);
           setSession(next);
           localStorage.setItem(storageKey, JSON.stringify(next));
         } finally {
@@ -39,9 +67,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         }
       },
       logout: async () => {
-        if (session?.access_token && isSupabaseConfigured) {
-          await supabaseLogout(session.access_token).catch(() => undefined);
-        }
+        if (session?.access_token && isSupabaseConfigured) await supabaseLogout(session.access_token).catch(() => undefined);
         setSession(null);
         localStorage.removeItem(storageKey);
       },
@@ -49,11 +75,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
     [isAdmin, loading, session],
   );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used inside AuthProvider');
+  const ctx = useContext(Ctx);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 }

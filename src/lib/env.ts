@@ -3,7 +3,7 @@ const env = import.meta.env;
 export const appEnv = {
   supabaseUrl: env.VITE_SUPABASE_URL as string | undefined,
   supabaseAnonKey: env.VITE_SUPABASE_ANON_KEY as string | undefined,
-  adminEmails: (env.VITE_ADMIN_EMAILS as string | undefined)?.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean) ?? [],
+  adminEmail: ((env.VITE_ADMIN_EMAIL as string | undefined) || 'x731072000@gmail.com').toLowerCase(),
   mediaBucket: (env.VITE_SUPABASE_MEDIA_BUCKET as string | undefined) || 'content-media',
 };
 

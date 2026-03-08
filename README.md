@@ -2,50 +2,66 @@
 
 Premium GitHub Pages **USER SITE** deployed at **https://arharif.github.io/**.
 
+## Product Overview
+This project includes:
+1. **Public Website** with two universes:
+   - Professional (interactive topic books/slide guides)
+   - Personal Culture Hub (Philosophy and Anime, Books, Hobbies)
+2. **Private Admin CMS**:
+   - Email + OTP login only (Supabase Auth)
+   - Topic CRUD (add/edit/delete/reorder-ready)
+   - Content CRUD (draft/published)
+   - Image upload + inline image insertion
+   - Video embed URL support
+
 ## Stack
 - React + TypeScript + Vite
 - Tailwind CSS + Framer Motion
-- React Router (SPA)
-- Supabase (Auth + Postgres + Storage) for admin CMS
-- GitHub Actions for Pages deployment
+- Supabase (Auth OTP + Postgres + Storage)
+- GitHub Pages via GitHub Actions
 
-## Public Experience
-- Cinematic split landing: **Professional** and **Personal**
-- Premium card/grid browsing with search + tag filters
-- Rich article pages with cover images, markdown-like body rendering, and video embeds
-- Three themes: **dark**, **light**, **purple**
+## Theme Modes
+- Dark
+- Light
+- Purple
+- Rainbow (premium gradient system)
 
-## Private Admin CMS
-- `/login` for admin authentication (Supabase email/password)
-- `/admin` protected route (admin allowlist via env)
-- Create / edit / delete content
-- Draft vs published status
-- Image upload (Supabase Storage bucket)
-- Video embed URL field (YouTube/Vimeo embed URL)
-- Public site renders only published content
+Theme persists in localStorage and is available in desktop/mobile nav.
 
-## Environment Configuration
+## Authentication Model (Email + OTP Only)
+- Admin login route: `/login`
+- OTP is sent via Supabase Auth email flow
+- Admin session persists in localStorage
+- Admin route `/admin` is protected
+- Access is granted only when authenticated email matches:
+  - `x731072000@gmail.com`
+
+No password is hardcoded or required in the frontend flow.
+
+## Environment Setup
 Create `.env` from `.env.example`:
 
 ```bash
 cp .env.example .env
 ```
 
-Required variables:
+Required vars:
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
-- `VITE_ADMIN_EMAILS` (comma-separated admin emails)
+- `VITE_ADMIN_EMAIL` (set to `x731072000@gmail.com`)
 - `VITE_SUPABASE_MEDIA_BUCKET` (default `content-media`)
 
 ## Supabase Setup
-Run SQL in `docs/supabase.sql` (edit admin email allowlist in policies first).
+Run `docs/supabase.sql` in Supabase SQL editor.
 
-This creates:
+It creates:
+- `topics` table
 - `content_entries` table
-- RLS policies for:
-  - public read of `published`
-  - admin write access by email allowlist
-- `content-media` storage bucket + read/write policies
+- RLS policies:
+  - public topic read
+  - public published-content read
+  - admin-only mutations for configured email
+- storage bucket/policies for image uploads
 
 ## Local Development
 ```bash
@@ -61,34 +77,43 @@ npm run preview
 
 ## GitHub Pages Deployment
 Workflow: `.github/workflows/deploy.yml`
-- trigger: push to `main`
-- install: `npm ci`
-- build: `npm run build`
-- deploy artifact: `dist/`
-- actions: official `configure-pages`, `upload-pages-artifact`, `deploy-pages`
+- Trigger: push to `main`
+- Install: `npm ci`
+- Build: `npm run build`
+- Upload: `dist/`
+- Deploy: official Pages actions
 
-## GitHub Pages User-Site Requirements (already applied)
+## GitHub Pages User-Site Constraints (Applied)
 - Vite `base: '/'`
-- No project subpath basename
-- SPA fallback via `404.html` redirect strategy
-- Canonical/sitemap/robots point to `https://arharif.github.io/`
+- No project basename subpath
+- SPA fallback via `404.html`
+- Root URLs for canonical, sitemap, robots
+
+## Admin CMS Usage
+1. Go to `/login`
+2. Enter admin email and click **Send OTP**
+3. Verify with OTP (or magic link callback)
+4. Open `/admin`
+5. Manage topics and content
+6. Upload images and insert inline
+7. Publish content for public visibility
 
 ## Troubleshooting
 - **Blank page after deploy**
-  - verify `vite.config.ts` still has `base: '/'`
-  - verify no broken route basename/subpath assumptions
-  - verify `404.html` SPA fallback exists
-- **CI install fails (`npm ci`)**
+  - ensure `vite.config.ts` has `base: '/'`
+  - ensure no stale subpath routing assumptions
+  - ensure `404.html` is present
+- **OTP not sent**
+  - verify Supabase URL/anon key
+  - enable Email OTP provider in Supabase Auth
+- **Unauthorized admin**
+  - verify authenticated email equals `VITE_ADMIN_EMAIL`
+- **Upload failed**
+  - verify bucket exists and storage RLS policies are active
+- **CI failure with npm ci**
   - ensure `package-lock.json` is committed
-- **Admin login fails**
-  - verify Supabase URL + anon key
-  - verify user exists in Supabase Auth
-  - verify email appears in `VITE_ADMIN_EMAILS`
-- **Uploads fail**
-  - verify storage bucket name and RLS policies
 
 ## Security Notes
-- Frontend uses **anon key only** (safe for client apps)
-- Never expose Supabase service-role key in this repository
-- Enforce mutations via Supabase RLS policies
-
+- Frontend uses anon key only.
+- Never commit Supabase service-role key.
+- Mutations are protected by Supabase RLS + admin email policy.
