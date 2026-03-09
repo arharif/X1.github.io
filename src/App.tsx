@@ -369,6 +369,35 @@ function AdminPage() {
   );
 }
 
+
+function SubmittingPage() {
+  return (
+    <section className="mx-auto max-w-3xl space-y-4 py-8">
+      <h1 className="text-3xl font-semibold">Submitting</h1>
+      <p className="text-muted">To submit a blog/article, send a manual email. This page is instructions-only and does not include an online form.</p>
+      <div className="glass rounded-2xl p-5 text-sm leading-7 text-muted">
+        <p className="font-medium text-white">Send to: <a className="underline underline-offset-4" href="mailto:rharifanass@gmail.com?subject=X1%20Submitting%3A%20%5BTopic%20Title%5D">rharifanass@gmail.com</a></p>
+        <ul className="mt-3 list-disc space-y-1 pl-5">
+          <li>Send the submission by email manually.</li>
+          <li>Email must contain text content only.</li>
+          <li>Do not include attachments, links, or external files.</li>
+          <li>Submissions that do not follow this format may be ignored.</li>
+        </ul>
+      </div>
+      <div className="glass rounded-2xl p-5">
+        <p className="mb-2 text-sm text-muted">Use this exact template:</p>
+        <pre className="overflow-x-auto rounded-xl bg-black/30 p-4 text-xs leading-6 text-slate-100">{`Full Name: [full name]
+Email: [email address]
+Topic Title: [topic title]
+Category: [category]
+Blogs/Article Content:
+[body content]`}</pre>
+      </div>
+      <a href="mailto:rharifanass@gmail.com?subject=X1%20Submitting%3A%20%5BTopic%20Title%5D" className="inline-block rounded-xl bg-white/15 px-4 py-2 text-sm hover:bg-white/25">Send by Email</a>
+    </section>
+  );
+}
+
 function NotFound() { return <section className="mx-auto max-w-xl py-24 text-center"><h1 className="text-4xl font-semibold">404</h1><Link to="/" className="mt-4 inline-block rounded-xl bg-white/10 px-4 py-2">Home</Link></section>; }
 
 function Shell() {
@@ -390,6 +419,7 @@ function Shell() {
               <Route path="/professional/topic/:slug" element={<ProfessionalBook />} />
               <Route path="/personal" element={<PersonalHub />} />
               <Route path="/personal/post/:slug" element={<PersonalPost />} />
+              <Route path="/submitting" element={<SubmittingPage />} />
               <Route path="/games" element={<GamesHub />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />

@@ -12,6 +12,7 @@ export function Navbar({ mode, onTheme }: { mode: ThemeMode; onTheme: (m: ThemeM
     { to: '/professional', label: 'Professional' },
     { to: '/personal', label: 'Personal' },
     { to: '/search', label: 'Search' },
+    { to: '/submitting', label: 'Submitting' },
     { to: '/games', label: 'Games' },
     { to: '/admin', label: 'Admin' },
   ];

@@ -102,3 +102,16 @@ The workflow now includes a guard step that fails deployment if `dist/index.html
 ## Best-effort keepalive
 
 A scheduled GitHub Actions workflow (`.github/workflows/keepalive.yml`) pings `https://arharif.github.io/healthz.json` every 5 days and optionally performs a lightweight Supabase REST read when secrets are configured. This is only a best-effort workaround and is not guaranteed to prevent inactivity behavior on free tiers. Upgrading your database/service plan is the only reliable solution.
+
+
+## Submitting page
+- Public route: `/submitting`
+- Instructions-only; no backend form handling
+- Manual email destination: `rharifanass@gmail.com` with prefilled subject `X1 Submitting: [Topic Title]`
+- Required text-only submission template is shown directly on the page
+
+## Editor and rendering safety
+- Admin content editor supports Markdown and GitHub README-friendly writing mode.
+- Built-in tools: inline link insertion, inline image upload to `content-media`, and preview mode.
+- Public body rendering uses a safe markdown subset renderer (no raw HTML execution / no `dangerouslySetInnerHTML`).
+- Link and media URLs are restricted to safe schemes (https + mailto for links; https for media).
