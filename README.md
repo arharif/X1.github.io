@@ -82,3 +82,18 @@ npm run build
   - ensure `package-lock.json` exists for `npm ci`
 - **Old path assumptions**
   - ensure there are no stale project-subpath references from previous repo naming
+
+
+## GitHub Pages Blank-Page / MIME Error Fix
+If production shows:
+- `Failed to load module script ... MIME type of application/octet-stream`
+- and the browser requests `/src/main.tsx`
+
+then GitHub Pages is serving repository source files instead of Vite build output.
+
+Use this repository workflow as the deployment source:
+1. In **Settings → Pages**, set **Build and deployment** source to **GitHub Actions**.
+2. Ensure `.github/workflows/deploy.yml` runs successfully and uploads `./dist`.
+3. Confirm deployed HTML references `/assets/...` files (not `/src/main.tsx`).
+
+The workflow now includes a guard step that fails deployment if `dist/index.html` still references `/src/main.tsx`.

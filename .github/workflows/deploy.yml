@@ -38,6 +38,15 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Verify built index references compiled assets
+        run: |
+          test -f dist/index.html
+          if grep -q '/src/main.tsx' dist/index.html; then
+            echo 'Build output still references /src/main.tsx; refusing to deploy.'
+            exit 1
+          fi
+          grep -q '/assets/' dist/index.html
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
