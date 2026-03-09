@@ -40,6 +40,8 @@ export function X1Mark({ size = 'md', mode }: { size?: 'sm' | 'md' | 'lg'; mode?
         <span className="x1-mark__eye x1-mark__eye--left" />
         <span className="x1-mark__eye x1-mark__eye--right" />
         <span className="x1-mark__mouth" />
+        <span className="x1-mark__cheek x1-mark__cheek--left" />
+        <span className="x1-mark__cheek x1-mark__cheek--right" />
         <span className="x1-mark__halo" />
       </span>
     </motion.div>

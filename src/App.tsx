@@ -31,8 +31,8 @@ function Landing() {
   const nav = useNavigate();
   return (
     <section className="grid gap-6 py-10 md:grid-cols-2">
-      <EntryCard title="Professional" description="Interactive digital books and slide-guides for GRC, IAM, PCI DSS, and security architecture." onClick={() => nav('/professional')} />
-      <EntryCard title="Personal" description="Curated writing across philosophy, books, and hobbies." onClick={() => nav('/personal')} />
+      <EntryCard title="Professional" description="AI, Cybersecurity, IoT, systems architecture, and emerging technology knowledge." onClick={() => nav('/professional')} />
+      <EntryCard title="Personal" description="Philosophy, anime, books, hobbies, and thoughtful cultural reflections." onClick={() => nav('/personal')} />
     </section>
   );
 }
@@ -73,7 +73,7 @@ function ProfessionalHome() {
   return (
     <section>
       <h1 className="mb-2 text-3xl font-semibold">Professional</h1>
-      <p className="mb-5 text-muted">Each topic opens as an interactive digital book or slides experience.</p>
+      <p className="mb-5 text-muted">AI, Cybersecurity, IoT, digital innovation, and modern engineering insights.</p>
 
       {topics.length > 0 ? (
         <div className="mb-6 grid gap-4 md:grid-cols-3">
@@ -152,7 +152,7 @@ function PersonalHub() {
   const categories = [...new Set(topics.map((t) => t.category).filter(Boolean))];
   const allTags = [...new Set(content.flatMap((c) => c.tags || []))].slice(0, 12);
 
-  return <section><h1 className="mb-2 text-3xl font-semibold">Personal</h1><p className="mb-4 text-muted">Curated writing across themes.</p><div className="glass mb-6 rounded-2xl p-4"><input className="w-full bg-transparent outline-none" placeholder="Search themes and notes" value={query} onChange={(e) => setQuery(e.target.value)} /><div className="mt-3 flex flex-wrap gap-2">{allTags.map((t)=><button key={t} onClick={()=>setTag(t)} className={`rounded-full px-3 py-1 text-xs ${tag===t?'bg-white/30':'bg-white/10'}`}>#{t}</button>)}<button className="text-xs" onClick={()=>setTag('')}>clear</button></div></div>{categories.map((cat) => { const t = topics.filter((x) => x.category === cat); const posts = searchContent(content.filter((c) => t.some((tt) => tt.id === c.topicId) && (!tag || (c.tags||[]).includes(tag))), query); return <section key={cat} className="mb-8"><h2 className="mb-3 text-2xl font-semibold">{cat}</h2><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{posts.map((p) => <ContentCard key={p.id} item={p} onOpen={() => nav(`/personal/post/${p.slug}`)} />)}</div></section>; })}{categories.length===0 && <div className="glass rounded-xl p-4 text-sm text-muted">No personal topics are visible yet.</div>}</section>;
+  return <section><h1 className="mb-2 text-3xl font-semibold">Personal</h1><p className="mb-4 text-muted">Philosophy, anime, books, hobbies, and reflective personal themes.</p><div className="glass mb-6 rounded-2xl p-4"><input className="w-full bg-transparent outline-none" placeholder="Search themes and notes" value={query} onChange={(e) => setQuery(e.target.value)} /><div className="mt-3 flex flex-wrap gap-2">{allTags.map((t)=><button key={t} onClick={()=>setTag(t)} className={`rounded-full px-3 py-1 text-xs ${tag===t?'bg-white/30':'bg-white/10'}`}>#{t}</button>)}<button className="text-xs" onClick={()=>setTag('')}>clear</button></div></div>{categories.map((cat) => { const t = topics.filter((x) => x.category === cat); const posts = searchContent(content.filter((c) => t.some((tt) => tt.id === c.topicId) && (!tag || (c.tags||[]).includes(tag))), query); return <section key={cat} className="mb-8"><h2 className="mb-3 text-2xl font-semibold">{cat}</h2><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{posts.map((p) => <ContentCard key={p.id} item={p} onOpen={() => nav(`/personal/post/${p.slug}`)} />)}</div></section>; })}{categories.length===0 && <div className="glass rounded-xl p-4 text-sm text-muted">No personal topics are visible yet.</div>}</section>;
 }
 
 
@@ -336,7 +336,7 @@ function Shell() {
           </motion.div>
         </AnimatePresence>
       </main>
-      <footer className="mx-auto mt-8 flex max-w-6xl items-center justify-between border-t border-white/10 p-6 text-sm text-muted"><span>© 2026</span>{config.linkedinUrl ? <a href={config.linkedinUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="rounded-full bg-white/10 px-2 py-1 text-base transition hover:bg-white/20">💼</a> : <span aria-label="LinkedIn link not configured" title="Set VITE_LINKEDIN_URL to enable" className="rounded-full bg-white/5 px-2 py-1 text-base opacity-70">💼</span>}</footer>
+      <footer className="mx-auto mt-8 flex max-w-6xl items-center justify-between border-t border-white/10 p-6 text-sm text-muted"><span>arharif © 2026</span><a href={config.linkedinUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="rounded-full bg-white/10 px-2 py-1 text-base transition hover:bg-white/20">💼</a></footer>
     </div>
   );
 }
