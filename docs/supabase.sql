@@ -37,6 +37,38 @@ create table if not exists public.content_entries (
   author_name text not null default 'Arharif'
 );
 
+
+create table if not exists public.tags (
+  id uuid primary key default gen_random_uuid(),
+  name text unique not null,
+  slug text unique not null
+);
+
+create table if not exists public.collections (
+  id uuid primary key default gen_random_uuid(),
+  slug text unique not null,
+  title text not null,
+  description text default '',
+  universe text not null check (universe in ('professional','personal')),
+  category text default '',
+  cover_image_url text,
+  featured boolean default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.content_tags (
+  content_id uuid references public.content_entries(id) on delete cascade,
+  tag_id uuid references public.tags(id) on delete cascade,
+  primary key (content_id, tag_id)
+);
+
+create table if not exists public.content_collections (
+  content_id uuid references public.content_entries(id) on delete cascade,
+  collection_id uuid references public.collections(id) on delete cascade,
+  primary key (content_id, collection_id)
+);
+
 drop trigger if exists handle_topics_updated on public.topics;
 create trigger handle_topics_updated before update on public.topics
 for each row execute procedure extensions.moddatetime(updated_at);
@@ -47,12 +79,16 @@ for each row execute procedure extensions.moddatetime(updated_at);
 
 alter table public.topics enable row level security;
 alter table public.content_entries enable row level security;
+alter table public.collections enable row level security;
 
 drop policy if exists "public_read_topics" on public.topics;
 create policy "public_read_topics" on public.topics for select using (true);
 
 drop policy if exists "public_read_published_content" on public.content_entries;
 create policy "public_read_published_content" on public.content_entries for select using (status = 'published');
+
+drop policy if exists "public_read_collections" on public.collections;
+create policy "public_read_collections" on public.collections for select using (true);
 
 drop policy if exists "admin_manage_topics" on public.topics;
 create policy "admin_manage_topics" on public.topics
@@ -62,6 +98,12 @@ with check (auth.jwt() ->> 'email' = 'x731072000@gmail.com');
 
 drop policy if exists "admin_manage_content" on public.content_entries;
 create policy "admin_manage_content" on public.content_entries
+for all
+using (auth.jwt() ->> 'email' = 'x731072000@gmail.com')
+with check (auth.jwt() ->> 'email' = 'x731072000@gmail.com');
+
+drop policy if exists "admin_manage_collections" on public.collections;
+create policy "admin_manage_collections" on public.collections
 for all
 using (auth.jwt() ->> 'email' = 'x731072000@gmail.com')
 with check (auth.jwt() ->> 'email' = 'x731072000@gmail.com');

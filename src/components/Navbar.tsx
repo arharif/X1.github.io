@@ -10,6 +10,8 @@ export function Navbar({ mode, onTheme }: { mode: ThemeMode; onTheme: (m: ThemeM
     { to: '/', label: 'Landing' },
     { to: '/professional', label: 'Professional' },
     { to: '/personal', label: 'Personal' },
+    { to: '/search', label: 'Search' },
+    { to: '/now', label: 'Now' },
     { to: '/admin', label: 'Admin' },
   ];
 

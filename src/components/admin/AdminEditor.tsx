@@ -43,7 +43,7 @@ export function AdminEditor({
           {topics.map((topic) => <option key={topic.id} value={topic.id}>{topic.title}</option>)}
         </select>
         <input className="rounded-xl bg-white/10 p-2" placeholder="Content type" value={form.contentType} onChange={(e) => update('contentType', e.target.value)} />
-        <select className="rounded-xl bg-white/10 p-2" value={form.status} onChange={(e) => update('status', e.target.value as ContentStatus)}>{['draft', 'published'].map((s) => <option key={s} value={s}>{s}</option>)}</select>
+        <select className="rounded-xl bg-white/10 p-2" value={form.status} onChange={(e) => update('status', e.target.value as ContentStatus)}>{['draft', 'published', 'archived'].map((s) => <option key={s} value={s}>{s}</option>)}</select>
         <input className="rounded-xl bg-white/10 p-2" placeholder="Author" value={form.authorName} onChange={(e) => update('authorName', e.target.value)} />
       </div>
       <input className="mt-3 w-full rounded-xl bg-white/10 p-2" placeholder="Quick tags (optional, text only)" value={tagsLike} onChange={(e) => setTagsLike(e.target.value)} />
@@ -60,6 +60,17 @@ export function AdminEditor({
           update('body', `${form.body}\n\n![uploaded image](${url})`);
         }} />
         {form.coverImageUrl && <img src={form.coverImageUrl} className="h-16 w-24 rounded object-cover" />}
+      </div>
+
+      <div className="mt-3 grid gap-3 md:grid-cols-2">
+        <input className="rounded-xl bg-white/10 p-2" placeholder="Collections IDs comma-separated" value={(form.collectionIds || []).join(',')} onChange={(e) => update('collectionIds', e.target.value.split(',').map((x) => x.trim()).filter(Boolean))} />
+        <input className="rounded-xl bg-white/10 p-2" placeholder="SEO meta title" value={form.metaTitle ?? ''} onChange={(e) => update('metaTitle', e.target.value)} />
+        <input className="rounded-xl bg-white/10 p-2" placeholder="SEO meta description" value={form.metaDescription ?? ''} onChange={(e) => update('metaDescription', e.target.value)} />
+        <input className="rounded-xl bg-white/10 p-2" placeholder="OG image URL" value={form.ogImageUrl ?? ''} onChange={(e) => update('ogImageUrl', e.target.value)} />
+      </div>
+      <div className="mt-3 flex gap-4 text-sm">
+        <label><input type="checkbox" checked={Boolean(form.featured)} onChange={(e)=>update('featured', e.target.checked)} /> Featured</label>
+        <label><input type="checkbox" checked={Boolean(form.favorite)} onChange={(e)=>update('favorite', e.target.checked)} /> Favorite</label>
       </div>
       <button disabled={saving} onClick={() => onSave({ ...form, body: `${form.body}${tagsLike ? `\n\n> tags: ${tagsLike}` : ''}`, publishedAt: form.status === 'published' ? new Date().toISOString() : undefined })} className="mt-4 rounded-xl bg-white/15 px-4 py-2 hover:bg-white/25">
         {saving ? 'Saving...' : 'Save Content'}

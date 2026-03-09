@@ -13,6 +13,9 @@ export function TopicEditor({ value, onSave, saving }: { value?: TopicRecord; on
     coverImageUrl: value?.coverImageUrl,
     icon: value?.icon,
     orderIndex: value?.orderIndex ?? 1,
+    palette: value?.palette,
+    mood: value?.mood,
+    featured: value?.featured,
   });
 
   const set = <K extends keyof TopicInput>(k: K, v: TopicInput[K]) => setTopic((t) => ({ ...t, [k]: v }));
@@ -33,8 +36,11 @@ export function TopicEditor({ value, onSave, saving }: { value?: TopicRecord; on
         <input className="rounded-xl bg-white/10 p-2" placeholder="Subcategory" value={topic.subcategory ?? ''} onChange={(e) => set('subcategory', e.target.value)} />
         <input className="rounded-xl bg-white/10 p-2" placeholder="Cover image URL" value={topic.coverImageUrl ?? ''} onChange={(e) => set('coverImageUrl', e.target.value)} />
         <input className="rounded-xl bg-white/10 p-2" type="number" placeholder="Order" value={topic.orderIndex} onChange={(e) => set('orderIndex', Number(e.target.value || 1))} />
+        <input className="rounded-xl bg-white/10 p-2" placeholder="Palette" value={topic.palette ?? ''} onChange={(e)=>set('palette', e.target.value)} />
+        <input className="rounded-xl bg-white/10 p-2" placeholder="Mood" value={topic.mood ?? ''} onChange={(e)=>set('mood', e.target.value)} />
       </div>
       <textarea className="mt-3 w-full rounded-xl bg-white/10 p-2" rows={3} placeholder="Description" value={topic.description} onChange={(e) => set('description', e.target.value)} />
+      <label className="mt-2 block text-sm"><input type="checkbox" checked={Boolean(topic.featured)} onChange={(e)=>set('featured', e.target.checked)} /> Featured topic</label>
       <button disabled={saving} onClick={() => onSave(topic)} className="mt-3 rounded-xl bg-white/15 px-4 py-2">{saving ? 'Saving...' : 'Save Topic'}</button>
     </div>
   );
