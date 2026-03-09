@@ -12,7 +12,7 @@ import { ProtectedRoute } from '@/routes/ProtectedRoute';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { createContent, createTopic, deleteContent, deleteTopic, listAdminContent, listAdminTopics, listCollections, listPublishedContent, listPublishedTopics, updateContent, updateTopic, uploadMedia } from '@/lib/cms';
 import { searchContent } from '@/lib/content';
-import { genericAccessDenied, genericAuthError, hasSupabaseCoreConfig } from '@/lib/config';
+import { config, genericAccessDenied, genericAuthError, hasSupabaseCoreConfig } from '@/lib/config';
 import { initTheme, ThemeMode, themeMap } from '@/lib/theme';
 import { CollectionRecord, ContentRecord, TopicRecord } from './content/types';
 
@@ -55,13 +55,19 @@ function ProfessionalHome() {
   const nav = useNavigate();
 
   useEffect(() => {
-    Promise.all([listPublishedTopics(), listCollections(), listPublishedContent()]).then(([t, c, content]) => {
+    Promise.all([listPublishedTopics(), listPublishedContent()]).then(([t, content]) => {
       const professionalTopics = t.filter((x) => normUniverse(x.universe) === 'professional');
       const professionalTopicIds = new Set(professionalTopics.map((x) => x.id));
       setTopics(professionalTopics);
-      setCollections(c.filter((x) => normUniverse(x.universe) === 'professional'));
       setPosts(content.filter((item) => professionalTopicIds.has(item.topicId)).slice(0, 6));
+    }).catch(() => {
+      setTopics([]);
+      setPosts([]);
     });
+
+    listCollections()
+      .then((c) => setCollections(c.filter((x) => normUniverse(x.universe) === 'professional')))
+      .catch(() => setCollections([]));
   }, []);
 
   return (
@@ -330,7 +336,7 @@ function Shell() {
           </motion.div>
         </AnimatePresence>
       </main>
-      <footer className="mx-auto mt-8 max-w-6xl border-t border-white/10 p-6 text-sm text-muted">© 2026</footer>
+      <footer className="mx-auto mt-8 flex max-w-6xl items-center justify-between border-t border-white/10 p-6 text-sm text-muted"><span>© 2026</span>{config.linkedinUrl ? <a href={config.linkedinUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="rounded-full bg-white/10 px-2 py-1 text-base transition hover:bg-white/20">💼</a> : <span aria-label="LinkedIn link not configured" title="Set VITE_LINKEDIN_URL to enable" className="rounded-full bg-white/5 px-2 py-1 text-base opacity-70">💼</span>}</footer>
     </div>
   );
 }
