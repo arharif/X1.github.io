@@ -1,15 +1,17 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Component, ReactNode, useEffect, useMemo, useState } from 'react';
+import { Component, ReactNode, useEffect, useState } from 'react';
 import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AdminEditor } from '@/components/admin/AdminEditor';
 import { TopicEditor } from '@/components/admin/TopicEditor';
+import { AuthModeTabs } from '@/components/auth/AuthModeTabs';
+import { X1Mark } from '@/components/branding/X1Mark';
 import { ArticleView } from '@/components/ArticleView';
 import { ContentCard, EntryCard } from '@/components/Cards';
 import { Navbar } from '@/components/Navbar';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { createContent, createTopic, deleteContent, deleteTopic, listAdminContent, listAdminTopics, listCollections, listPublishedContent, listPublishedTopics, updateContent, updateTopic, uploadMedia } from '@/lib/cms';
 import { searchContent } from '@/lib/content';
-import { appEnv, isSupabaseConfigured } from '@/lib/env';
+import { genericAccessDenied, hasSupabaseCoreConfig } from '@/lib/config';
 import { initTheme, ThemeMode, themeMap } from '@/lib/theme';
 import { CollectionRecord, ContentRecord, TopicRecord } from './content/types';
 
@@ -116,14 +118,16 @@ function PersonalPost() {
 function NowPage() { return <section className="glass rounded-2xl p-6"><h1 className="text-3xl font-semibold">Now</h1><p className="mt-3 text-muted">Currently building long-form security knowledge books, writing cultural analysis, and improving systems design craft.</p></section>; }
 
 function LoginPage() {
-  const { sendOtp, verifyOtp, loading, isAdmin, session } = useAuth();
+  const { sendOtp, verifyOtpCode, loginWithPassword, loading, isAdmin, session } = useAuth();
   const nav = useNavigate();
-  const [email, setEmail] = useState(appEnv.adminEmail);
+  const [email, setEmail] = useState('');
+  const [mode, setMode] = useState<'password'|'otp'>('otp');
+  const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   useEffect(() => { if (session && isAdmin) nav('/admin'); }, [isAdmin, nav, session]);
-  return <section className="mx-auto max-w-md py-20"><div className="glass rounded-2xl p-6"><h1 className="text-2xl font-semibold">Admin OTP Login</h1><p className="mt-2 text-sm text-muted">Authorized admin: {appEnv.adminEmail}</p>{!isSupabaseConfigured && <p className="mt-3 text-xs text-amber-300">Supabase env missing. Configure VITE_* variables to enable OTP auth.</p>}<input className="mt-4 w-full rounded-xl bg-white/10 p-2" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" /><button className="mt-3 rounded-xl bg-white/15 px-4 py-2" disabled={loading || !isSupabaseConfigured} onClick={async () => { setError(''); try { await sendOtp(email); setMessage('OTP sent to your email.'); } catch (e) { setError((e as Error).message); } }}>Send OTP</button><input className="mt-4 w-full rounded-xl bg-white/10 p-2" value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="6-digit OTP" /><button className="mt-3 rounded-xl bg-white/15 px-4 py-2" disabled={loading || !isSupabaseConfigured} onClick={async () => { setError(''); try { await verifyOtp(email, otp); nav('/admin'); } catch (e) { setError((e as Error).message); } }}>Verify OTP</button>{message && <p className="mt-3 text-xs text-emerald-300">{message}</p>}{error && <p className="mt-3 text-xs text-rose-300">{error}</p>}</div></section>;
+  return <section className="mx-auto max-w-md py-20"><div className="glass rounded-2xl p-6"><div className="flex items-center gap-3"><X1Mark size="md" /><h1 className="text-2xl font-semibold">Admin Login</h1></div><p className="mt-2 text-sm text-muted">Use your admin credentials to continue.</p>{!hasSupabaseCoreConfig && <p className="mt-3 text-xs text-amber-300">Configuration is incomplete. Authentication is currently unavailable.</p>}<AuthModeTabs mode={mode} onChange={setMode} /><input className="mt-4 w-full rounded-xl bg-white/10 p-2" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />{mode==='password' && <input className="mt-3 w-full rounded-xl bg-white/10 p-2" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Password" />}{mode==='otp' && <><button className="mt-3 rounded-xl bg-white/15 px-4 py-2" disabled={loading || !hasSupabaseCoreConfig} onClick={async () => { setError(''); setMessage(''); try { await sendOtp(email); setMessage('If the request can be completed, you will receive an email shortly.'); } catch { setError('Unable to complete sign-in. Please try again.'); } }}>Send OTP</button><input className="mt-3 w-full rounded-xl bg-white/10 p-2" value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="OTP code" /><button className="mt-3 rounded-xl bg-white/15 px-4 py-2" disabled={loading || !hasSupabaseCoreConfig} onClick={async () => { setError(''); setMessage(''); try { await verifyOtpCode(email, otp); nav('/admin'); } catch { setError(genericAccessDenied); } }}>Verify OTP</button></>}{mode==='password' && <button className="mt-3 rounded-xl bg-white/15 px-4 py-2" disabled={loading || !hasSupabaseCoreConfig} onClick={async()=>{ setError(''); setMessage(''); try { await loginWithPassword(email, password); nav('/admin'); } catch { setError('Authentication could not be completed.'); } }}>Sign in</button>}{message && <p className="mt-3 text-xs text-emerald-300">{message}</p>}{error && <p className="mt-3 text-xs text-rose-300">{error}</p>}</div></section>;
 }
 
 function AdminPage() {
@@ -136,14 +140,14 @@ function AdminPage() {
   const token = session?.access_token || '';
 
   const load = async () => {
-    if (!token && isSupabaseConfigured) return;
+    if (!token && hasSupabaseCoreConfig) return;
     const [t, c] = await Promise.all([listAdminTopics(token), listAdminContent(token)]);
     setTopics(t); setContent(c);
   };
   useEffect(() => { load(); }, [token]);
 
   if (!session) return <Navigate to="/login" replace />;
-  if (!isAdmin) return <div className="glass rounded-2xl p-6">Unauthorized. Only {appEnv.adminEmail} can access admin dashboard.</div>;
+  if (!isAdmin) return <div className="glass rounded-2xl p-6">Access could not be granted.</div>;
 
   const published = content.filter((c) => c.status === 'published').length;
   const drafts = content.filter((c) => c.status === 'draft').length;
@@ -162,7 +166,7 @@ function Shell() {
     <div className="gradient-bg min-h-screen transition-colors duration-500">
       <Navbar mode={mode} onTheme={setMode} />
       <main className="mx-auto max-w-6xl p-4 md:p-8">
-        {!isSupabaseConfigured && <div className="glass mb-4 rounded-xl p-3 text-xs text-amber-300">Supabase env is missing. Public demo/fallback mode is active. Admin OTP requires VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.</div>}
+        {!hasSupabaseCoreConfig && <div className="glass mb-4 rounded-xl p-3 text-xs text-amber-300">Configuration is incomplete. Some authenticated features may be unavailable.</div>}
         <InsightBanner />
         <AnimatePresence mode="wait">
           <motion.div key={location.pathname} initial={{ opacity: 0, y: 10, filter: 'blur(6px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25 }}>
@@ -181,7 +185,7 @@ function Shell() {
           </motion.div>
         </AnimatePresence>
       </main>
-      <footer className="mx-auto mt-8 max-w-6xl border-t border-white/10 p-6 text-sm text-muted">© 2026 Arharif · Framework Academy + Personal Culture Hub</footer>
+      <footer className="mx-auto mt-8 max-w-6xl border-t border-white/10 p-6 text-sm text-muted">© 2026 X1 · Framework Academy + Personal Culture Hub</footer>
     </div>
   );
 }

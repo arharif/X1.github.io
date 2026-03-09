@@ -1,10 +1,10 @@
-const env = import.meta.env;
+import { config, hasSupabaseCoreConfig } from './config';
 
 export const appEnv = {
-  supabaseUrl: env.VITE_SUPABASE_URL as string | undefined,
-  supabaseAnonKey: env.VITE_SUPABASE_ANON_KEY as string | undefined,
-  adminEmail: ((env.VITE_ADMIN_EMAIL as string | undefined) || 'x731072000@gmail.com').toLowerCase(),
-  mediaBucket: (env.VITE_SUPABASE_MEDIA_BUCKET as string | undefined) || 'content-media',
+  supabaseUrl: config.supabaseUrl,
+  supabaseAnonKey: config.supabaseAnonKey,
+  adminEmail: config.adminEmail,
+  mediaBucket: config.mediaBucket,
 };
 
-export const isSupabaseConfigured = Boolean(appEnv.supabaseUrl && appEnv.supabaseAnonKey);
+export const isSupabaseConfigured = hasSupabaseCoreConfig;

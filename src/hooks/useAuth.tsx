@@ -1,18 +1,19 @@
 import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
-import { appEnv, isSupabaseConfigured } from '@/lib/env';
-import { AuthSession, getUser, sendOtpEmail, supabaseLogout, verifyOtpEmail } from '@/lib/supabase';
+import { config, genericAccessDenied, genericAuthError, hasSupabaseCoreConfig } from '@/lib/config';
+import { AuthSession, getUser, signInWithOtp, signInWithPassword, supabaseLogout, verifyOtp } from '@/lib/supabase';
 
 interface AuthCtx {
   session: AuthSession | null;
   isAdmin: boolean;
   loading: boolean;
+  loginWithPassword: (email: string, password: string) => Promise<void>;
   sendOtp: (email: string) => Promise<void>;
-  verifyOtp: (email: string, otp: string) => Promise<void>;
+  verifyOtpCode: (email: string, otp: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
 const Ctx = createContext<AuthCtx | undefined>(undefined);
-const storageKey = 'arharif-auth';
+const storageKey = 'x1-auth-session';
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<AuthSession | null>(() => {
@@ -27,7 +28,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const refresh = hash.get('refresh_token');
     const type = hash.get('token_type') || 'bearer';
     const expires = Number(hash.get('expires_in') || 3600);
-    if (token && refresh) {
+    if (token && refresh && hasSupabaseCoreConfig) {
       getUser(token)
         .then((user) => {
           const next: AuthSession = { access_token: token, refresh_token: refresh, token_type: type, expires_in: expires, user };
@@ -39,27 +40,47 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   }, []);
 
-  const isAdmin = session?.user.email?.toLowerCase() === appEnv.adminEmail;
+  const isAdmin = Boolean(session?.user.email && config.adminEmail && session.user.email.toLowerCase() === config.adminEmail);
+
+  const ensureAdmin = (next: AuthSession) => {
+    const email = next.user.email?.toLowerCase();
+    if (!email || !config.adminEmail || email !== config.adminEmail) {
+      throw new Error(genericAccessDenied);
+    }
+  };
 
   const value = useMemo<AuthCtx>(
     () => ({
       session,
-      isAdmin: Boolean(isAdmin),
+      isAdmin,
       loading,
-      sendOtp: async (email) => {
-        if (!isSupabaseConfigured) throw new Error('Supabase env vars missing.');
+      loginWithPassword: async (email, password) => {
+        if (!hasSupabaseCoreConfig) throw new Error(genericAuthError);
         setLoading(true);
         try {
-          await sendOtpEmail(email);
+          const next = await signInWithPassword(email, password);
+          ensureAdmin(next);
+          setSession(next);
+          localStorage.setItem(storageKey, JSON.stringify(next));
         } finally {
           setLoading(false);
         }
       },
-      verifyOtp: async (email, otp) => {
-        if (!isSupabaseConfigured) throw new Error('Supabase env vars missing.');
+      sendOtp: async (email) => {
+        if (!hasSupabaseCoreConfig) throw new Error(genericAuthError);
         setLoading(true);
         try {
-          const next = await verifyOtpEmail(email, otp);
+          await signInWithOtp(email);
+        } finally {
+          setLoading(false);
+        }
+      },
+      verifyOtpCode: async (email, otp) => {
+        if (!hasSupabaseCoreConfig) throw new Error(genericAuthError);
+        setLoading(true);
+        try {
+          const next = await verifyOtp(email, otp);
+          ensureAdmin(next);
           setSession(next);
           localStorage.setItem(storageKey, JSON.stringify(next));
         } finally {
@@ -67,7 +88,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         }
       },
       logout: async () => {
-        if (session?.access_token && isSupabaseConfigured) await supabaseLogout(session.access_token).catch(() => undefined);
+        if (session?.access_token && hasSupabaseCoreConfig) await supabaseLogout(session.access_token).catch(() => undefined);
         setSession(null);
         localStorage.removeItem(storageKey);
       },
@@ -80,6 +101,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 export function useAuth() {
   const ctx = useContext(Ctx);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  if (!ctx) throw new Error('Authentication context unavailable.');
   return ctx;
 }

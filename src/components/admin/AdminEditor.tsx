@@ -26,7 +26,7 @@ export function AdminEditor({
     videoUrl: value?.videoUrl,
     status: value?.status ?? 'draft',
     publishedAt: value?.publishedAt,
-    authorName: value?.authorName ?? 'Arharif',
+    authorName: value?.authorName ?? 'X1',
   });
 
   const [tagsLike, setTagsLike] = useState('');

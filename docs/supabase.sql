@@ -1,5 +1,5 @@
 -- Replace with your admin email if needed
--- Default requested admin: x731072000@gmail.com
+-- Default requested admin: <ADMIN_EMAIL>
 
 create extension if not exists pgcrypto;
 create extension if not exists moddatetime schema extensions;
@@ -34,7 +34,7 @@ create table if not exists public.content_entries (
   published_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  author_name text not null default 'Arharif'
+  author_name text not null default 'X1'
 );
 
 
@@ -93,20 +93,20 @@ create policy "public_read_collections" on public.collections for select using (
 drop policy if exists "admin_manage_topics" on public.topics;
 create policy "admin_manage_topics" on public.topics
 for all
-using (auth.jwt() ->> 'email' = 'x731072000@gmail.com')
-with check (auth.jwt() ->> 'email' = 'x731072000@gmail.com');
+using (auth.jwt() ->> 'email' = '<ADMIN_EMAIL>')
+with check (auth.jwt() ->> 'email' = '<ADMIN_EMAIL>');
 
 drop policy if exists "admin_manage_content" on public.content_entries;
 create policy "admin_manage_content" on public.content_entries
 for all
-using (auth.jwt() ->> 'email' = 'x731072000@gmail.com')
-with check (auth.jwt() ->> 'email' = 'x731072000@gmail.com');
+using (auth.jwt() ->> 'email' = '<ADMIN_EMAIL>')
+with check (auth.jwt() ->> 'email' = '<ADMIN_EMAIL>');
 
 drop policy if exists "admin_manage_collections" on public.collections;
 create policy "admin_manage_collections" on public.collections
 for all
-using (auth.jwt() ->> 'email' = 'x731072000@gmail.com')
-with check (auth.jwt() ->> 'email' = 'x731072000@gmail.com');
+using (auth.jwt() ->> 'email' = '<ADMIN_EMAIL>')
+with check (auth.jwt() ->> 'email' = '<ADMIN_EMAIL>');
 
 insert into storage.buckets (id, name, public)
 values ('content-media', 'content-media', true)
@@ -137,7 +137,7 @@ for insert
 to authenticated
 with check (
   bucket_id = 'content-media'
-  and (auth.jwt() ->> 'email') = 'x731072000@gmail.com'
+  and (auth.jwt() ->> 'email') = '<ADMIN_EMAIL>'
 );
 
 -- Only admin email can update
@@ -147,11 +147,11 @@ for update
 to authenticated
 using (
   bucket_id = 'content-media'
-  and (auth.jwt() ->> 'email') = 'x731072000@gmail.com'
+  and (auth.jwt() ->> 'email') = '<ADMIN_EMAIL>'
 )
 with check (
   bucket_id = 'content-media'
-  and (auth.jwt() ->> 'email') = 'x731072000@gmail.com'
+  and (auth.jwt() ->> 'email') = '<ADMIN_EMAIL>'
 );
 
 -- Only admin email can delete
@@ -161,5 +161,5 @@ for delete
 to authenticated
 using (
   bucket_id = 'content-media'
-  and (auth.jwt() ->> 'email') = 'x731072000@gmail.com'
+  and (auth.jwt() ->> 'email') = '<ADMIN_EMAIL>'
 );

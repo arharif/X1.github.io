@@ -2,28 +2,21 @@
 
 Premium GitHub Pages **USER SITE** deployed at **https://arharif.github.io/**.
 
-## Architecture
+## Architecture Overview
 - Static frontend: React + TypeScript + Vite + Tailwind + Framer Motion
-- BaaS: Supabase (OTP Auth, Postgres, Storage)
+- Auth/CMS backend: Supabase (Auth, Postgres, Storage)
 - Hosting: GitHub Pages user-site (root domain)
 
-## Product Surfaces
-1. **Public website**
-   - Cinematic split entry
-   - Professional Framework Academy (book/slide topic experiences)
-   - Personal Culture Hub (Philosophy and Anime, Books, Hobbies)
-2. **Admin CMS**
-   - OTP-only login
-   - Topic CRUD + Content CRUD
-   - Draft / Publish / Archive workflow
-   - Media upload and inline images
-   - Video embed support
-
-## Themes
-- Dark
-- Light
-- Purple
-- Rainbow (controlled premium gradient treatment)
+## Authentication Model (Login Only)
+- `/login` supports:
+  - Email + Password
+  - Email + OTP
+- OTP request uses Supabase `signInWithOtp` semantics with `shouldCreateUser: false`.
+- OTP verification uses Supabase `verifyOtp` with `type: 'email'`.
+- Admin authorization requires:
+  1) authenticated session
+  2) authenticated email equals `VITE_ADMIN_EMAIL`
+- Unauthorized access responses are generic to reduce user enumeration.
 
 ## Environment Variables
 Create `.env` from `.env.example`.
@@ -32,64 +25,60 @@ Create `.env` from `.env.example`.
 cp .env.example .env
 ```
 
-Required:
+Required variables:
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
-- `VITE_ADMIN_EMAIL` (set to `x731072000@gmail.com`)
-- `VITE_SUPABASE_MEDIA_BUCKET` (default: `content-media`)
+- `VITE_ADMIN_EMAIL`
+- `VITE_SUPABASE_MEDIA_BUCKET`
 
-## OTP Admin Login
-- Route: `/login`
-- Flow: email -> send OTP -> verify OTP
-- Only authenticated email matching `VITE_ADMIN_EMAIL` is authorized for `/admin`
-- No password is required by the app login flow
+`.env.example` contains placeholders only and no secrets.
 
-## Supabase Setup
-Run `docs/supabase.sql` in Supabase SQL editor.
-It sets up:
-- `topics` table
-- `content_entries` table
-- RLS for public-read/published-read and admin-only mutations
-- `content-media` storage bucket policies
-
-## GitHub Pages Deployment
+## GitHub Actions Configuration
 Workflow: `.github/workflows/deploy.yml`
-- Trigger: push to `main`
-- Install: `npm ci`
-- Build: `npm run build`
-- Upload: `dist`
-- Deploy: official Pages actions
-- Build envs injected from GitHub Secrets:
+
+Build-time env injection:
+- **Secrets**
   - `VITE_SUPABASE_URL`
   - `VITE_SUPABASE_ANON_KEY`
+- **Repository Variables**
   - `VITE_ADMIN_EMAIL`
   - `VITE_SUPABASE_MEDIA_BUCKET`
 
-## Local Commands
+## Supabase Setup
+Run `docs/supabase.sql` in Supabase SQL editor after replacing `<ADMIN_EMAIL>` with your authorized admin email value.
+
+Included setup:
+- tables: `topics`, `content_entries`, `tags`, `collections`, `content_tags`, `content_collections`
+- RLS policies for public reads + admin-only mutations
+- storage bucket and storage policies for `content-media`
+
+## Local Development
 ```bash
 npm ci
 npm run dev
 npm run build
 ```
 
+## Security Notes
+- Frontend uses only Supabase anon key.
+- Never use service-role key in browser code.
+- Never commit secrets.
+- Error/auth messaging is intentionally generic to avoid identity leakage.
+
 ## Troubleshooting
 - **Blank page**
-  - Ensure `vite.config.ts` has `base: '/'`
-  - Ensure no stale project subpath assumptions
-  - Ensure `index.html` root div exists and `src/main.tsx` mounts correctly
-  - Check browser console for runtime errors (app includes visible error boundary screen)
+  - verify `vite.config.ts` has `base: '/'`
+  - verify `index.html` has `<div id="root"></div>`
+  - verify `src/main.tsx` mount path is correct
+  - check browser console/runtime errors (UI has runtime error boundary)
 - **Missing env vars**
-  - App shows a visible warning banner and runs in public fallback mode
-  - OTP auth requires Supabase URL + anon key
+  - app shows visible configuration warning state instead of blank screen
+- **OTP not arriving**
+  - ensure Email OTP is enabled in Supabase Auth
+  - verify SMTP/email provider status in Supabase project
 - **Auth redirect/session issues**
-  - Ensure Supabase OTP email provider is enabled
-  - Ensure callback includes token hash and `/login` can process it
+  - ensure hash tokens are preserved on callback route
 - **Build failures**
-  - Ensure `package-lock.json` is committed when using `npm ci`
-- **Old path/domain references**
-  - Confirm there are no stale references to old repository naming/subpaths
-
-## Security Notes
-- Use only Supabase anon key in frontend
-- Never commit service-role keys or passwords
-- Admin mutations are controlled through RLS + admin email allowlist
+  - ensure `package-lock.json` exists for `npm ci`
+- **Old path assumptions**
+  - ensure there are no stale project-subpath references from previous repo naming

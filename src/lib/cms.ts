@@ -25,7 +25,7 @@ const normalizeContent = (r: Record<string, unknown>): ContentRecord => ({
   metaDescription: r.meta_description ? String(r.meta_description) : undefined,
   ogImageUrl: r.og_image_url ? String(r.og_image_url) : undefined,
   featured: Boolean(r.featured), favorite: Boolean(r.favorite),
-  createdAt: String(r.created_at), updatedAt: String(r.updated_at), authorName: String(r.author_name ?? 'Arharif'),
+  createdAt: String(r.created_at), updatedAt: String(r.updated_at), authorName: String(r.author_name ?? 'X1'),
 });
 
 const topicRow = (i: TopicInput) => ({ slug: i.slug, title: i.title, description: i.description, universe: i.universe, category: i.category, subcategory: i.subcategory ?? null, display_style: i.displayStyle, cover_image_url: i.coverImageUrl ?? null, palette: i.palette ?? null, mood: i.mood ?? null, icon: i.icon ?? null, order_index: i.orderIndex, featured: i.featured ?? false });
