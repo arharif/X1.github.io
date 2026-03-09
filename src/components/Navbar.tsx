@@ -19,9 +19,8 @@ export function Navbar({ mode, onTheme }: { mode: ThemeMode; onTheme: (m: ThemeM
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-black/30 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between p-4">
-        <Link to="/" className="flex items-center gap-2 font-semibold tracking-[0.2em]">
+        <Link to="/" className="flex items-center" aria-label="Home">
           <X1Mark size="sm" />
-          <span>X1</span>
         </Link>
         <nav className="hidden gap-6 md:flex">
           {links.map((link) => (
