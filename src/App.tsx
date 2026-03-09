@@ -135,11 +135,20 @@ function PersonalHub() {
   const [query, setQuery] = useState('');
   const [tag, setTag] = useState('');
   const nav = useNavigate();
-  useEffect(() => { Promise.all([listPublishedTopics(), listPublishedContent()]).then(([t, c]) => { setTopics(t.filter((x) => normUniverse(x.universe) === 'personal')); setContent(c); }); }, []);
-  const categories = ['Philosophy and Anime', 'Books', 'Hobbies'];
+
+  useEffect(() => {
+    Promise.all([listPublishedTopics(), listPublishedContent()]).then(([t, c]) => {
+      setTopics(t.filter((x) => normUniverse(x.universe) === 'personal'));
+      setContent(c);
+    });
+  }, []);
+
+  const categories = [...new Set(topics.map((t) => t.category).filter(Boolean))];
   const allTags = [...new Set(content.flatMap((c) => c.tags || []))].slice(0, 12);
-  return <section><h1 className="mb-2 text-3xl font-semibold">Personal</h1><p className="mb-4 text-muted">Curated writing across philosophy, books, and hobbies.</p><div className="glass mb-6 rounded-2xl p-4"><input className="w-full bg-transparent outline-none" placeholder="Search themes and notes" value={query} onChange={(e) => setQuery(e.target.value)} /><div className="mt-3 flex flex-wrap gap-2">{allTags.map((t)=><button key={t} onClick={()=>setTag(t)} className={`rounded-full px-3 py-1 text-xs ${tag===t?'bg-white/30':'bg-white/10'}`}>#{t}</button>)}<button className="text-xs" onClick={()=>setTag('')}>clear</button></div></div>{categories.map((cat) => { const t = topics.filter((x) => x.category === cat); const posts = searchContent(content.filter((c) => t.some((tt) => tt.id === c.topicId) && (!tag || (c.tags||[]).includes(tag))), query); return <section key={cat} className="mb-8"><h2 className="mb-3 text-2xl font-semibold">{cat}</h2><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{posts.map((p) => <ContentCard key={p.id} item={p} onOpen={() => nav(`/personal/post/${p.slug}`)} />)}</div></section>; })}</section>;
+
+  return <section><h1 className="mb-2 text-3xl font-semibold">Personal</h1><p className="mb-4 text-muted">Curated writing across themes.</p><div className="glass mb-6 rounded-2xl p-4"><input className="w-full bg-transparent outline-none" placeholder="Search themes and notes" value={query} onChange={(e) => setQuery(e.target.value)} /><div className="mt-3 flex flex-wrap gap-2">{allTags.map((t)=><button key={t} onClick={()=>setTag(t)} className={`rounded-full px-3 py-1 text-xs ${tag===t?'bg-white/30':'bg-white/10'}`}>#{t}</button>)}<button className="text-xs" onClick={()=>setTag('')}>clear</button></div></div>{categories.map((cat) => { const t = topics.filter((x) => x.category === cat); const posts = searchContent(content.filter((c) => t.some((tt) => tt.id === c.topicId) && (!tag || (c.tags||[]).includes(tag))), query); return <section key={cat} className="mb-8"><h2 className="mb-3 text-2xl font-semibold">{cat}</h2><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{posts.map((p) => <ContentCard key={p.id} item={p} onOpen={() => nav(`/personal/post/${p.slug}`)} />)}</div></section>; })}{categories.length===0 && <div className="glass rounded-xl p-4 text-sm text-muted">No personal topics are visible yet.</div>}</section>;
 }
+
 
 function PersonalPost() {
   const { slug } = useParams();
@@ -159,9 +168,12 @@ function LoginPage() {
   const [otp, setOtp] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+
   useEffect(() => { if (session && isAdmin) nav('/admin'); }, [isAdmin, nav, session]);
-  return <section className="mx-auto max-w-md py-20"><div className="glass rounded-2xl p-6"><div className="flex items-center gap-3"><X1Mark size="md" /><h1 className="text-2xl font-semibold">Sign in</h1></div><p className="mt-2 text-sm text-muted">Two-step verification required to continue.</p>{!hasSupabaseCoreConfig && <p className="mt-3 text-xs text-amber-300">Configuration is incomplete. Authentication is currently unavailable.</p>}<div className="mt-4"><div className="mb-2 flex items-center justify-between text-xs text-muted"><span>Step {step} of 2</span><span>{step === 1 ? 'Credentials' : 'Verification'}</span></div><div className="h-1 rounded-full bg-white/10"><motion.div className="h-1 rounded-full bg-gradient-to-r from-cyan-300 via-violet-400 to-rose-400" initial={false} animate={{ width: step === 1 ? '50%' : '100%' }} transition={{ duration: 0.25 }} /></div></div><AnimatePresence mode="wait"><motion.div key={step} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2 }}><input className="mt-4 w-full rounded-xl bg-white/10 p-2" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" disabled={step === 2} />{step === 1 ? <><input className="mt-3 w-full rounded-xl bg-white/10 p-2" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Password" /><button className="mt-3 w-full rounded-xl bg-white/15 px-4 py-2" disabled={loading || !hasSupabaseCoreConfig} onClick={async()=>{ setError(''); setMessage(''); try { await beginSecureLogin(email, password); setStep(2); setMessage('If the sign-in request can be completed, a verification code will be sent.'); } catch { setError(genericAuthError); } }}>{loading ? 'Processing...' : 'Continue'}</button></> : <><input className="mt-3 w-full rounded-xl bg-white/10 p-2 tracking-[0.35em]" value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="OTP code" /><button className="mt-3 w-full rounded-xl bg-white/15 px-4 py-2" disabled={loading || !hasSupabaseCoreConfig} onClick={async () => { setError(''); setMessage(''); try { await verifyOtpCode(otp); nav('/admin'); } catch { setError(genericAccessDenied); } }}>{loading ? 'Verifying...' : 'Verify'}</button><button className="mt-2 w-full rounded-xl bg-white/5 px-4 py-2 text-xs text-muted" onClick={() => { setStep(1); setOtp(''); setMessage(''); setError(''); }}>Back</button></>}</motion.div></AnimatePresence>{message && <p className="mt-3 text-xs text-emerald-300">{message}</p>}{error && <p className="mt-3 text-xs text-rose-300">{error}</p>}</div></section>;
+
+  return <section className="mx-auto max-w-md py-20"><div className="glass rounded-2xl p-6"><div className="flex items-center gap-3"><X1Mark size="md" /><h1 className="text-2xl font-semibold">Sign in</h1></div><AnimatePresence mode="wait"><motion.div key={step} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2 }}><input className="mt-4 w-full rounded-xl bg-white/10 p-2" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" disabled={step === 2} autoComplete="email" />{step === 1 ? <><input className="mt-3 w-full rounded-xl bg-white/10 p-2" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Password" autoComplete="current-password" /><button className="mt-3 w-full rounded-xl bg-white/15 px-4 py-2" disabled={loading || !hasSupabaseCoreConfig || !email.trim() || !password} onClick={async()=>{ setError(''); setMessage(''); try { await beginSecureLogin(email.trim(), password); setStep(2); setMessage('If the request can be completed, you will receive an email shortly.'); } catch { setError(genericAuthError); } }}>{loading ? 'Processing...' : 'Continue'}</button></> : <><input className="mt-3 w-full rounded-xl bg-white/10 p-2 tracking-[0.35em]" value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="OTP code" inputMode="numeric" /><button className="mt-3 w-full rounded-xl bg-white/15 px-4 py-2" disabled={loading || !hasSupabaseCoreConfig || otp.trim().length < 6} onClick={async () => { setError(''); setMessage(''); try { await verifyOtpCode(otp.trim()); nav('/admin'); } catch { setError(genericAccessDenied); } }}>{loading ? 'Verifying...' : 'Verify'}</button><button className="mt-2 w-full rounded-xl bg-white/5 px-4 py-2 text-xs text-muted" onClick={() => { setStep(1); setOtp(''); setMessage(''); setError(''); }}>Back</button></>}</motion.div></AnimatePresence>{message && <p className="mt-3 text-xs text-emerald-300">{message}</p>}{error && <p className="mt-3 text-xs text-rose-300">{error}</p>}{!hasSupabaseCoreConfig && <p className="mt-3 text-xs text-amber-300">Authentication could not be completed.</p>}</div></section>;
 }
+
 
 function AdminPage() {
   const { session, isAdmin, logout } = useAuth();
@@ -202,6 +214,38 @@ function AdminPage() {
   const drafts = content.length - published;
   const recentPublished = content.filter((c) => c.status === 'published').slice(0, 5);
   const recentTopics = topics.slice(0, 5);
+  const saveTopic = async (payload: any) => {
+    setSaving(true);
+    setNotice('');
+    setError('');
+    try {
+      selectedTopic ? await updateTopic(selectedTopic.id, payload, token) : await createTopic(payload, token);
+      setSelectedTopic(undefined);
+      setNotice('Topic saved.');
+      try { await load(); } catch { /* keep success notice when write succeeds */ }
+    } catch (e) {
+      setError(friendly(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveContent = async (payload: any) => {
+    setSaving(true);
+    setNotice('');
+    setError('');
+    try {
+      const clean = { ...payload, contentType: payload.contentType || 'article' };
+      selectedContent ? await updateContent(selectedContent.id, clean, token) : await createContent(clean, token);
+      setSelectedContent(undefined);
+      setNotice('Post saved.');
+      try { await load(); } catch { /* keep success notice when write succeeds */ }
+    } catch (e) {
+      setError(friendly(e));
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <section className="space-y-4">
@@ -249,8 +293,8 @@ function AdminPage() {
           <div className="space-y-1">{content.slice(0,14).map((c)=><div key={c.id} className="rounded-lg bg-white/5 p-2"><button className="text-left text-sm" onClick={()=>setSelectedContent(c)}>{c.title}</button><button className="ml-2 text-xs text-rose-300" onClick={async()=>{ setNotice(''); setError(''); try { await deleteContent(c.id, token); await load(); setNotice('Post removed.'); } catch (e) { setError(friendly(e)); } }}>delete</button></div>)}</div>
         </aside>
         <div className="space-y-6">
-          <TopicEditor value={selectedTopic} saving={saving} onSave={async (payload)=>{ setSaving(true); setNotice(''); setError(''); try { selectedTopic ? await updateTopic(selectedTopic.id,payload,token) : await createTopic(payload,token); await load(); setSelectedTopic(undefined); setNotice('Topic saved.'); } catch (e) { setError(friendly(e)); } finally { setSaving(false); } }} />
-          <AdminEditor title="Create Post" topics={topics} value={selectedContent} saving={saving} onUpload={(f)=>uploadMedia(f,token)} onSave={async (payload)=>{ setSaving(true); setNotice(''); setError(''); try { const clean = { ...payload, contentType: payload.contentType || 'article' }; selectedContent ? await updateContent(selectedContent.id,clean,token) : await createContent(clean,token); await load(); setSelectedContent(undefined); setNotice('Post saved.'); } catch (e) { setError(friendly(e)); } finally { setSaving(false); } }} />
+          <TopicEditor value={selectedTopic} saving={saving} onSave={saveTopic} />
+          <AdminEditor title="Create Post" topics={topics} value={selectedContent} saving={saving} onUpload={(f)=>uploadMedia(f,token)} onSave={saveContent} />
         </div>
       </div>
     </section>
