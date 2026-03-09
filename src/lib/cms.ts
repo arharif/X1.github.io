@@ -132,7 +132,9 @@ export async function deleteContent(id: string, accessToken: string) {
 }
 
 export async function uploadMedia(file: File, accessToken: string) {
-  const ext = file.name.split('.').pop() || 'png';
+  const allowed = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+  if (!allowed.has(file.type) || file.size > 8 * 1024 * 1024) throw new Error('Invalid upload.');
+  const ext = (file.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '') || 'png';
   const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   if (!isSupabaseConfigured) return URL.createObjectURL(file);
   return supabaseUpload(file, accessToken, path);

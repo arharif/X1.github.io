@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ThemeMode } from '@/lib/theme';
 
 export function X1Mark({ size = 'md', mode }: { size?: 'sm' | 'md' | 'lg'; mode?: ThemeMode }) {
@@ -24,6 +24,13 @@ export function X1Mark({ size = 'md', mode }: { size?: 'sm' | 'md' | 'lg'; mode?
     return () => obs.disconnect();
   }, [mode]);
 
+  const emoji = useMemo(() => {
+    if (liveMode === 'dark') return '😴';
+    if (liveMode === 'light') return '😇';
+    if (liveMode === 'purple') return '😠';
+    return '🤩';
+  }, [liveMode]);
+
   return (
     <motion.div
       initial={{ y: 0 }}
@@ -36,13 +43,7 @@ export function X1Mark({ size = 'md', mode }: { size?: 'sm' | 'md' | 'lg'; mode?
       <span className="x1-mark__shine" />
       <span className="x1-mark__spark" />
       <span className="x1-mark__label relative z-10 font-semibold tracking-wide">X1</span>
-      <span className="x1-mark__face" aria-hidden="true">
-        <span className="x1-mark__eye x1-mark__eye--left" />
-        <span className="x1-mark__eye x1-mark__eye--right" />
-        <span className="x1-mark__mouth" />
-        <span className="x1-mark__cheek x1-mark__cheek--left" />
-        <span className="x1-mark__cheek x1-mark__cheek--right" />
-      </span>
+      <span className="x1-mark__emoji" aria-hidden="true">{emoji}</span>
     </motion.div>
   );
 }

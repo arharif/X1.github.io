@@ -39,6 +39,7 @@ export function AdminEditor({
   }), [defaultTopic]);
   const [form, setForm] = useState<ContentInput>(blankForm);
   const [tagsLike, setTagsLike] = useState('');
+  const [localError, setLocalError] = useState('');
 
   useEffect(() => {
     if (!value) {
@@ -70,13 +71,15 @@ export function AdminEditor({
   }, [value, blankForm]);
 
   const update = <K extends keyof ContentInput>(key: K, val: ContentInput[K]) => setForm((f) => ({ ...f, [key]: val }));
+  const safeUrl = (value?: string) => !value || /^https:\/\//.test(value);
 
   return (
     <div className="glass rounded-2xl p-4">
       <h3 className="mb-4 text-xl font-semibold">{value ? `Edit ${title.replace('Create ', '')}` : title}</h3>
+      {localError && <p className="mb-3 text-xs text-rose-300">{localError}</p>}
       <div className="grid gap-3 md:grid-cols-2">
         <input className="rounded-xl bg-white/10 p-2" placeholder="Title" value={form.title} onChange={(e) => { const title = e.target.value; update('title', title); if (!value) update('slug', title.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-')); }} />
-        <input className="rounded-xl bg-white/10 p-2" placeholder="Slug" value={form.slug} onChange={(e) => update('slug', e.target.value.toLowerCase().replace(/\s+/g, '-'))} />
+        <input className="rounded-xl bg-white/10 p-2" placeholder="Slug" value={form.slug} onChange={(e) => update('slug', e.target.value.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-'))} />
         <select className="rounded-xl bg-white/10 p-2" value={form.topicId} onChange={(e) => update('topicId', e.target.value)}>
           {topics.map((topic) => <option key={topic.id} value={topic.id}>{topic.title}</option>)}
         </select>
@@ -93,9 +96,14 @@ export function AdminEditor({
           const file = e.target.files?.[0];
           if (!file || !file.type.startsWith('image/')) return;
           if (file.size > 8 * 1024 * 1024) return;
-          const url = await onUpload(file);
-          update('coverImageUrl', url);
-          update('body', `${form.body}\n\n![uploaded image](${url})`);
+          try {
+            const url = await onUpload(file);
+            update('coverImageUrl', url);
+            update('body', `${form.body}\n\n![uploaded image](${url})`);
+            setLocalError('');
+          } catch {
+            setLocalError('Upload failed. Use JPG/PNG/WEBP/GIF under 8MB.');
+          }
         }} />
         {form.coverImageUrl && <img src={form.coverImageUrl} className="h-16 w-24 rounded object-cover" />}
       </div>
@@ -110,7 +118,14 @@ export function AdminEditor({
         <label><input type="checkbox" checked={Boolean(form.featured)} onChange={(e)=>update('featured', e.target.checked)} /> Featured</label>
         <label><input type="checkbox" checked={Boolean(form.favorite)} onChange={(e)=>update('favorite', e.target.checked)} /> Favorite</label>
       </div>
-      <button disabled={saving || !form.topicId || !form.title.trim() || !form.slug.trim()} onClick={() => onSave({ ...form, contentType: form.contentType, title: form.title.trim(), slug: form.slug.trim(), body: `${form.body}${tagsLike ? `\n\n> tags: ${tagsLike}` : ''}`, publishedAt: form.status === 'published' ? (form.publishedAt || new Date().toISOString()) : undefined })} className="mt-4 rounded-xl bg-white/15 px-4 py-2 hover:bg-white/25 disabled:cursor-not-allowed disabled:opacity-60">
+      <button disabled={saving || !form.topicId || !form.title.trim() || !form.slug.trim()} onClick={() => {
+        if (!safeUrl(form.videoUrl) || !safeUrl(form.coverImageUrl) || !safeUrl(form.ogImageUrl)) {
+          setLocalError('Only HTTPS URLs are allowed for media fields.');
+          return;
+        }
+        setLocalError('');
+        onSave({ ...form, contentType: form.contentType, title: form.title.trim(), slug: form.slug.trim(), body: `${form.body}${tagsLike ? `\n\n> tags: ${tagsLike}` : ''}`, publishedAt: form.status === 'published' ? (form.publishedAt || new Date().toISOString()) : undefined });
+      }} className="mt-4 rounded-xl bg-white/15 px-4 py-2 hover:bg-white/25 disabled:cursor-not-allowed disabled:opacity-60">
         {saving ? 'Saving...' : 'Save Content'}
       </button>
     </div>

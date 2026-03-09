@@ -1,5 +1,7 @@
 import { ContentRecord } from '@/content/types';
 
+const safeMediaUrl = (value?: string) => (value && /^https:\/\//.test(value) ? value : undefined);
+
 function renderLine(line: string, idx: number) {
   if (!line.trim()) return <div key={idx} className="h-2" />;
   if (line.startsWith('# ')) return <h2 key={idx} className="mt-4 text-2xl font-semibold">{line.slice(2)}</h2>;
@@ -17,10 +19,10 @@ function renderLine(line: string, idx: number) {
 export function ArticleView({ item }: { item: ContentRecord }) {
   return (
     <article className="mx-auto max-w-4xl">
-      {item.coverImageUrl && <div className="mb-4 h-56 overflow-hidden rounded-2xl"><img src={item.coverImageUrl} alt={item.title} className="h-full w-full object-cover" /></div>}
+      {safeMediaUrl(item.coverImageUrl) && <div className="mb-4 h-56 overflow-hidden rounded-2xl"><img src={safeMediaUrl(item.coverImageUrl)} alt={item.title} className="h-full w-full object-cover" loading="lazy" /></div>}
       <h1 className="text-3xl font-semibold">{item.title}</h1>
       <p className="mt-2 text-sm text-muted">{item.authorName}</p>
-      {item.videoUrl && <div className="mt-5 aspect-video overflow-hidden rounded-2xl"><iframe src={item.videoUrl} title="Video" className="h-full w-full" allowFullScreen /></div>}
+      {safeMediaUrl(item.videoUrl) && <div className="mt-5 aspect-video overflow-hidden rounded-2xl"><iframe src={safeMediaUrl(item.videoUrl)} title="Video" className="h-full w-full" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation" /></div>}
       <div className="mt-5">{item.body.split('\n').map(renderLine)}</div>
     </article>
   );

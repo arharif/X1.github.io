@@ -31,8 +31,8 @@ function Landing() {
   const nav = useNavigate();
   return (
     <section className="grid gap-6 py-10 md:grid-cols-2">
-      <EntryCard title="Professional Framework Academy" description="Interactive digital books and slide-guides for GRC, IAM, PCI DSS, and security architecture." onClick={() => nav('/professional')} />
-      <EntryCard title="Personal Culture Hub" description="Philosophy and Anime, Books, and Hobbies in an expressive, premium space." onClick={() => nav('/personal')} />
+      <EntryCard title="Professional" description="Interactive digital books and slide-guides for GRC, IAM, PCI DSS, and security architecture." onClick={() => nav('/professional')} />
+      <EntryCard title="Personal" description="Philosophy and Anime, Books, and Hobbies in an expressive, premium space." onClick={() => nav('/personal')} />
     </section>
   );
 }
@@ -45,7 +45,7 @@ function SearchPage() {
   useEffect(() => { Promise.all([listPublishedTopics(), listPublishedContent()]).then(([t, c]) => { setTopics(t); setContent(c); }); }, []);
   const matchedTopics = topics.filter((t) => `${t.title} ${t.description} ${t.category}`.toLowerCase().includes(query.toLowerCase()));
   const matchedContent = searchContent(content, query);
-  return <section><h1 className="mb-4 text-3xl font-semibold">Global Smart Search</h1><div className="glass mb-5 rounded-2xl p-3"><input className="w-full bg-transparent outline-none" placeholder="Search topics, articles, tags, collections" value={query} onChange={(e) => setQuery(e.target.value)} /></div><div className="grid gap-6 md:grid-cols-2"><div><h2 className="mb-2 text-xl font-semibold">Topics</h2>{matchedTopics.map((t)=><button key={t.id} onClick={()=>nav(normUniverse(t.universe)==='professional'?`/professional/topic/${t.slug}`:'/personal')} className="glass mb-2 block w-full rounded-xl p-3 text-left">{t.title}</button>)}</div><div><h2 className="mb-2 text-xl font-semibold">Content</h2>{matchedContent.map((c)=><button key={c.id} onClick={()=>nav(`/personal/post/${c.slug}`)} className="glass mb-2 block w-full rounded-xl p-3 text-left">{c.title}</button>)}</div></div></section>;
+  return <section><h1 className="mb-4 text-3xl font-semibold">Search</h1><div className="glass mb-5 rounded-2xl p-3"><input className="w-full bg-transparent outline-none" placeholder="Search topics, articles, tags, collections" value={query} onChange={(e) => setQuery(e.target.value)} /></div><div className="grid gap-6 md:grid-cols-2"><div><h2 className="mb-2 text-xl font-semibold">Topics</h2>{matchedTopics.map((t)=><button key={t.id} onClick={()=>nav(normUniverse(t.universe)==='professional'?`/professional/topic/${t.slug}`:'/personal')} className="glass mb-2 block w-full rounded-xl p-3 text-left">{t.title}</button>)}</div><div><h2 className="mb-2 text-xl font-semibold">Content</h2>{matchedContent.map((c)=>{ const topic = topics.find((t)=>t.id===c.topicId); return <button key={c.id} onClick={()=>nav(topic && normUniverse(topic.universe)==='professional'?`/professional/topic/${topic.slug}`:`/personal/post/${c.slug}`)} className="glass mb-2 block w-full rounded-xl p-3 text-left">{c.title}</button>; })}</div></div></section>;
 }
 
 function ProfessionalHome() {
@@ -66,7 +66,7 @@ function ProfessionalHome() {
 
   return (
     <section>
-      <h1 className="mb-2 text-3xl font-semibold">Framework Academy</h1>
+      <h1 className="mb-2 text-3xl font-semibold">Professional</h1>
       <p className="mb-5 text-muted">Each topic opens as an interactive digital book or slides experience.</p>
 
       {topics.length > 0 ? (
@@ -81,7 +81,7 @@ function ProfessionalHome() {
         <>
           <h2 className="mb-3 text-xl font-semibold">Latest Professional Posts</h2>
           <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((p) => <ContentCard key={p.id} item={p} onOpen={() => nav(`/personal/post/${p.slug}`)} />)}
+            {posts.map((p) => { const topic = topics.find((t) => t.id === p.topicId); return <ContentCard key={p.id} item={p} onOpen={() => nav(topic ? `/professional/topic/${topic.slug}` : '/professional')} />; })}
           </div>
         </>
       )}
@@ -138,7 +138,7 @@ function PersonalHub() {
   useEffect(() => { Promise.all([listPublishedTopics(), listPublishedContent()]).then(([t, c]) => { setTopics(t.filter((x) => normUniverse(x.universe) === 'personal')); setContent(c); }); }, []);
   const categories = ['Philosophy and Anime', 'Books', 'Hobbies'];
   const allTags = [...new Set(content.flatMap((c) => c.tags || []))].slice(0, 12);
-  return <section><h1 className="mb-2 text-3xl font-semibold">Personal Culture Hub</h1><p className="mb-4 text-muted">Distinct thematic identities across philosophy/anime, books, and hobbies.</p><div className="glass mb-6 rounded-2xl p-4"><input className="w-full bg-transparent outline-none" placeholder="Search themes and notes" value={query} onChange={(e) => setQuery(e.target.value)} /><div className="mt-3 flex flex-wrap gap-2">{allTags.map((t)=><button key={t} onClick={()=>setTag(t)} className={`rounded-full px-3 py-1 text-xs ${tag===t?'bg-white/30':'bg-white/10'}`}>#{t}</button>)}<button className="text-xs" onClick={()=>setTag('')}>clear</button></div></div>{categories.map((cat) => { const t = topics.filter((x) => x.category === cat); const posts = searchContent(content.filter((c) => t.some((tt) => tt.id === c.topicId) && (!tag || (c.tags||[]).includes(tag))), query); return <section key={cat} className="mb-8"><h2 className="mb-3 text-2xl font-semibold">{cat}</h2><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{posts.map((p) => <ContentCard key={p.id} item={p} onOpen={() => nav(`/personal/post/${p.slug}`)} />)}</div></section>; })}</section>;
+  return <section><h1 className="mb-2 text-3xl font-semibold">Personal</h1><p className="mb-4 text-muted">Curated writing across philosophy, books, and hobbies.</p><div className="glass mb-6 rounded-2xl p-4"><input className="w-full bg-transparent outline-none" placeholder="Search themes and notes" value={query} onChange={(e) => setQuery(e.target.value)} /><div className="mt-3 flex flex-wrap gap-2">{allTags.map((t)=><button key={t} onClick={()=>setTag(t)} className={`rounded-full px-3 py-1 text-xs ${tag===t?'bg-white/30':'bg-white/10'}`}>#{t}</button>)}<button className="text-xs" onClick={()=>setTag('')}>clear</button></div></div>{categories.map((cat) => { const t = topics.filter((x) => x.category === cat); const posts = searchContent(content.filter((c) => t.some((tt) => tt.id === c.topicId) && (!tag || (c.tags||[]).includes(tag))), query); return <section key={cat} className="mb-8"><h2 className="mb-3 text-2xl font-semibold">{cat}</h2><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{posts.map((p) => <ContentCard key={p.id} item={p} onOpen={() => nav(`/personal/post/${p.slug}`)} />)}</div></section>; })}</section>;
 }
 
 function PersonalPost() {
@@ -149,7 +149,6 @@ function PersonalPost() {
   return <ArticleView item={item} />;
 }
 
-function NowPage() { return <section className="glass rounded-2xl p-6"><h1 className="text-3xl font-semibold">Now</h1><p className="mt-3 text-muted">Currently building long-form security knowledge books, writing cultural analysis, and improving systems design craft.</p></section>; }
 
 function LoginPage() {
   const { verifyOtpCode, beginSecureLogin, loading, isAdmin, session } = useAuth();
@@ -210,7 +209,7 @@ function AdminPage() {
         <div className="glass rounded-xl p-3"><p className="text-xs text-muted">Posted</p><p className="text-2xl font-semibold">{published}</p></div>
         <div className="glass rounded-xl p-3"><p className="text-xs text-muted">Unposted</p><p className="text-2xl font-semibold">{drafts}</p></div>
         <div className="glass rounded-xl p-3"><p className="text-xs text-muted">Topics</p><p className="text-2xl font-semibold">{topics.length}</p></div>
-        <div className="glass rounded-xl p-3"><button className="text-sm" onClick={async()=>logout()}>Logout</button></div>
+        <div className="glass rounded-xl p-3"><button className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm font-medium hover:bg-white/15" onClick={async()=>logout()}>Logout</button></div>
       </div>
       <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
         <aside className="glass rounded-2xl p-4">
@@ -249,7 +248,6 @@ function Shell() {
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/search" element={<SearchPage />} />
-              <Route path="/now" element={<NowPage />} />
               <Route path="/professional" element={<ProfessionalHome />} />
               <Route path="/professional/topic/:slug" element={<ProfessionalBook />} />
               <Route path="/personal" element={<PersonalHub />} />
@@ -262,7 +260,7 @@ function Shell() {
           </motion.div>
         </AnimatePresence>
       </main>
-      <footer className="mx-auto mt-8 max-w-6xl border-t border-white/10 p-6 text-sm text-muted">© 2026 · Framework Academy + Personal Culture Hub</footer>
+      <footer className="mx-auto mt-8 max-w-6xl border-t border-white/10 p-6 text-sm text-muted">© 2026</footer>
     </div>
   );
 }
