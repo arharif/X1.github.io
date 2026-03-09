@@ -138,13 +138,28 @@ function AdminPage() {
   const [selectedTopic, setSelectedTopic] = useState<TopicRecord | undefined>();
   const [selectedContent, setSelectedContent] = useState<ContentRecord | undefined>();
   const [saving, setSaving] = useState(false);
+  const [notice, setNotice] = useState('');
+  const [error, setError] = useState('');
   const token = session?.access_token || '';
+
+  const friendly = (err: unknown) => {
+    const message = err instanceof Error ? err.message.toLowerCase() : '';
+    if (message.includes('row-level security') || message.includes('permission') || message.includes('not allowed')) return genericAccessDenied;
+    return 'Unable to complete request. Please try again.';
+  };
 
   const load = async () => {
     if (!token && hasSupabaseCoreConfig) return;
-    const [t, c] = await Promise.all([listAdminTopics(token), listAdminContent(token)]);
-    setTopics(t); setContent(c);
+    setError('');
+    try {
+      const [t, c] = await Promise.all([listAdminTopics(token), listAdminContent(token)]);
+      setTopics(t);
+      setContent(c);
+    } catch (e) {
+      setError(friendly(e));
+    }
   };
+
   useEffect(() => { load(); }, [token]);
 
   if (!session) return <Navigate to="/login" replace />;
@@ -153,7 +168,36 @@ function AdminPage() {
   const published = content.filter((c) => c.status === 'published').length;
   const drafts = content.filter((c) => c.status === 'draft').length;
 
-  return <section className="space-y-4"><div className="grid gap-3 md:grid-cols-4"><div className="glass rounded-xl p-3"><p className="text-xs text-muted">Published</p><p className="text-2xl font-semibold">{published}</p></div><div className="glass rounded-xl p-3"><p className="text-xs text-muted">Drafts</p><p className="text-2xl font-semibold">{drafts}</p></div><div className="glass rounded-xl p-3"><p className="text-xs text-muted">Topics</p><p className="text-2xl font-semibold">{topics.length}</p></div><div className="glass rounded-xl p-3"><button className="text-sm" onClick={async()=>logout()}>Logout</button></div></div><div className="grid gap-6 lg:grid-cols-[300px_1fr]"><aside className="glass rounded-2xl p-4"><p className="mb-2 text-xs text-muted">Topics</p><button className="mb-2 w-full rounded-xl bg-white/10 p-2 text-left" onClick={() => setSelectedTopic(undefined)}>+ New Topic</button><div className="space-y-1">{topics.map((t)=><div key={t.id} className="rounded-lg bg-white/5 p-2"><button className="text-left text-sm" onClick={()=>setSelectedTopic(t)}>{t.title}</button><button className="ml-2 text-xs text-rose-300" onClick={async()=>{await deleteTopic(t.id, token); await load();}}>delete</button></div>)}</div><p className="mb-2 mt-4 text-xs text-muted">Content</p><button className="mb-2 w-full rounded-xl bg-white/10 p-2 text-left" onClick={() => setSelectedContent(undefined)}>+ New Content</button><div className="space-y-1">{content.slice(0,14).map((c)=><div key={c.id} className="rounded-lg bg-white/5 p-2"><button className="text-left text-sm" onClick={()=>setSelectedContent(c)}>{c.title}</button><button className="ml-2 text-xs text-rose-300" onClick={async()=>{await deleteContent(c.id, token); await load();}}>delete</button></div>)}</div></aside><div className="space-y-6"><TopicEditor value={selectedTopic} saving={saving} onSave={async (payload)=>{setSaving(true); try{selectedTopic? await updateTopic(selectedTopic.id,payload,token):await createTopic(payload,token); await load(); setSelectedTopic(undefined);} finally{setSaving(false);}}} /><AdminEditor topics={topics} value={selectedContent} saving={saving} onUpload={(f)=>uploadMedia(f,token)} onSave={async (payload)=>{setSaving(true); try{selectedContent? await updateContent(selectedContent.id,payload,token):await createContent(payload,token); await load(); setSelectedContent(undefined);} finally{setSaving(false);}}} /></div></div></section>;
+  return (
+    <section className="space-y-4">
+      {notice && <div className="glass rounded-xl border border-emerald-300/30 p-3 text-xs text-emerald-200">{notice}</div>}
+      {error && <div className="glass rounded-xl border border-rose-300/30 p-3 text-xs text-rose-200">{error}</div>}
+      <div className="grid gap-3 md:grid-cols-4">
+        <div className="glass rounded-xl p-3"><p className="text-xs text-muted">Published</p><p className="text-2xl font-semibold">{published}</p></div>
+        <div className="glass rounded-xl p-3"><p className="text-xs text-muted">Drafts</p><p className="text-2xl font-semibold">{drafts}</p></div>
+        <div className="glass rounded-xl p-3"><p className="text-xs text-muted">Topics</p><p className="text-2xl font-semibold">{topics.length}</p></div>
+        <div className="glass rounded-xl p-3"><button className="text-sm" onClick={async()=>logout()}>Logout</button></div>
+      </div>
+      <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
+        <aside className="glass rounded-2xl p-4">
+          <p className="mb-2 text-xs text-muted">Topics</p>
+          <button className="mb-2 w-full rounded-xl bg-white/10 p-2 text-left" onClick={() => setSelectedTopic(undefined)}>+ New Topic</button>
+          <div className="space-y-1">
+            {topics.map((t)=><div key={t.id} className="rounded-lg bg-white/5 p-2"><button className="text-left text-sm" onClick={()=>setSelectedTopic(t)}>{t.title}</button><button className="ml-2 text-xs text-rose-300" onClick={async()=>{ setNotice(''); setError(''); try { await deleteTopic(t.id, token); await load(); setNotice('Topic updated successfully.'); } catch (e) { setError(friendly(e)); } }}>delete</button></div>)}
+          </div>
+          <p className="mb-2 mt-4 text-xs text-muted">Content</p>
+          <button className="mb-2 w-full rounded-xl bg-white/10 p-2 text-left" onClick={() => setSelectedContent(undefined)}>+ New Content</button>
+          <div className="space-y-1">
+            {content.slice(0,14).map((c)=><div key={c.id} className="rounded-lg bg-white/5 p-2"><button className="text-left text-sm" onClick={()=>setSelectedContent(c)}>{c.title}</button><button className="ml-2 text-xs text-rose-300" onClick={async()=>{ setNotice(''); setError(''); try { await deleteContent(c.id, token); await load(); setNotice('Content updated successfully.'); } catch (e) { setError(friendly(e)); } }}>delete</button></div>)}
+          </div>
+        </aside>
+        <div className="space-y-6">
+          <TopicEditor value={selectedTopic} saving={saving} onSave={async (payload)=>{ setSaving(true); setNotice(''); setError(''); try { selectedTopic ? await updateTopic(selectedTopic.id,payload,token) : await createTopic(payload,token); await load(); setSelectedTopic(undefined); setNotice('Topic saved successfully.'); } catch (e) { setError(friendly(e)); } finally { setSaving(false); } }} />
+          <AdminEditor topics={topics} value={selectedContent} saving={saving} onUpload={(f)=>uploadMedia(f,token)} onSave={async (payload)=>{ setSaving(true); setNotice(''); setError(''); try { selectedContent ? await updateContent(selectedContent.id,payload,token) : await createContent(payload,token); await load(); setSelectedContent(undefined); setNotice('Content saved successfully.'); } catch (e) { setError(friendly(e)); } finally { setSaving(false); } }} />
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function NotFound() { return <section className="mx-auto max-w-xl py-24 text-center"><h1 className="text-4xl font-semibold">404</h1><Link to="/" className="mt-4 inline-block rounded-xl bg-white/10 px-4 py-2">Home</Link></section>; }

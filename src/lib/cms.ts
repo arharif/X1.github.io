@@ -96,13 +96,13 @@ export async function deleteTopic(id: string, accessToken: string) {
 
 export async function listPublishedContent() {
   if (!isSupabaseConfigured) return getLocalContent().filter((c) => c.status === 'published');
-  const rows = await supabaseRest<Record<string, unknown>[]>('content_entries?select=*&status=eq.published&order=published_at.desc.nullslast');
+  const rows = await supabaseRest<Record<string, unknown>[]>('content?select=*&status=eq.published&order=published_at.desc.nullslast');
   return rows.map(normalizeContent);
 }
 
 export async function listAdminContent(accessToken: string) {
   if (!isSupabaseConfigured) return getLocalContent();
-  const rows = await supabaseRest<Record<string, unknown>[]>('content_entries?select=*&order=updated_at.desc', undefined, accessToken);
+  const rows = await supabaseRest<Record<string, unknown>[]>('content?select=*&order=updated_at.desc', undefined, accessToken);
   return rows.map(normalizeContent);
 }
 
@@ -112,7 +112,7 @@ export async function createContent(input: ContentInput, accessToken: string) {
     setLocalContent([next, ...getLocalContent()]);
     return;
   }
-  await supabaseRest('content_entries', { method: 'POST', body: JSON.stringify(contentRow(input)) }, accessToken);
+  await supabaseRest('content', { method: 'POST', body: JSON.stringify(contentRow(input)) }, accessToken);
 }
 
 export async function updateContent(id: string, input: ContentInput, accessToken: string) {
@@ -120,7 +120,7 @@ export async function updateContent(id: string, input: ContentInput, accessToken
     setLocalContent(getLocalContent().map((c) => (c.id === id ? { ...c, ...input, updatedAt: new Date().toISOString() } : c)));
     return;
   }
-  await supabaseRest(`content_entries?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify(contentRow(input)) }, accessToken);
+  await supabaseRest(`content?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify(contentRow(input)) }, accessToken);
 }
 
 export async function deleteContent(id: string, accessToken: string) {
@@ -128,7 +128,7 @@ export async function deleteContent(id: string, accessToken: string) {
     setLocalContent(getLocalContent().filter((c) => c.id !== id));
     return;
   }
-  await supabaseRest(`content_entries?id=eq.${id}`, { method: 'DELETE' }, accessToken);
+  await supabaseRest(`content?id=eq.${id}`, { method: 'DELETE' }, accessToken);
 }
 
 export async function uploadMedia(file: File, accessToken: string) {

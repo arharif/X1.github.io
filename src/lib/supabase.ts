@@ -63,7 +63,17 @@ export async function supabaseRest<T>(path: string, options?: RequestInit, acces
   h.set('Content-Type', 'application/json');
   if (accessToken) h.set('Authorization', `Bearer ${accessToken}`);
   const res = await fetch(`${config.supabaseUrl}/rest/v1/${path}`, { ...options, headers: h });
-  if (!res.ok) throw new Error('Unable to complete request.');
+  if (!res.ok) {
+    let msg = 'Unable to complete request.';
+    try {
+      const payload = await res.json();
+      const detail = payload?.message || payload?.error || payload?.hint;
+      if (typeof detail === 'string' && detail.trim()) msg = detail;
+    } catch {
+      // keep generic fallback
+    }
+    throw new Error(msg);
+  }
   if (res.status === 204) return null as T;
   return res.json() as Promise<T>;
 }
