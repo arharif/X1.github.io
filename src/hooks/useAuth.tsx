@@ -6,9 +6,8 @@ interface AuthCtx {
   session: AuthSession | null;
   isAdmin: boolean;
   loading: boolean;
-  loginWithPassword: (email: string, password: string) => Promise<void>;
-  sendOtp: (email: string) => Promise<void>;
-  verifyOtpCode: (email: string, otp: string) => Promise<void>;
+  beginSecureLogin: (email: string, password: string) => Promise<void>;
+  verifyOtpCode: (otp: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -21,6 +20,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     return raw ? (JSON.parse(raw) as AuthSession) : null;
   });
   const [loading, setLoading] = useState(false);
+  const [challengeEmail, setChallengeEmail] = useState<string | null>(null);
 
   useEffect(() => {
     const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
@@ -54,35 +54,32 @@ export function AuthProvider({ children }: PropsWithChildren) {
       session,
       isAdmin,
       loading,
-      loginWithPassword: async (email, password) => {
+      beginSecureLogin: async (email, password) => {
         if (!hasSupabaseCoreConfig) throw new Error(genericAuthError);
         setLoading(true);
         try {
           const next = await signInWithPassword(email, password);
-          ensureAdmin(next);
-          setSession(next);
-          localStorage.setItem(storageKey, JSON.stringify(next));
-        } finally {
-          setLoading(false);
-        }
-      },
-      sendOtp: async (email) => {
-        if (!hasSupabaseCoreConfig) throw new Error(genericAuthError);
-        setLoading(true);
-        try {
+          await supabaseLogout(next.access_token).catch(() => undefined);
           await signInWithOtp(email);
+          setChallengeEmail(email);
+        } catch {
+          throw new Error(genericAuthError);
         } finally {
           setLoading(false);
         }
       },
-      verifyOtpCode: async (email, otp) => {
+      verifyOtpCode: async (otp) => {
         if (!hasSupabaseCoreConfig) throw new Error(genericAuthError);
+        if (!challengeEmail) throw new Error(genericAuthError);
         setLoading(true);
         try {
-          const next = await verifyOtp(email, otp);
+          const next = await verifyOtp(challengeEmail, otp);
           ensureAdmin(next);
           setSession(next);
           localStorage.setItem(storageKey, JSON.stringify(next));
+          setChallengeEmail(null);
+        } catch {
+          throw new Error(genericAuthError);
         } finally {
           setLoading(false);
         }
@@ -90,10 +87,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
       logout: async () => {
         if (session?.access_token && hasSupabaseCoreConfig) await supabaseLogout(session.access_token).catch(() => undefined);
         setSession(null);
+        setChallengeEmail(null);
         localStorage.removeItem(storageKey);
       },
     }),
-    [isAdmin, loading, session],
+    [challengeEmail, isAdmin, loading, session],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

@@ -5,13 +5,15 @@ export function X1Mark({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
   return (
     <motion.div
       initial={{ y: 0 }}
-      animate={{ y: [0, -3, 0], rotate: [0, 1.5, -1.5, 0] }}
-      transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
-      whileHover={{ scale: 1.08, rotate: 4 }}
-      className={`inline-grid place-items-center rounded-xl bg-gradient-to-br from-cyan-400/45 via-violet-500/45 to-fuchsia-500/45 shadow-[0_0_26px_rgba(139,92,246,.5)] ${cls}`}
+      animate={{ y: [0, -2, 0], rotate: [0, 1.2, -1.2, 0], scale: [1, 1.02, 1] }}
+      transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
+      whileHover={{ scale: 1.08, rotate: 3.5 }}
+      className={`x1-mark inline-grid place-items-center overflow-hidden rounded-xl ${cls}`}
       aria-label="X1 brand mark"
     >
-      <span className="font-semibold tracking-wide">X1</span>
+      <span className="x1-mark__shine" />
+      <span className="x1-mark__spark" />
+      <span className="relative z-10 font-semibold tracking-wide">X1</span>
     </motion.div>
   );
 }

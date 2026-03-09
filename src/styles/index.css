@@ -46,6 +46,69 @@ body {
 input, textarea, select, option { color: var(--text); }
 iframe { border: 0; }
 
+.x1-mark {
+  position: relative;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.4), rgba(139, 92, 246, 0.5), rgba(236, 72, 153, 0.45));
+  box-shadow: 0 0 24px rgba(139, 92, 246, 0.45);
+  isolation: isolate;
+  transition: box-shadow 300ms ease, filter 300ms ease;
+}
+
+.x1-mark::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  opacity: 0.7;
+}
+
+.x1-mark__shine {
+  position: absolute;
+  inset: -35%;
+  background: linear-gradient(120deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%);
+  transform: translateX(-90%);
+  animation: x1-idle-shine 3.8s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+.x1-mark__spark {
+  position: absolute;
+  top: 18%;
+  right: 18%;
+  width: 7px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(248, 113, 113, 0), rgba(248, 113, 113, 0.95), rgba(248, 113, 113, 0));
+  box-shadow: 0 0 10px rgba(248, 113, 113, 0.75);
+  transform: rotate(-24deg);
+  opacity: 0;
+}
+
+.x1-mark:hover {
+  box-shadow: 0 0 28px rgba(139, 92, 246, 0.8), 0 0 20px rgba(248, 113, 113, 0.28);
+  filter: saturate(1.15);
+}
+
+.x1-mark:hover .x1-mark__shine {
+  animation-duration: 1.05s;
+  opacity: 0.9;
+}
+
+.x1-mark:hover .x1-mark__spark {
+  animation: x1-red-spark 700ms ease-out;
+}
+
+@keyframes x1-idle-shine {
+  0%, 30%, 100% { transform: translateX(-90%); }
+  55% { transform: translateX(90%); }
+}
+
+@keyframes x1-red-spark {
+  0% { opacity: 0; transform: rotate(-24deg) translateX(-2px); }
+  30% { opacity: 1; transform: rotate(-24deg) translateX(2px); }
+  100% { opacity: 0; transform: rotate(-24deg) translateX(7px); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }

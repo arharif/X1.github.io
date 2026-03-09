@@ -3,7 +3,6 @@ import { Component, ReactNode, useEffect, useState } from 'react';
 import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AdminEditor } from '@/components/admin/AdminEditor';
 import { TopicEditor } from '@/components/admin/TopicEditor';
-import { AuthModeTabs } from '@/components/auth/AuthModeTabs';
 import { X1Mark } from '@/components/branding/X1Mark';
 import { ArticleView } from '@/components/ArticleView';
 import { ContentCard, EntryCard } from '@/components/Cards';
@@ -11,7 +10,7 @@ import { Navbar } from '@/components/Navbar';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { createContent, createTopic, deleteContent, deleteTopic, listAdminContent, listAdminTopics, listCollections, listPublishedContent, listPublishedTopics, updateContent, updateTopic, uploadMedia } from '@/lib/cms';
 import { searchContent } from '@/lib/content';
-import { genericAccessDenied, hasSupabaseCoreConfig } from '@/lib/config';
+import { genericAccessDenied, genericAuthError, hasSupabaseCoreConfig } from '@/lib/config';
 import { initTheme, ThemeMode, themeMap } from '@/lib/theme';
 import { CollectionRecord, ContentRecord, TopicRecord } from './content/types';
 
@@ -118,16 +117,16 @@ function PersonalPost() {
 function NowPage() { return <section className="glass rounded-2xl p-6"><h1 className="text-3xl font-semibold">Now</h1><p className="mt-3 text-muted">Currently building long-form security knowledge books, writing cultural analysis, and improving systems design craft.</p></section>; }
 
 function LoginPage() {
-  const { sendOtp, verifyOtpCode, loginWithPassword, loading, isAdmin, session } = useAuth();
+  const { verifyOtpCode, beginSecureLogin, loading, isAdmin, session } = useAuth();
   const nav = useNavigate();
   const [email, setEmail] = useState('');
-  const [mode, setMode] = useState<'password'|'otp'>('otp');
+  const [step, setStep] = useState<1 | 2>(1);
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   useEffect(() => { if (session && isAdmin) nav('/admin'); }, [isAdmin, nav, session]);
-  return <section className="mx-auto max-w-md py-20"><div className="glass rounded-2xl p-6"><div className="flex items-center gap-3"><X1Mark size="md" /><h1 className="text-2xl font-semibold">Admin Login</h1></div><p className="mt-2 text-sm text-muted">Use your admin credentials to continue.</p>{!hasSupabaseCoreConfig && <p className="mt-3 text-xs text-amber-300">Configuration is incomplete. Authentication is currently unavailable.</p>}<AuthModeTabs mode={mode} onChange={setMode} /><input className="mt-4 w-full rounded-xl bg-white/10 p-2" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />{mode==='password' && <input className="mt-3 w-full rounded-xl bg-white/10 p-2" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Password" />}{mode==='otp' && <><button className="mt-3 rounded-xl bg-white/15 px-4 py-2" disabled={loading || !hasSupabaseCoreConfig} onClick={async () => { setError(''); setMessage(''); try { await sendOtp(email); setMessage('If the request can be completed, you will receive an email shortly.'); } catch { setError('Unable to complete sign-in. Please try again.'); } }}>Send OTP</button><input className="mt-3 w-full rounded-xl bg-white/10 p-2" value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="OTP code" /><button className="mt-3 rounded-xl bg-white/15 px-4 py-2" disabled={loading || !hasSupabaseCoreConfig} onClick={async () => { setError(''); setMessage(''); try { await verifyOtpCode(email, otp); nav('/admin'); } catch { setError(genericAccessDenied); } }}>Verify OTP</button></>}{mode==='password' && <button className="mt-3 rounded-xl bg-white/15 px-4 py-2" disabled={loading || !hasSupabaseCoreConfig} onClick={async()=>{ setError(''); setMessage(''); try { await loginWithPassword(email, password); nav('/admin'); } catch { setError('Authentication could not be completed.'); } }}>Sign in</button>}{message && <p className="mt-3 text-xs text-emerald-300">{message}</p>}{error && <p className="mt-3 text-xs text-rose-300">{error}</p>}</div></section>;
+  return <section className="mx-auto max-w-md py-20"><div className="glass rounded-2xl p-6"><div className="flex items-center gap-3"><X1Mark size="md" /><h1 className="text-2xl font-semibold">Secure Admin Sign-In</h1></div><p className="mt-2 text-sm text-muted">Two-step verification required to continue.</p>{!hasSupabaseCoreConfig && <p className="mt-3 text-xs text-amber-300">Configuration is incomplete. Authentication is currently unavailable.</p>}<div className="mt-4"><div className="mb-2 flex items-center justify-between text-xs text-muted"><span>Step {step} of 2</span><span>{step === 1 ? 'Credentials' : 'Verification'}</span></div><div className="h-1 rounded-full bg-white/10"><motion.div className="h-1 rounded-full bg-gradient-to-r from-cyan-300 via-violet-400 to-rose-400" initial={false} animate={{ width: step === 1 ? '50%' : '100%' }} transition={{ duration: 0.25 }} /></div></div><AnimatePresence mode="wait"><motion.div key={step} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2 }}><input className="mt-4 w-full rounded-xl bg-white/10 p-2" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" disabled={step === 2} />{step === 1 ? <><input className="mt-3 w-full rounded-xl bg-white/10 p-2" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Password" /><button className="mt-3 w-full rounded-xl bg-white/15 px-4 py-2" disabled={loading || !hasSupabaseCoreConfig} onClick={async()=>{ setError(''); setMessage(''); try { await beginSecureLogin(email, password); setStep(2); setMessage('If the sign-in request can be completed, a verification code will be sent.'); } catch { setError(genericAuthError); } }}>{loading ? 'Processing...' : 'Continue'}</button></> : <><input className="mt-3 w-full rounded-xl bg-white/10 p-2 tracking-[0.35em]" value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="OTP code" /><button className="mt-3 w-full rounded-xl bg-white/15 px-4 py-2" disabled={loading || !hasSupabaseCoreConfig} onClick={async () => { setError(''); setMessage(''); try { await verifyOtpCode(otp); nav('/admin'); } catch { setError(genericAccessDenied); } }}>{loading ? 'Verifying...' : 'Verify'}</button><button className="mt-2 w-full rounded-xl bg-white/5 px-4 py-2 text-xs text-muted" onClick={() => { setStep(1); setOtp(''); setMessage(''); setError(''); }}>Back</button></>}</motion.div></AnimatePresence>{message && <p className="mt-3 text-xs text-emerald-300">{message}</p>}{error && <p className="mt-3 text-xs text-rose-300">{error}</p>}</div></section>;
 }
 
 function AdminPage() {
