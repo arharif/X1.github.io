@@ -26,6 +26,7 @@ const normalizeContent = (r: Record<string, unknown>): ContentRecord => ({
   ogImageUrl: r.og_image_url ? String(r.og_image_url) : undefined,
   featured: Boolean(r.featured), favorite: Boolean(r.favorite),
   createdAt: String(r.created_at), updatedAt: String(r.updated_at), authorName: String(r.author_name ?? 'X1'),
+  topic: r.topic && typeof r.topic === 'object' ? normalizeTopic(r.topic as Record<string, unknown>) : undefined,
 });
 
 const topicRow = (i: TopicInput) => ({ slug: i.slug, title: i.title, description: i.description, universe: i.universe, category: i.category, subcategory: i.subcategory ?? null, display_style: i.displayStyle, cover_image_url: i.coverImageUrl ?? null, icon: i.icon ?? null, order_index: i.orderIndex });
@@ -96,7 +97,7 @@ export async function deleteTopic(id: string, accessToken: string) {
 
 export async function listPublishedContent() {
   if (!isSupabaseConfigured) return getLocalContent().filter((c) => c.status === 'published');
-  const rows = await supabaseRest<Record<string, unknown>[]>('content?select=*&status=eq.published&order=published_at.desc.nullslast');
+  const rows = await supabaseRest<Record<string, unknown>[]>("content?select=*,topic:topics(id,slug,title,description,universe,category,subcategory,display_style,cover_image_url,icon,order_index,created_at,updated_at)&status=eq.published&order=published_at.desc.nullslast");
   return rows.map(normalizeContent);
 }
 

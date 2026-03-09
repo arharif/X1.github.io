@@ -72,6 +72,7 @@ export interface ContentRecord {
   createdAt: string;
   updatedAt: string;
   authorName: string;
+  topic?: TopicRecord;
 }
 
 export interface ContentInput {

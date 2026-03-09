@@ -19,6 +19,25 @@ import { CollectionRecord, ContentRecord, TopicRecord } from './content/types';
 
 const normUniverse = (value?: string | null) => (value || '').toLowerCase().trim();
 
+const inferUniverseFromContentType = (contentType?: string | null) => {
+  const value = (contentType || '').toLowerCase().trim();
+  if (value.startsWith('professional')) return 'professional';
+  if (value.startsWith('personal')) return 'personal';
+  return '';
+};
+
+async function loadPublishedGraph(): Promise<{ topics: TopicRecord[]; content: ContentRecord[] }> {
+  const [topicsResult, contentResult] = await Promise.allSettled([listPublishedTopics(), listPublishedContent()]);
+  const topics = topicsResult.status === 'fulfilled' ? topicsResult.value : [];
+  const content = contentResult.status === 'fulfilled' ? contentResult.value : [];
+  const topicFromContent = content
+    .map((item) => item.topic)
+    .filter((item): item is TopicRecord => Boolean(item));
+  const topicMap = new Map<string, TopicRecord>();
+  [...topics, ...topicFromContent].forEach((topic) => topicMap.set(topic.id, topic));
+  return { topics: [...topicMap.values()], content };
+}
+
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; message?: string }> {
   state = { hasError: false, message: undefined as string | undefined };
   static getDerivedStateFromError(error: Error) { return { hasError: true, message: error.message }; }
@@ -43,7 +62,7 @@ function SearchPage() {
   const [content, setContent] = useState<ContentRecord[]>([]);
   const [query, setQuery] = useState('');
   const nav = useNavigate();
-  useEffect(() => { Promise.all([listPublishedTopics(), listPublishedContent()]).then(([t, c]) => { setTopics(t); setContent(c); }).catch(() => { setTopics([]); setContent([]); }); }, []);
+  useEffect(() => { loadPublishedGraph().then(({ topics: t, content: c }) => { setTopics(t); setContent(c); }); }, []);
   const matchedTopics = topics.filter((t) => `${t.title} ${t.description} ${t.category}`.toLowerCase().includes(query.toLowerCase()));
   const matchedContent = searchContent(content, query);
   return <section><h1 className="mb-4 text-3xl font-semibold">Search</h1><div className="glass mb-5 rounded-2xl p-3"><input className="w-full bg-transparent outline-none" placeholder="Search topics, articles, tags, collections" value={query} onChange={(e) => setQuery(e.target.value)} /></div><div className="grid gap-6 md:grid-cols-2"><div><h2 className="mb-2 text-xl font-semibold">Topics</h2>{matchedTopics.map((t)=><button key={t.id} onClick={()=>nav(normUniverse(t.universe)==='professional'?`/professional/topic/${t.slug}`:'/personal')} className="glass mb-2 block w-full rounded-xl p-3 text-left">{t.title}</button>)}</div><div><h2 className="mb-2 text-xl font-semibold">Content</h2>{matchedContent.map((c)=>{ const topic = topics.find((t)=>t.id===c.topicId); return <button key={c.id} onClick={()=>nav(topic && normUniverse(topic.universe)==='professional'?`/professional/topic/${topic.slug}`:`/personal/post/${c.slug}`)} className="glass mb-2 block w-full rounded-xl p-3 text-left">{c.title}</button>; })}</div></div></section>;
@@ -56,14 +75,16 @@ function ProfessionalHome() {
   const nav = useNavigate();
 
   useEffect(() => {
-    Promise.all([listPublishedTopics(), listPublishedContent()]).then(([t, content]) => {
+    loadPublishedGraph().then(({ topics: t, content }) => {
       const professionalTopics = t.filter((x) => normUniverse(x.universe) === 'professional');
       const professionalTopicIds = new Set(professionalTopics.map((x) => x.id));
+      const professionalPosts = content.filter((item) => {
+        if (professionalTopicIds.size > 0) return professionalTopicIds.has(item.topicId);
+        const topicUniverse = normUniverse(item.topic?.universe);
+        return topicUniverse === 'professional' || inferUniverseFromContentType(item.contentType) === 'professional';
+      });
       setTopics(professionalTopics);
-      setPosts(content.filter((item) => professionalTopicIds.has(item.topicId)).slice(0, 6));
-    }).catch(() => {
-      setTopics([]);
-      setPosts([]);
+      setPosts(professionalPosts.slice(0, 6));
     });
 
     listCollections()
@@ -80,7 +101,7 @@ function ProfessionalHome() {
         <div className="mb-6 grid gap-4 md:grid-cols-3">
           {topics.map((t)=><motion.button whileHover={{y:-5}} key={t.id} onClick={()=>nav(`/professional/topic/${t.slug}`)} className="glass rounded-2xl p-5 text-left"><p className="text-xs text-muted">{t.category} · {t.displayStyle}</p><h3 className="mt-2 text-xl font-semibold">{t.title}</h3><p className="mt-2 text-sm text-muted">{t.description}</p></motion.button>)}
         </div>
-      ) : (
+      ) : posts.length > 0 ? null : (
         <div className="glass mb-6 rounded-2xl p-4 text-sm text-muted">No professional topics are visible yet.</div>
       )}
 
@@ -109,11 +130,11 @@ function ProfessionalBook() {
   const [chapters, setChapters] = useState<ContentRecord[]>([]);
   const [progress, setProgress] = useState(0);
   useEffect(() => {
-    Promise.all([listPublishedTopics(), listPublishedContent()]).then(([topics, content]) => {
+    loadPublishedGraph().then(({ topics, content }) => {
       const t = topics.find((x) => x.slug === slug && normUniverse(x.universe) === 'professional') || null;
       setTopic(t);
       setChapters(t ? content.filter((c) => c.topicId === t.id) : []);
-    }).catch(() => { setTopic(null); setChapters([]); });
+    });
   }, [slug]);
   useEffect(() => {
     const onScroll = () => {
@@ -144,23 +165,59 @@ function PersonalHub() {
   const nav = useNavigate();
 
   useEffect(() => {
-    Promise.all([listPublishedTopics(), listPublishedContent()]).then(([t, c]) => {
+    loadPublishedGraph().then(({ topics: t, content: c }) => {
       const personalTopics = t.filter((x) => normUniverse(x.universe) === 'personal');
       const personalTopicIds = new Set(personalTopics.map((x) => x.id));
+      const personalContent = c.filter((item) => {
+        if (personalTopicIds.size > 0) return personalTopicIds.has(item.topicId);
+        const topicUniverse = normUniverse(item.topic?.universe);
+        return topicUniverse === 'personal' || inferUniverseFromContentType(item.contentType) === 'personal';
+      });
       setTopics(personalTopics);
-      setContent(c.filter((item) => personalTopicIds.has(item.topicId)));
-    }).catch(() => {
-      setTopics([]);
-      setContent([]);
+      setContent(personalContent);
     });
   }, []);
 
   const categories = [...new Set(topics.map((t) => t.category?.trim() || 'Uncategorized').filter(Boolean))];
   const allTags = [...new Set(content.flatMap((c) => c.tags || []))].slice(0, 12);
+  const groups = categories.length
+    ? categories.map((cat) => ({
+        label: cat,
+        topicIds: new Set(topics.filter((x) => (x.category?.trim() || 'Uncategorized') === cat).map((x) => x.id)),
+      }))
+    : content.length > 0
+      ? [{ label: 'Personal', topicIds: new Set(content.map((item) => item.topicId)) }]
+      : [];
 
-  return <section><h1 className="mb-2 text-3xl font-semibold">Personal</h1><p className="mb-4 text-muted">Philosophy, anime, books, hobbies, and reflective personal themes.</p><div className="glass mb-6 rounded-2xl p-4"><input className="w-full bg-transparent outline-none" placeholder="Search themes and notes" value={query} onChange={(e) => setQuery(e.target.value)} /><div className="mt-3 flex flex-wrap gap-2">{allTags.map((t)=><button key={t} onClick={()=>setTag(t)} className={`rounded-full px-3 py-1 text-xs ${tag===t?'bg-white/30':'bg-white/10'}`}>#{t}</button>)}<button className="text-xs" onClick={()=>setTag('')}>clear</button></div></div>{categories.map((cat) => { const t = topics.filter((x) => (x.category?.trim() || 'Uncategorized') === cat); const posts = searchContent(content.filter((c) => t.some((tt) => tt.id === c.topicId) && (!tag || (c.tags||[]).includes(tag))), query); return <section key={cat} className="mb-8"><h2 className="mb-3 text-2xl font-semibold">{cat}</h2><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{posts.map((p) => <ContentCard key={p.id} item={p} onOpen={() => nav(`/personal/post/${p.slug}`)} />)}</div></section>; })}{topics.length===0 && <div className="glass rounded-xl p-4 text-sm text-muted">No personal topics are visible yet.</div>}</section>;
+  return (
+    <section>
+      <h1 className="mb-2 text-3xl font-semibold">Personal</h1>
+      <p className="mb-4 text-muted">Philosophy, anime, books, hobbies, and reflective personal themes.</p>
+      <div className="glass mb-6 rounded-2xl p-4">
+        <input className="w-full bg-transparent outline-none" placeholder="Search themes and notes" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <div className="mt-3 flex flex-wrap gap-2">
+          {allTags.map((t) => <button key={t} onClick={() => setTag(t)} className={`rounded-full px-3 py-1 text-xs ${tag === t ? 'bg-white/30' : 'bg-white/10'}`}>#{t}</button>)}
+          <button className="text-xs" onClick={() => setTag('')}>clear</button>
+        </div>
+      </div>
+      {groups.map((group) => {
+        const posts = searchContent(
+          content.filter((c) => group.topicIds.has(c.topicId) && (!tag || (c.tags || []).includes(tag))),
+          query,
+        );
+        return (
+          <section key={group.label} className="mb-8">
+            <h2 className="mb-3 text-2xl font-semibold">{group.label}</h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {posts.map((p) => <ContentCard key={p.id} item={p} onOpen={() => nav(`/personal/post/${p.slug}`)} />)}
+            </div>
+          </section>
+        );
+      })}
+      {topics.length === 0 && content.length === 0 && <div className="glass rounded-xl p-4 text-sm text-muted">No personal topics are visible yet.</div>}
+    </section>
+  );
 }
-
 
 function PersonalPost() {
   const { slug } = useParams();
