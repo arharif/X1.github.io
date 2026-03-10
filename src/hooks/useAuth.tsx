@@ -1,6 +1,7 @@
 import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
 import { config, genericAccessDenied, genericAuthError, hasSupabaseCoreConfig } from '@/lib/config';
 import { AuthSession, getUser, signInWithOtp, signInWithPassword, supabaseLogout, verifyOtp } from '@/lib/supabase';
+import { safeStorage } from '@/lib/storage';
 
 interface AuthCtx {
   session: AuthSession | null;
@@ -14,31 +15,14 @@ interface AuthCtx {
 const Ctx = createContext<AuthCtx | undefined>(undefined);
 const storageKey = 'x1-auth-session';
 
-const readAuthStorage = () => {
-  try {
-    return sessionStorage.getItem(storageKey) ?? localStorage.getItem(storageKey);
-  } catch {
-    return null;
-  }
-};
+const readAuthStorage = () => safeStorage.get(storageKey, 'session') ?? safeStorage.get(storageKey, 'local');
 
 const writeAuthStorage = (value: string) => {
-  try {
-    sessionStorage.setItem(storageKey, value);
-  } catch {
-    /* ignore session storage issues */
-  }
-  try {
-    localStorage.removeItem(storageKey);
-  } catch {
-    /* ignore local storage issues */
-  }
+  safeStorage.set(storageKey, value, 'session');
+  safeStorage.remove(storageKey, 'local');
 };
 
-const clearAuthStorage = () => {
-  try { sessionStorage.removeItem(storageKey); } catch { /* ignore */ }
-  try { localStorage.removeItem(storageKey); } catch { /* ignore */ }
-};
+const clearAuthStorage = () => safeStorage.remove(storageKey, 'both');
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<AuthSession | null>(() => {
@@ -74,13 +58,16 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   }, []);
 
-  const isAdmin = Boolean(session?.user.email && config.adminEmail && session.user.email.toLowerCase() === config.adminEmail);
+  const normalizedAdminEmail = config.adminEmail?.toLowerCase() ?? '';
+  const isAdmin = Boolean(session?.user.email && normalizedAdminEmail && session.user.email.toLowerCase() === normalizedAdminEmail);
 
   useEffect(() => {
     if (!session?.access_token || !hasSupabaseCoreConfig) return;
     getUser(session.access_token)
       .then((user) => {
         if (!user?.id) throw new Error('invalid-session');
+        const email = user.email?.toLowerCase();
+        if (!email || !normalizedAdminEmail || email !== normalizedAdminEmail) throw new Error(genericAccessDenied);
         const next = { ...session, user };
         setSession(next);
         writeAuthStorage(JSON.stringify(next));
@@ -91,11 +78,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
         setChallengeEmail(null);
         clearAuthStorage();
       });
-  }, [session?.access_token]);
+  }, [normalizedAdminEmail, session?.access_token]);
 
   const ensureAdmin = (next: AuthSession) => {
     const email = next.user.email?.toLowerCase();
-    if (!email || !config.adminEmail || email !== config.adminEmail) {
+    if (!email || !normalizedAdminEmail || email !== normalizedAdminEmail) {
       throw new Error(genericAccessDenied);
     }
   };

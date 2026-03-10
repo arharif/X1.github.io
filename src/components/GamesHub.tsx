@@ -8,6 +8,7 @@ import { CardSheddingGame } from '@/components/games/CardSheddingGame';
 import { Puzzle2048Game } from '@/components/games/Puzzle2048Game';
 import { SudokuMiniGame } from '@/components/games/SudokuMiniGame';
 import { MemoryPuzzleGame } from '@/components/games/MemoryPuzzleGame';
+import { safeStorage } from '@/lib/storage';
 
 type GameCategory = 'Card Games' | 'Puzzle Games' | 'Classic Games' | 'Arcade & Skills' | 'Knowledge';
 type GameKey =
@@ -32,20 +33,12 @@ const gameMeta: Record<GameKey, { title: string; desc: string; color: string; ic
 };
 
 const readBest = (key: string) => {
-  if (typeof window === 'undefined') return 0;
-  try {
-    const value = window.localStorage.getItem(key);
-    const num = Number(value || 0);
-    return Number.isFinite(num) ? num : 0;
-  } catch {
-    return 0;
-  }
+  const value = safeStorage.get(key);
+  const num = Number(value || 0);
+  return Number.isFinite(num) ? num : 0;
 };
 
-const saveBest = (key: string, value: number) => {
-  if (typeof window === 'undefined') return;
-  try { window.localStorage.setItem(key, String(value)); } catch { /* ignore storage failures */ }
-};
+const saveBest = (key: string, value: number) => safeStorage.set(key, String(value));
 
 export function GamesHub() {
   const [active, setActive] = useState<GameKey>('card-shedding');

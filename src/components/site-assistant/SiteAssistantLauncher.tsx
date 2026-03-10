@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { X1Mark } from '@/components/branding/X1Mark';
 import { SiteAssistantPanel } from './SiteAssistantPanel';
 import { resolveAssistantSection } from './assistantContext';
+import { safeStorage } from '@/lib/storage';
 
 const SINGLETON_KEY = '__x1_single_launcher__' as const;
 const SEEN_KEY = 'x1-assistant-seen-sections';
@@ -10,9 +11,9 @@ const SEEN_KEY = 'x1-assistant-seen-sections';
 type LauncherWindow = Window & { [SINGLETON_KEY]?: boolean };
 
 const readSeen = (): Record<string, boolean> => {
+  const raw = safeStorage.get(SEEN_KEY);
+  if (!raw) return {};
   try {
-    const raw = localStorage.getItem(SEEN_KEY);
-    if (!raw) return {};
     const parsed = JSON.parse(raw);
     return parsed && typeof parsed === 'object' ? parsed as Record<string, boolean> : {};
   } catch {
@@ -20,13 +21,7 @@ const readSeen = (): Record<string, boolean> => {
   }
 };
 
-const writeSeen = (value: Record<string, boolean>) => {
-  try {
-    localStorage.setItem(SEEN_KEY, JSON.stringify(value));
-  } catch {
-    /* ignore storage failures */
-  }
-};
+const writeSeen = (value: Record<string, boolean>) => safeStorage.set(SEEN_KEY, JSON.stringify(value));
 
 export function SiteAssistantLauncher() {
   const [open, setOpen] = useState(false);

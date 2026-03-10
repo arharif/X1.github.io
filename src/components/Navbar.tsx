@@ -22,10 +22,10 @@ export function Navbar({ mode, onTheme }: { mode: ThemeMode; onTheme: (m: ThemeM
   ], []);
 
   const navClass = (active: boolean, admin = false) =>
-    `rounded-lg px-2 py-1 text-sm transition-colors ${active ? 'bg-white/15 text-white' : admin ? 'text-muted/90 hover:text-white' : 'text-muted hover:text-white'}`;
+    `nav-link ${active ? 'is-active' : ''} ${admin ? 'is-admin' : ''}`;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-black/30 backdrop-blur-xl">
+    <header className="nav-shell sticky top-0 z-50">
       <div className="mx-auto flex max-w-6xl items-center justify-between p-4">
         <Link to="/" className="flex items-center" aria-label="Home">
           <X1Mark size="sm" mode={mode} />

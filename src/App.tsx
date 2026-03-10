@@ -19,6 +19,7 @@ import { searchContent } from '@/lib/content';
 import { genericAccessDenied, genericAuthError, hasSupabaseCoreConfig } from '@/lib/config';
 import { initTheme, ThemeMode, themeMap } from '@/lib/theme';
 import { normalizeUniverse, universeMeta } from '@/lib/universe';
+import { safeStorage } from '@/lib/storage';
 import { CollectionRecord, ContentRecord, TopicRecord } from './content/types';
 
 const inferUniverseFromContentType = (contentType?: string | null) => normalizeUniverse(contentType);
@@ -243,7 +244,14 @@ function LoginPage() {
 
   useEffect(() => {
     if (!lockUntil) return;
-    const t = window.setInterval(() => setNow(Date.now()), 1000);
+    const t = window.setInterval(() => {
+      const tick = Date.now();
+      setNow(tick);
+      if (tick >= lockUntil) {
+        setLockUntil(null);
+        setAttempts(0);
+      }
+    }, 1000);
     return () => window.clearInterval(t);
   }, [lockUntil]);
 
@@ -518,10 +526,7 @@ function NotFound() { return <section className="mx-auto max-w-xl py-24 text-cen
 function Shell() {
   const [mode, setMode] = useState<ThemeMode>(() => initTheme());
   const location = useLocation();
-  const [navNotice, setNavNotice] = useState('');
-  const [noticeVisible, setNoticeVisible] = useState(false);
-  const previousTopPath = useRef<string>('');
-  useEffect(() => { document.documentElement.classList.remove('theme-dark', 'theme-light', 'theme-purple', 'theme-rainbow'); document.documentElement.classList.add(themeMap[mode]); try { localStorage.setItem('theme', mode); } catch { /* storage may be unavailable */ } }, [mode]);
+  useEffect(() => { document.documentElement.classList.remove('theme-dark', 'theme-light', 'theme-purple', 'theme-rainbow'); document.documentElement.classList.add(themeMap[mode]); safeStorage.set('theme', mode); }, [mode]);
   useEffect(() => {
     const labels: Record<string, string> = {
       '/': 'Landing', '/professional': 'Technology & Innovation', '/personal': 'Curiosities & Philosophy', '/security-mindmap': 'Security Map', '/Security_Mindmap': 'Security Map', '/search': 'Search', '/games': 'Games', '/submitting': 'Submitting', '/admin': 'Admin', '/login': 'Login',

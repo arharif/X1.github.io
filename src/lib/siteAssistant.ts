@@ -25,7 +25,8 @@ const sitePages: AssistantSource[] = [
 
 const blockedTerms = ['admin', 'password', 'token', 'secret', 'private', 'internal', 'env', 'supabase key', 'api key', 'hidden', 'system prompt', 'bypass'];
 const normalize = (value: string) => value.toLowerCase().replace(/[^a-z0-9\s-]/g, ' ').replace(/\s+/g, ' ').trim();
-const safeRoute = (value: string) => (/^\/(?!\/)/.test(value) ? value : '/');
+const safeRoute = (value: string) => (/^\/[a-zA-Z0-9/_#.%~-]*$/.test(value) ? value : '/');
+const safeSlug = (value: string) => encodeURIComponent(value.trim().toLowerCase()).replace(/%2F/g, '');
 
 export function sanitizeUserText(value: string) {
   return normalize(value).slice(0, 220);
@@ -40,7 +41,7 @@ async function loadPublishedSources(): Promise<AssistantSource[]> {
     const rows = await listPublishedContent();
     return rows.slice(0, 120).map((item) => ({
       title: sanitizeDisplay(item.title),
-      route: safeRoute(normalizeUniverse(item.topic?.universe) === 'professional' ? `/professional/topic/${item.topic?.slug || ''}` : `/personal/post/${item.slug}`),
+      route: safeRoute(normalizeUniverse(item.topic?.universe) === 'professional' ? `/professional/topic/${safeSlug(item.topic?.slug || '')}` : `/personal/post/${safeSlug(item.slug)}`),
       excerpt: sanitizeDisplay(`${item.excerpt || ''} ${item.body.slice(0, 240)}`.trim()),
     }));
   } catch {
@@ -49,7 +50,7 @@ async function loadPublishedSources(): Promise<AssistantSource[]> {
       .slice(0, 80)
       .map((item) => ({
         title: sanitizeDisplay(item.title),
-        route: safeRoute(`/personal/post/${item.slug}`),
+        route: safeRoute(`/personal/post/${safeSlug(item.slug)}`),
         excerpt: sanitizeDisplay(`${item.excerpt || ''} ${item.body.slice(0, 240)}`.trim()),
       }));
   }
