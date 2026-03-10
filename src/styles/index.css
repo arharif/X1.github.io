@@ -390,3 +390,53 @@ iframe { border: 0; }
   .assistant-panel { left: 10px; right: 10px; width: auto; bottom: 74px; }
   .assistant-launcher { left: 10px; bottom: 14px; }
 }
+
+/* Security roles map filters */
+.roles-filters { display: grid; gap: 0.8rem; }
+.roles-filter-row { display: flex; flex-wrap: wrap; gap: 0.7rem; align-items: center; justify-content: space-between; }
+.roles-chip-wrap { display: flex; flex-wrap: wrap; gap: 0.45rem; max-height: 130px; overflow: auto; padding-right: 0.25rem; }
+.role-chip {
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.06);
+  color: #dbeafe;
+  font-size: 12px;
+  padding: 0.28rem 0.66rem;
+}
+.role-chip.is-active { background: rgba(14,116,144,0.25); border-color: rgba(103,232,249,0.56); color: #f8fafc; }
+.roles-toggle-row { display: flex; flex-wrap: wrap; gap: 1rem; color: #cbd5e1; font-size: 12px; }
+.roles-toggle-row label { display: inline-flex; align-items: center; gap: 0.35rem; }
+
+/* Assistant overrides: circular compact launcher at bottom-right */
+.assistant-launcher {
+  left: auto;
+  right: 18px;
+  bottom: 20px;
+  border-radius: 999px;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: linear-gradient(165deg, rgba(15,23,42,0.9), rgba(2,6,23,0.96));
+  box-shadow: 0 10px 30px rgba(2,6,23,0.44);
+}
+.assistant-logo-wrap { display: inline-grid; place-items: center; transform: scale(0.84); }
+.assistant-panel {
+  left: auto;
+  right: 18px;
+  bottom: 76px;
+  border-radius: 18px;
+}
+.assistant-launcher:focus-visible,
+.assistant-icon-btn:focus-visible,
+.assistant-input:focus-visible,
+.assistant-send:focus-visible,
+.role-chip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(125, 211, 252, 0.62);
+}
+@media (max-width: 640px) {
+  .assistant-panel { right: 10px; left: 10px; width: auto; bottom: 74px; }
+  .assistant-launcher { right: 10px; bottom: 14px; }
+}

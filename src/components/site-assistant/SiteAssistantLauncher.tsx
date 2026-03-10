@@ -7,8 +7,8 @@ export function SiteAssistantLauncher() {
 
   return (
     <>
-      <button className="assistant-launcher" onClick={() => setOpen((v) => !v)} aria-label="Open site assistant">
-        <X1Mark size="md" />
+      <button className="assistant-launcher" onClick={() => setOpen((v) => !v)} aria-label={open ? 'Close site assistant' : 'Open site assistant'} aria-expanded={open}>
+        <span className="assistant-logo-wrap"><X1Mark size="sm" /></span>
       </button>
       <SiteAssistantPanel open={open} onClose={() => setOpen(false)} />
     </>
