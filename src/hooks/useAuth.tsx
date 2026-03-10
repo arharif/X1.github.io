@@ -25,55 +25,63 @@ const storageKey = 'x1-auth-session';
 const pendingMfaKey = 'x1-auth-mfa-pending';
 const MFA_WINDOW_MS = 5 * 60 * 1000;
 
-const readAuthStorage = () => safeStorage.get(storageKey, 'session') ?? safeStorage.get(storageKey, 'local');
-
-const writeAuthStorage = (value: string) => {
-  safeStorage.set(storageKey, value, 'session');
-  safeStorage.remove(storageKey, 'local');
-};
-
-const clearAuthStorage = () => safeStorage.remove(storageKey, 'both');
-
-const readPendingMfa = (): PendingMfa | null => {
-  const raw = safeStorage.get(pendingMfaKey, 'session');
+const parseAuthSession = (raw: string | null): AuthSession | null => {
   if (!raw) return null;
   try {
-    const parsed = JSON.parse(raw) as PendingMfa;
+    const parsed = JSON.parse(raw) as Partial<AuthSession>;
+    if (!parsed?.access_token || !parsed?.refresh_token || !parsed?.token_type || !parsed?.user?.id) return null;
+    return {
+      access_token: parsed.access_token,
+      refresh_token: parsed.refresh_token,
+      token_type: parsed.token_type,
+      expires_in: typeof parsed.expires_in === 'number' && Number.isFinite(parsed.expires_in) ? parsed.expires_in : 3600,
+      user: { id: parsed.user.id, email: parsed.user.email },
+    };
+  } catch {
+    return null;
+  }
+};
+
+const parsePendingMfa = (raw: string | null): PendingMfa | null => {
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as Partial<PendingMfa>;
     if (!parsed?.email || !parsed?.expiresAt) return null;
-    if (Date.now() >= parsed.expiresAt) return null;
+    if (typeof parsed.email !== 'string' || typeof parsed.expiresAt !== 'number') return null;
+    if (!Number.isFinite(parsed.expiresAt) || Date.now() >= parsed.expiresAt) return null;
     return { email: parsed.email.toLowerCase(), expiresAt: parsed.expiresAt };
   } catch {
     return null;
   }
 };
 
-const writePendingMfa = (value: PendingMfa) => safeStorage.set(pendingMfaKey, JSON.stringify(value), 'session');
-const clearPendingMfaStorage = () => safeStorage.remove(pendingMfaKey, 'session');
+const readAuthStorage = () => parseAuthSession(safeStorage.get(storageKey, 'session')) ?? parseAuthSession(safeStorage.get(storageKey, 'local'));
 
-const readAuthStorage = () => safeStorage.get(storageKey, 'session') ?? safeStorage.get(storageKey, 'local');
-
-const writeAuthStorage = (value: string) => {
-  safeStorage.set(storageKey, value, 'session');
+const writeAuthStorage = (session: AuthSession) => {
+  safeStorage.set(storageKey, JSON.stringify(session), 'session');
   safeStorage.remove(storageKey, 'local');
 };
 
 const clearAuthStorage = () => safeStorage.remove(storageKey, 'both');
 
+const readPendingMfa = (): PendingMfa | null => parsePendingMfa(safeStorage.get(pendingMfaKey, 'session'));
+
+const writePendingMfa = (value: PendingMfa) => safeStorage.set(pendingMfaKey, JSON.stringify({ ...value, email: value.email.toLowerCase() }), 'session');
+const clearPendingMfaStorage = () => safeStorage.remove(pendingMfaKey, 'session');
+const createPendingMfa = (email: string): PendingMfa => ({ email: email.toLowerCase(), expiresAt: Date.now() + MFA_WINDOW_MS });
+
 export function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<AuthSession | null>(() => {
-    try {
-      const raw = readAuthStorage();
-      if (!raw) return null;
-      const parsed = JSON.parse(raw) as AuthSession;
-      if (!parsed?.access_token || !parsed?.refresh_token || !parsed?.token_type || !parsed?.user?.id) return null;
-      return parsed;
-    } catch {
-      clearAuthStorage();
-      return null;
-    }
+    const stored = readAuthStorage();
+    if (!stored) clearAuthStorage();
+    return stored;
   });
   const [loading, setLoading] = useState(false);
-  const [pendingMfa, setPendingMfa] = useState<PendingMfa | null>(() => readPendingMfa());
+  const [pendingMfa, setPendingMfa] = useState<PendingMfa | null>(() => {
+    const pending = readPendingMfa();
+    if (!pending) clearPendingMfaStorage();
+    return pending;
+  });
 
   const normalizedAdminEmail = config.adminEmail?.toLowerCase() ?? '';
   const isAdmin = Boolean(session?.user.email && normalizedAdminEmail && session.user.email.toLowerCase() === normalizedAdminEmail);
@@ -92,7 +100,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (!pendingMfa) return;
-    if (Date.now() >= pendingMfa.expiresAt) clearPendingMfa();
+    const ttl = pendingMfa.expiresAt - Date.now();
+    if (ttl <= 0) {
+      clearPendingMfa();
+      return;
+    }
+    const timer = window.setTimeout(clearPendingMfa, ttl);
+    return () => window.clearTimeout(timer);
   }, [pendingMfa]);
 
   useEffect(() => {
@@ -117,7 +131,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         const next: AuthSession = { access_token: token, refresh_token: refresh, token_type: type, expires_in: expires, user };
         ensureAdmin(next);
         setSession(next);
-        writeAuthStorage(JSON.stringify(next));
+        writeAuthStorage(next);
         clearPendingMfa();
         history.replaceState(null, '', window.location.pathname + window.location.search);
       })
@@ -136,7 +150,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         if (!email || !normalizedAdminEmail || email !== normalizedAdminEmail) throw new Error(genericAccessDenied);
         const next = { ...session, user };
         setSession(next);
-        writeAuthStorage(JSON.stringify(next));
+        writeAuthStorage(next);
       })
       .catch(async () => {
         if (session?.access_token) await supabaseLogout(session.access_token).catch(() => undefined);
@@ -162,7 +176,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
           await signInWithOtp(email);
           clearAuthStorage();
           setSession(null);
-          const pending = { email, expiresAt: Date.now() + MFA_WINDOW_MS };
+          const pending = createPendingMfa(email);
           setPendingMfa(pending);
           writePendingMfa(pending);
         } catch {
@@ -181,7 +195,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         setLoading(true);
         try {
           await signInWithOtp(pendingMfa.email);
-          const next = { email: pendingMfa.email, expiresAt: Date.now() + MFA_WINDOW_MS };
+          const next = createPendingMfa(pendingMfa.email);
           setPendingMfa(next);
           writePendingMfa(next);
         } catch {
@@ -201,7 +215,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
           const next = await verifyOtp(pendingMfa.email, otp.trim());
           ensureAdmin(next);
           setSession(next);
-          writeAuthStorage(JSON.stringify(next));
+          writeAuthStorage(next);
           clearPendingMfa();
         } catch {
           throw new Error(genericAuthError);
