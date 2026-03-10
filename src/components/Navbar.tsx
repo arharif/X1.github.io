@@ -11,12 +11,13 @@ export function Navbar({ mode, onTheme }: { mode: ThemeMode; onTheme: (m: ThemeM
     { to: '/', label: 'Landing' },
     { to: '/professional', label: 'Professional' },
     { to: '/personal', label: 'Personal' },
+    { to: '/security-mindmap', label: 'Security Map' },
     { to: '/search', label: 'Search' },
-    { to: '/security-mindmap', label: 'Security Mindmap' },
     { to: '/submitting', label: 'Submitting' },
     { to: '/games', label: 'Games' },
     { to: '/admin', label: 'Admin' },
   ];
+
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-black/30 backdrop-blur-xl">

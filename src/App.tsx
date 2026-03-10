@@ -9,6 +9,7 @@ import { ArticleView } from '@/components/ArticleView';
 import { ContentCard, EntryCard } from '@/components/Cards';
 import { Navbar } from '@/components/Navbar';
 import { GamesHub } from '@/components/GamesHub';
+import { TopicFilterBar } from '@/components/TopicFilterBar';
 import { SecurityMindmapPage } from '@/pages/SecurityMindmapPage';
 import { ProtectedRoute } from '@/routes/ProtectedRoute';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
@@ -73,6 +74,7 @@ function ProfessionalHome() {
   const [topics, setTopics] = useState<TopicRecord[]>([]);
   const [collections, setCollections] = useState<CollectionRecord[]>([]);
   const [posts, setPosts] = useState<ContentRecord[]>([]);
+  const [activeTopic, setActiveTopic] = useState('all');
   const nav = useNavigate();
 
   useEffect(() => {
@@ -85,7 +87,7 @@ function ProfessionalHome() {
         return topicUniverse === 'professional' || inferUniverseFromContentType(item.contentType) === 'professional';
       });
       setTopics(professionalTopics);
-      setPosts(professionalPosts.slice(0, 6));
+      setPosts(professionalPosts.slice(0, 24));
     });
 
     listCollections()
@@ -93,26 +95,34 @@ function ProfessionalHome() {
       .catch(() => setCollections([]));
   }, []);
 
+  const filterOptions = [{ id: 'all', label: 'All' }, ...topics.map((t) => ({ id: t.id, label: t.title }))];
+  const filteredTopics = activeTopic === 'all' ? topics : topics.filter((t) => t.id === activeTopic);
+  const filteredPosts = activeTopic === 'all' ? posts : posts.filter((p) => p.topicId === activeTopic);
+
   return (
     <section>
       <h1 className="mb-2 text-3xl font-semibold">Professional</h1>
       <p className="mb-5 text-muted">This universe is for everything related to the latest technology including AI, Cybersecurity, IoT, OT/ICS, Blockchain, and modern engineering insights.</p>
 
-      {topics.length > 0 ? (
-        <div className="mb-6 grid gap-4 md:grid-cols-3">
-          {topics.map((t)=><motion.button whileHover={{y:-5}} key={t.id} onClick={()=>nav(`/professional/topic/${t.slug}`)} className="glass rounded-2xl p-5 text-left"><p className="text-xs text-muted">{t.category} · {t.displayStyle}</p><h3 className="mt-2 text-xl font-semibold">{t.title}</h3><p className="mt-2 text-sm text-muted">{t.description}</p></motion.button>)}
+      <TopicFilterBar label="Professional Topics" options={filterOptions} active={activeTopic} onChange={setActiveTopic} count={filteredPosts.length + filteredTopics.length} />
+
+      {filteredTopics.length > 0 ? (
+        <div className="mb-6 mt-4 grid gap-4 md:grid-cols-3">
+          {filteredTopics.map((t)=><motion.button whileHover={{y:-5}} key={t.id} onClick={()=>nav(`/professional/topic/${t.slug}`)} className="glass rounded-2xl p-5 text-left"><p className="text-xs text-muted">{t.category} · {t.displayStyle}</p><h3 className="mt-2 text-xl font-semibold">{t.title}</h3><p className="mt-2 text-sm text-muted">{t.description}</p></motion.button>)}
         </div>
-      ) : posts.length > 0 ? null : (
-        <div className="glass mb-6 rounded-2xl p-4 text-sm text-muted">No professional topics are visible yet.</div>
+      ) : filteredPosts.length > 0 ? null : (
+        <div className="glass mb-6 mt-4 rounded-2xl p-4 text-sm text-muted">No professional topics match this filter.</div>
       )}
 
-      {posts.length > 0 && (
+      {filteredPosts.length > 0 ? (
         <>
           <h2 className="mb-3 text-xl font-semibold">Latest Professional Posts</h2>
           <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((p) => { const topic = topics.find((t) => t.id === p.topicId); return <ContentCard key={p.id} item={p} onOpen={() => nav(topic ? `/professional/topic/${topic.slug}` : '/professional')} />; })}
+            {filteredPosts.map((p) => { const topic = topics.find((t) => t.id === p.topicId); return <ContentCard key={p.id} item={p} onOpen={() => nav(topic ? `/professional/topic/${topic.slug}` : '/professional')} />; })}
           </div>
         </>
+      ) : (
+        <div className="glass mb-6 rounded-2xl p-4 text-sm text-muted">No professional posts match this filter yet.</div>
       )}
 
       <h2 className="mb-3 text-xl font-semibold">Curated Collections</h2>
@@ -163,6 +173,7 @@ function PersonalHub() {
   const [content, setContent] = useState<ContentRecord[]>([]);
   const [query, setQuery] = useState('');
   const [tag, setTag] = useState('');
+  const [activeTopic, setActiveTopic] = useState('all');
   const nav = useNavigate();
 
   useEffect(() => {
@@ -179,43 +190,34 @@ function PersonalHub() {
     });
   }, []);
 
-  const categories = [...new Set(topics.map((t) => t.category?.trim() || 'Uncategorized').filter(Boolean))];
-  const allTags = [...new Set(content.flatMap((c) => c.tags || []))].slice(0, 12);
-  const groups = categories.length
-    ? categories.map((cat) => ({
-        label: cat,
-        topicIds: new Set(topics.filter((x) => (x.category?.trim() || 'Uncategorized') === cat).map((x) => x.id)),
-      }))
-    : content.length > 0
-      ? [{ label: 'Personal', topicIds: new Set(content.map((item) => item.topicId)) }]
-      : [];
+  const allTags = [...new Set(content.flatMap((c) => c.tags || []))].slice(0, 16);
+  const filterOptions = [{ id: 'all', label: 'All' }, ...topics.map((t) => ({ id: t.id, label: t.title }))];
+
+  const filteredByTopic = activeTopic === 'all' ? content : content.filter((item) => item.topicId === activeTopic);
+  const searched = searchContent(filteredByTopic.filter((c) => (!tag || (c.tags || []).includes(tag))), query);
 
   return (
     <section>
       <h1 className="mb-2 text-3xl font-semibold">Personal</h1>
       <p className="mb-4 text-muted">Philosophy, anime, books, hobbies, and reflective personal themes.</p>
-      <div className="glass mb-6 rounded-2xl p-4">
+
+      <TopicFilterBar label="Personal Topics" options={filterOptions} active={activeTopic} onChange={setActiveTopic} count={searched.length} />
+
+      <div className="glass mb-6 mt-4 rounded-2xl p-4">
         <input className="w-full bg-transparent outline-none" placeholder="Search themes and notes" value={query} onChange={(e) => setQuery(e.target.value)} />
         <div className="mt-3 flex flex-wrap gap-2">
-          {allTags.map((t) => <button key={t} onClick={() => setTag(t)} className={`rounded-full px-3 py-1 text-xs ${tag === t ? 'bg-white/30' : 'bg-white/10'}`}>#{t}</button>)}
-          <button className="text-xs" onClick={() => setTag('')}>clear</button>
+          {allTags.map((t)=><button key={t} onClick={()=>setTag(t)} className={`rounded-full px-3 py-1 text-xs ${tag===t?'bg-white/30':'bg-white/10'}`}>#{t}</button>)}
+          <button className="text-xs" onClick={()=>setTag('')}>clear</button>
         </div>
       </div>
-      {groups.map((group) => {
-        const posts = searchContent(
-          content.filter((c) => group.topicIds.has(c.topicId) && (!tag || (c.tags || []).includes(tag))),
-          query,
-        );
-        return (
-          <section key={group.label} className="mb-8">
-            <h2 className="mb-3 text-2xl font-semibold">{group.label}</h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {posts.map((p) => <ContentCard key={p.id} item={p} onOpen={() => nav(`/personal/post/${p.slug}`)} />)}
-            </div>
-          </section>
-        );
-      })}
-      {topics.length === 0 && content.length === 0 && <div className="glass rounded-xl p-4 text-sm text-muted">No personal topics are visible yet.</div>}
+
+      {searched.length > 0 ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {searched.map((p) => <ContentCard key={p.id} item={p} onOpen={() => nav(`/personal/post/${p.slug}`)} />)}
+        </div>
+      ) : (
+        <div className="glass rounded-xl p-4 text-sm text-muted">No personal posts match your current filters.</div>
+      )}
     </section>
   );
 }

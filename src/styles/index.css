@@ -325,3 +325,29 @@ iframe { border: 0; }
 @media (prefers-reduced-motion: reduce) {
   .mindmap-node, .mindmap-hero, .mindmap-cta, .mindmap-ghost { transition: none !important; animation: none !important; }
 }
+
+.filter-chip-row {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+  scrollbar-width: thin;
+}
+.filter-chip {
+  white-space: nowrap;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.08);
+  color: #dbeafe;
+  padding: 0.36rem 0.78rem;
+  font-size: 0.8rem;
+}
+.filter-chip.is-active {
+  border-color: rgba(125, 211, 252, 0.55);
+  background: linear-gradient(120deg, rgba(34, 211, 238, 0.3), rgba(59,130,246,0.28));
+  color: #f8fafc;
+}
+.filter-chip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(125, 211, 252, 0.5);
+}

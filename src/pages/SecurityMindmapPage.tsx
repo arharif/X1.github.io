@@ -8,7 +8,7 @@ export function SecurityMindmapPage() {
     <section className="space-y-6">
       <div className="mindmap-hero rounded-3xl p-6 md:p-8">
         <p className="text-xs uppercase tracking-[0.25em] text-cyan-200/90">Flagship Experience</p>
-        <h1 className="mt-3 text-3xl font-semibold md:text-5xl">Security Mindmap</h1>
+        <h1 className="mt-3 text-3xl font-semibold md:text-5xl">Security Map</h1>
         <p className="mt-3 max-w-3xl text-sm text-slate-200/90 md:text-base">
           From curiosity to cyber leadership: a living map of architecture, operations, governance, resilience, and strategic direction toward CISO as a Service.
         </p>
