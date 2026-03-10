@@ -22,7 +22,7 @@ const sitePages: AssistantSource[] = [
   { title: 'Submitting', route: '/submitting', excerpt: 'Manual email submission instructions.' },
 ];
 
-const blockedTerms = ['admin', 'password', 'token', 'secret', 'private', 'internal', 'env', 'supabase key', 'api key', 'hidden'];
+const blockedTerms = ['admin', 'password', 'token', 'secret', 'private', 'internal', 'env', 'supabase key', 'api key', 'hidden', 'system prompt', 'bypass'];
 const normalize = (value: string) => value.toLowerCase().replace(/[^a-z0-9\s-]/g, ' ').replace(/\s+/g, ' ').trim();
 const safeRoute = (value: string) => (value.startsWith('/') ? value : '/');
 
@@ -91,19 +91,21 @@ export async function querySiteAssistant(rawQuery: string): Promise<AssistantRep
     .slice(0, 5)
     .map((x) => ({ ...x.item, route: safeRoute(x.item.route) }));
 
-  if (!scored.length) {
+  const uniqueScored = scored.filter((item, index, arr) => arr.findIndex((x) => x.route === item.route && x.title === item.title) === index);
+
+  if (!uniqueScored.length) {
     return {
       text: 'I could not find that on this website. Try broader keywords or open Security Map, Professional, Personal, or Games.',
       sources: [],
     };
   }
 
-  const summary = scored
+  const summary = uniqueScored
     .map((s) => `• ${sanitizeDisplay(s.title)}: ${sanitizeDisplay(s.excerpt).slice(0, 130)}`)
     .join('\n');
 
   return {
     text: `Here is what I found on this website for “${sanitizeDisplay(query)}”:\n${summary}`,
-    sources: scored,
+    sources: uniqueScored,
   };
 }

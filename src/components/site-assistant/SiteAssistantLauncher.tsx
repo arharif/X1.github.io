@@ -1,8 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { X1Mark } from '@/components/branding/X1Mark';
 import { SiteAssistantPanel } from './SiteAssistantPanel';
+
+const singletonKey = '__x1_single_launcher__';
 
 export function SiteAssistantLauncher() {
   const [open, setOpen] = useState(false);
+  const [enabled, setEnabled] = useState(true);
+
+  useEffect(() => {
+    const w = window as Window & { [singletonKey]?: boolean };
+    if (w[singletonKey]) {
+      setEnabled(false);
+      return;
+    }
+    w[singletonKey] = true;
+    return () => {
+      w[singletonKey] = false;
+    };
+  }, []);
+
+  if (!enabled) return null;
 
   return (
     <>
@@ -13,8 +31,8 @@ export function SiteAssistantLauncher() {
         aria-expanded={open}
         aria-controls="x1-assistant-panel"
       >
+        <span className="assistant-launcher-logo"><X1Mark size="sm" /></span>
         <span className="assistant-launcher-title">X1</span>
-        <span className="assistant-launcher-text">Assistant</span>
       </button>
       <SiteAssistantPanel open={open} onClose={() => setOpen(false)} />
     </>
