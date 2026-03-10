@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { X1Mark } from '@/components/branding/X1Mark';
 import { SiteAssistantPanel } from './SiteAssistantPanel';
@@ -32,6 +32,9 @@ export function SiteAssistantLauncher() {
   const [open, setOpen] = useState(false);
   const [enabled, setEnabled] = useState(true);
   const [seenSections, setSeenSections] = useState<Record<string, boolean>>(() => readSeen());
+
+  const [navIndicator, setNavIndicator] = useState(false);
+  const prevRouteKeyRef = useRef<string>('');
   const location = useLocation();
   const routeKey = useMemo(() => resolveAssistantSection(location.pathname), [location.pathname]);
 
@@ -60,9 +63,24 @@ export function SiteAssistantLauncher() {
     if (open) markSeen(routeKey);
   }, [open, routeKey]);
 
+
+  useEffect(() => {
+    if (!prevRouteKeyRef.current) {
+      prevRouteKeyRef.current = routeKey;
+      return;
+    }
+    if (prevRouteKeyRef.current === routeKey) return;
+    prevRouteKeyRef.current = routeKey;
+    if (open) return;
+
+    setNavIndicator(true);
+    const timer = window.setTimeout(() => setNavIndicator(false), 2600);
+    return () => window.clearTimeout(timer);
+  }, [routeKey, open]);
+
   if (!enabled) return null;
 
-  const showBadge = !open && !seenSections[routeKey];
+  const showBadge = !open && (!seenSections[routeKey] || navIndicator);
 
   return (
     <>
@@ -71,7 +89,7 @@ export function SiteAssistantLauncher() {
         onClick={() => {
           setOpen((v) => {
             const next = !v;
-            if (next) markSeen(routeKey);
+            if (next) { markSeen(routeKey); setNavIndicator(false); }
             return next;
           });
         }}
