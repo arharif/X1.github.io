@@ -228,10 +228,9 @@ function CuriosityPost() {
 
 
 function LoginPage() {
-  const { verifyOtpCode, beginSecureLogin, requestOtpChallenge, loading, isAdmin, session } = useAuth();
+  const { verifyOtpCode, beginSecureLogin, resendOtpChallenge, pendingMfa, cancelPendingLogin, loading, isAdmin, session } = useAuth();
   const nav = useNavigate();
   const [email, setEmail] = useState('');
-  const [step, setStep] = useState<1 | 2>(1);
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
   const [message, setMessage] = useState('');
@@ -261,6 +260,8 @@ function LoginPage() {
   const sanitizedEmail = email.trim().toLowerCase();
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedEmail);
   const sanitizedOtp = otp.trim();
+  const otpLike = /^[A-Za-z0-9-]{4,12}$/.test(sanitizedOtp);
+  const inOtpStep = Boolean(pendingMfa);
 
   const registerFailure = () => {
     setAttempts((prev) => {
@@ -278,12 +279,12 @@ function LoginPage() {
   return (
     <section className="mx-auto max-w-md py-20">
       <div className="glass rounded-2xl p-6">
-        <div className="flex items-center gap-3"><X1Mark size="md" /><h1 className="text-2xl font-semibold">Sign in</h1></div>
+        <div className="flex items-center gap-3"><X1Mark size="md" /><h1 className="text-2xl font-semibold">Admin sign in</h1></div>
         <AnimatePresence mode="wait">
-          <motion.div key={step} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2 }}>
-            <input className="mt-4 w-full rounded-xl bg-white/10 p-2" value={email} onChange={(e) => setEmail(e.target.value.slice(0, 120))} placeholder="Email" disabled={step === 2 || locked} autoComplete="email" />
-            {step === 1 ? (
+          <motion.div key={inOtpStep ? 'otp' : 'credentials'} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2 }}>
+            {!inOtpStep ? (
               <>
+                <input className="mt-4 w-full rounded-xl bg-white/10 p-2" value={email} onChange={(e) => setEmail(e.target.value.slice(0, 120))} placeholder="Email" disabled={locked} autoComplete="email" />
                 <input className="mt-3 w-full rounded-xl bg-white/10 p-2" type="password" value={password} onChange={(e)=>setPassword(e.target.value.slice(0, 128))} placeholder="Password" autoComplete="current-password" disabled={locked} />
                 <button
                   className="mt-3 w-full rounded-xl bg-white/15 px-4 py-2"
@@ -293,8 +294,9 @@ function LoginPage() {
                     try {
                       await beginSecureLogin(sanitizedEmail, password);
                       setPassword('');
+                      setOtp('');
                       setAttempts(0);
-                      nav('/admin', { replace: true });
+                      setMessage('Verification code sent. Enter the one-time code to continue.');
                     } catch {
                       registerFailure();
                       if (!locked) setError(genericAuthError);
@@ -303,31 +305,14 @@ function LoginPage() {
                 >
                   {loading ? 'Processing...' : 'Continue'}
                 </button>
-                <button
-                  className="mt-2 w-full rounded-xl bg-white/5 px-4 py-2 text-xs text-muted"
-                  disabled={loading || locked || !hasSupabaseCoreConfig || !validEmail}
-                  onClick={async () => {
-                    setError(''); setMessage('');
-                    try {
-                      await requestOtpChallenge(sanitizedEmail);
-                      setStep(2);
-                      setAttempts(0);
-                      setMessage('If the request can be completed, you will receive a one-time code by email shortly.');
-                    } catch {
-                      registerFailure();
-                      if (!locked) setError(genericAuthError);
-                    }
-                  }}
-                >
-                  Use one-time code instead
-                </button>
               </>
             ) : (
               <>
-                <input className="mt-3 w-full rounded-xl bg-white/10 p-2" value={otp} onChange={(e) => setOtp(e.target.value.slice(0, 64))} placeholder="One-time code" autoComplete="one-time-code" disabled={locked} />
+                <p className="mt-4 text-xs text-muted">Enter the one-time code to finish authentication.</p>
+                <input className="mt-3 w-full rounded-xl bg-white/10 p-2" value={otp} onChange={(e) => setOtp(e.target.value.slice(0, 64))} placeholder="One-time code" autoComplete="one-time-code" disabled={locked} aria-label="One-time code" />
                 <button
                   className="mt-3 w-full rounded-xl bg-white/15 px-4 py-2"
-                  disabled={loading || locked || !hasSupabaseCoreConfig || !sanitizedOtp}
+                  disabled={loading || locked || !hasSupabaseCoreConfig || !otpLike}
                   onClick={async () => {
                     setError(''); setMessage('');
                     try {
@@ -336,13 +321,29 @@ function LoginPage() {
                       nav('/admin', { replace: true });
                     } catch {
                       registerFailure();
-                      if (!locked) setError(genericAccessDenied);
+                      if (!locked) setError(genericAuthError);
                     }
                   }}
                 >
                   {loading ? 'Verifying...' : 'Verify'}
                 </button>
-                <button className="mt-2 w-full rounded-xl bg-white/5 px-4 py-2 text-xs text-muted" onClick={() => { setStep(1); setOtp(''); setMessage(''); setError(''); }} disabled={locked}>Back</button>
+                <button
+                  className="mt-2 w-full rounded-xl bg-white/5 px-4 py-2 text-xs text-muted"
+                  disabled={loading || locked || !hasSupabaseCoreConfig}
+                  onClick={async () => {
+                    setError(''); setMessage('');
+                    try {
+                      await resendOtpChallenge();
+                      setMessage('A new verification code was sent if the request can be completed.');
+                    } catch {
+                      registerFailure();
+                      if (!locked) setError(genericAuthError);
+                    }
+                  }}
+                >
+                  Resend code
+                </button>
+                <button className="mt-2 w-full rounded-xl bg-white/5 px-4 py-2 text-xs text-muted" onClick={() => { cancelPendingLogin(); setOtp(''); setMessage(''); setError(''); }} disabled={loading || locked}>Back</button>
               </>
             )}
           </motion.div>
@@ -355,7 +356,6 @@ function LoginPage() {
     </section>
   );
 }
-
 function AdminPage() {
   const { session, isAdmin, logout } = useAuth();
   const [topics, setTopics] = useState<TopicRecord[]>([]);
@@ -388,7 +388,7 @@ function AdminPage() {
   useEffect(() => { load(); }, [token]);
 
   if (!session) return <Navigate to="/login" replace />;
-  if (!isAdmin) return <div className="glass rounded-2xl p-6">Access could not be granted.</div>;
+  if (!isAdmin) return <Navigate to="/login" replace />;
 
   const published = content.filter((c) => c.status === 'published').length;
   const recentPublished = content.filter((c) => c.status === 'published').slice(0, 5);
