@@ -71,6 +71,17 @@ export function GamesHub() {
 
   const categories: GameCategory[] = ['Card Games', 'Puzzle Games', 'Classic Games', 'Arcade & Skills', 'Knowledge'];
 
+  const scrollToGamesZone = () => {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    gamesZoneRef.current?.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'start' });
+    gamesZoneRef.current?.focus({ preventScroll: true });
+  };
+
+  const selectGame = (key: GameKey) => {
+    setActive(key);
+    window.requestAnimationFrame(scrollToGamesZone);
+  };
+
   return (
     <section className="space-y-5">
       <header className="game-store rounded-3xl p-6">
@@ -102,7 +113,7 @@ export function GamesHub() {
                 {entries.map(([k, meta]) => (
                   <button
                     key={k}
-                    onClick={() => setActive(k as GameKey)}
+                    onClick={() => selectGame(k as GameKey)}
                     className={`game-card rounded-2xl bg-gradient-to-br ${meta.color} p-5 text-left transition duration-200 hover:-translate-y-0.5 ${active === k ? 'ring-2 ring-cyan-300/60' : ''}`}
                     aria-pressed={active === k}
                   >

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Github, Linkedin } from 'lucide-react';
+import { Github, Linkedin, Mail } from 'lucide-react';
 import { Component, ReactNode, useEffect, useState } from 'react';
 import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AdminEditor } from '@/components/admin/AdminEditor';
@@ -271,7 +271,6 @@ function LoginPage() {
     <section className="mx-auto max-w-md py-20">
       <div className="glass rounded-2xl p-6">
         <div className="flex items-center gap-3"><X1Mark size="md" /><h1 className="text-2xl font-semibold">Sign in</h1></div>
-        <p className="mt-2 text-xs text-muted">Admin access requires password verification followed by one-time code confirmation.</p>
         <AnimatePresence mode="wait">
           <motion.div key={step} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2 }}>
             <input className="mt-4 w-full rounded-xl bg-white/10 p-2" value={email} onChange={(e) => setEmail(e.target.value.slice(0, 120))} placeholder="Email" disabled={step === 2 || locked} autoComplete="email" />
@@ -559,12 +558,18 @@ function Shell() {
       <footer className="mx-auto mt-8 flex max-w-6xl items-center border-t border-white/10 p-6 text-sm text-muted">
         <div className="footer-inline">
           <span className="footer-brand">arharif © 2026</span>
-          <a href="https://www.linkedin.com/in/rharif-anass-/" target="_blank" rel="noopener noreferrer" aria-label="Open LinkedIn profile" title="LinkedIn" className="social-icon-link">
-            <Linkedin size={12} strokeWidth={2.15} />
-          </a>
-          <a href="https://github.com/arharif" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub profile" title="GitHub" className="social-icon-link">
-            <Github size={12} strokeWidth={2.15} />
-          </a>
+          <span className="footer-separator" aria-hidden="true">|</span>
+          <div className="footer-icons" aria-label="Social links">
+            <a href="https://www.linkedin.com/in/rharif-anass-/" target="_blank" rel="noopener noreferrer" aria-label="Open LinkedIn profile" title="LinkedIn" className="social-icon-link">
+              <Linkedin size={12} strokeWidth={2.15} />
+            </a>
+            <a href="https://github.com/arharif" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub profile" title="GitHub" className="social-icon-link">
+              <Github size={12} strokeWidth={2.15} />
+            </a>
+            <a href="mailto:rharifanass@gmail.com" aria-label="Send email to rharifanass@gmail.com" title="Email" className="social-icon-link">
+              <Mail size={12} strokeWidth={2.15} />
+            </a>
+          </div>
         </div>
       </footer>
     </div>
