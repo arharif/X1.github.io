@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { listPublishedContent } from '@/lib/cms';
 import { ContentRecord } from '@/content/types';
 import { CyberAwarenessQuiz } from '@/components/games/CyberAwarenessQuiz';
@@ -50,10 +50,24 @@ const saveBest = (key: string, value: number) => {
 export function GamesHub() {
   const [active, setActive] = useState<GameKey>('card-shedding');
   const [games, setGames] = useState<ContentRecord[]>([]);
+  const location = useLocation();
+  const gamesZoneRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     listPublishedContent().then((rows) => setGames(rows.filter((r) => r.contentType === 'game'))).catch(() => setGames([]));
   }, []);
+
+  useEffect(() => {
+    if (location.pathname !== '/games') return;
+    const shouldScroll = !location.hash || location.hash === '#games-zone';
+    if (!shouldScroll) return;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const frame = window.requestAnimationFrame(() => {
+      gamesZoneRef.current?.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'start' });
+      gamesZoneRef.current?.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [location.pathname, location.hash]);
 
   const categories: GameCategory[] = ['Card Games', 'Puzzle Games', 'Classic Games', 'Arcade & Skills', 'Knowledge'];
 
@@ -108,7 +122,7 @@ export function GamesHub() {
         <Link to="/Security_Mindmap" className="mt-2 inline-block rounded-xl bg-white/15 px-4 py-2 text-sm hover:bg-white/25">Explore Security Map</Link>
       </div>
 
-      <div className="game-panel rounded-2xl p-4">
+      <section id="games-zone" ref={gamesZoneRef} tabIndex={-1} className="game-panel rounded-2xl p-4" aria-label="Interactive games zone">
         {active === 'snake' && <SnakeGame />}
         {active === 'battleship' && <BattleshipGame />}
         {active === 'tictactoe' && <TicTacToeGame />}
@@ -122,7 +136,7 @@ export function GamesHub() {
         {active === 'geo' && <CountryLocatorGame />}
         {active === 'cyber-awareness' && <CyberAwarenessQuiz />}
         {active === 'general-knowledge' && <GeneralKnowledgeQuiz />}
-      </div>
+      </section>
     </section>
   );
 }

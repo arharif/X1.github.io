@@ -235,12 +235,102 @@ function LoginPage() {
   const [otp, setOtp] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [attempts, setAttempts] = useState(0);
+  const [lockUntil, setLockUntil] = useState<number | null>(null);
+  const [now, setNow] = useState(() => Date.now());
 
-  useEffect(() => { if (session && isAdmin) nav('/admin'); }, [isAdmin, nav, session]);
+  useEffect(() => { if (session && isAdmin) nav('/admin', { replace: true }); }, [isAdmin, nav, session]);
 
-  return <section className="mx-auto max-w-md py-20"><div className="glass rounded-2xl p-6"><div className="flex items-center gap-3"><X1Mark size="md" /><h1 className="text-2xl font-semibold">Sign in</h1></div><AnimatePresence mode="wait"><motion.div key={step} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2 }}><input className="mt-4 w-full rounded-xl bg-white/10 p-2" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" disabled={step === 2} autoComplete="email" />{step === 1 ? <><input className="mt-3 w-full rounded-xl bg-white/10 p-2" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Password" autoComplete="current-password" /><button className="mt-3 w-full rounded-xl bg-white/15 px-4 py-2" disabled={loading || !hasSupabaseCoreConfig || !email.trim() || !password} onClick={async()=>{ setError(''); setMessage(''); try { await beginSecureLogin(email.trim(), password); setStep(2); setMessage('If the request can be completed, you will receive an email shortly.'); } catch { setError(genericAuthError); } }}>{loading ? 'Processing...' : 'Continue'}</button></> : <><input className="mt-3 w-full rounded-xl bg-white/10 p-2 tracking-[0.35em]" value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="OTP code" inputMode="numeric" /><button className="mt-3 w-full rounded-xl bg-white/15 px-4 py-2" disabled={loading || !hasSupabaseCoreConfig || otp.trim().length < 6} onClick={async () => { setError(''); setMessage(''); try { await verifyOtpCode(otp.trim()); nav('/admin'); } catch { setError(genericAccessDenied); } }}>{loading ? 'Verifying...' : 'Verify'}</button><button className="mt-2 w-full rounded-xl bg-white/5 px-4 py-2 text-xs text-muted" onClick={() => { setStep(1); setOtp(''); setMessage(''); setError(''); }}>Back</button></>}</motion.div></AnimatePresence>{message && <p className="mt-3 text-xs text-emerald-300">{message}</p>}{error && <p className="mt-3 text-xs text-rose-300">{error}</p>}{!hasSupabaseCoreConfig && <p className="mt-3 text-xs text-amber-300">Authentication could not be completed.</p>}</div></section>;
+  useEffect(() => {
+    if (!lockUntil) return;
+    const t = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(t);
+  }, [lockUntil]);
+
+  const lockSeconds = lockUntil ? Math.max(0, Math.ceil((lockUntil - now) / 1000)) : 0;
+  const locked = lockSeconds > 0;
+
+  const sanitizedEmail = email.trim().toLowerCase();
+  const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedEmail);
+  const sanitizedOtp = otp.replace(/\D/g, '').slice(0, 6);
+
+  const registerFailure = () => {
+    setAttempts((prev) => {
+      const next = prev + 1;
+      if (next >= 3) {
+        const until = Date.now() + 30_000;
+        setLockUntil(until);
+        setError('Too many attempts. Please wait 30 seconds before trying again.');
+        return 0;
+      }
+      return next;
+    });
+  };
+
+  return (
+    <section className="mx-auto max-w-md py-20">
+      <div className="glass rounded-2xl p-6">
+        <div className="flex items-center gap-3"><X1Mark size="md" /><h1 className="text-2xl font-semibold">Sign in</h1></div>
+        <p className="mt-2 text-xs text-muted">Admin access requires password verification followed by one-time code confirmation.</p>
+        <AnimatePresence mode="wait">
+          <motion.div key={step} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2 }}>
+            <input className="mt-4 w-full rounded-xl bg-white/10 p-2" value={email} onChange={(e) => setEmail(e.target.value.slice(0, 120))} placeholder="Email" disabled={step === 2 || locked} autoComplete="email" />
+            {step === 1 ? (
+              <>
+                <input className="mt-3 w-full rounded-xl bg-white/10 p-2" type="password" value={password} onChange={(e)=>setPassword(e.target.value.slice(0, 128))} placeholder="Password" autoComplete="current-password" disabled={locked} />
+                <button
+                  className="mt-3 w-full rounded-xl bg-white/15 px-4 py-2"
+                  disabled={loading || locked || !hasSupabaseCoreConfig || !validEmail || password.length < 8}
+                  onClick={async()=>{
+                    setError(''); setMessage('');
+                    try {
+                      await beginSecureLogin(sanitizedEmail, password);
+                      setStep(2);
+                      setPassword('');
+                      setAttempts(0);
+                      setMessage('If the request can be completed, you will receive an email shortly.');
+                    } catch {
+                      registerFailure();
+                      if (!locked) setError(genericAuthError);
+                    }
+                  }}
+                >
+                  {loading ? 'Processing...' : 'Continue'}
+                </button>
+              </>
+            ) : (
+              <>
+                <input className="mt-3 w-full rounded-xl bg-white/10 p-2 tracking-[0.35em]" value={sanitizedOtp} onChange={(e) => setOtp(e.target.value)} placeholder="OTP code" inputMode="numeric" autoComplete="one-time-code" disabled={locked} />
+                <button
+                  className="mt-3 w-full rounded-xl bg-white/15 px-4 py-2"
+                  disabled={loading || locked || !hasSupabaseCoreConfig || sanitizedOtp.length < 6}
+                  onClick={async () => {
+                    setError(''); setMessage('');
+                    try {
+                      await verifyOtpCode(sanitizedOtp);
+                      setAttempts(0);
+                      nav('/admin', { replace: true });
+                    } catch {
+                      registerFailure();
+                      if (!locked) setError(genericAccessDenied);
+                    }
+                  }}
+                >
+                  {loading ? 'Verifying...' : 'Verify'}
+                </button>
+                <button className="mt-2 w-full rounded-xl bg-white/5 px-4 py-2 text-xs text-muted" onClick={() => { setStep(1); setOtp(''); setMessage(''); setError(''); }} disabled={locked}>Back</button>
+              </>
+            )}
+          </motion.div>
+        </AnimatePresence>
+        {message && <p className="mt-3 text-xs text-emerald-300">{message}</p>}
+        {error && <p className="mt-3 text-xs text-rose-300">{error}</p>}
+        {locked && <p className="mt-3 text-xs text-amber-300">Temporary lock active. Try again in {lockSeconds}s.</p>}
+        {!hasSupabaseCoreConfig && <p className="mt-3 text-xs text-amber-300">Authentication could not be completed.</p>}
+      </div>
+    </section>
+  );
 }
-
 
 function AdminPage() {
   const { session, isAdmin, logout } = useAuth();
@@ -254,7 +344,6 @@ function AdminPage() {
   const token = session?.access_token || '';
 
   const friendly = (err: unknown) => {
-    if (import.meta.env.DEV) console.error('Admin request failed:', err);
     const message = err instanceof Error ? err.message.toLowerCase() : '';
     if (message.includes('row-level security') || message.includes('permission') || message.includes('not allowed')) return genericAccessDenied;
     return 'Unable to complete request. Please try again.';
@@ -371,27 +460,56 @@ function AdminPage() {
 function SubmittingPage() {
   return (
     <section className="mx-auto max-w-3xl space-y-4 py-8">
-      <h1 className="text-3xl font-semibold">Submitting</h1>
-      <p className="text-muted">To submit a blog/article, send a manual email. This page is instructions-only and does not include an online form.</p>
-      <div className="glass rounded-2xl p-5 text-sm leading-7 text-muted">
-        <p className="font-medium text-white">Send to: <a className="underline underline-offset-4" href="mailto:rharifanass@gmail.com?subject=X1%20Submitting%3A%20%5BTopic%20Title%5D">rharifanass@gmail.com</a></p>
-        <ul className="mt-3 list-disc space-y-1 pl-5">
-          <li>Send the submission by email manually.</li>
-          <li>Email must contain text content only.</li>
-          <li>Do not include attachments, links, or external files.</li>
-          <li>Submissions that do not follow this format may be ignored.</li>
-        </ul>
+      <div className="glass rounded-3xl p-6 md:p-7">
+        <p className="text-xs uppercase tracking-[0.18em] text-muted">Contribute</p>
+        <h1 className="mt-2 text-3xl font-semibold">Submit an Article</h1>
+        <p className="mt-3 text-sm text-muted leading-7">
+          Want to share an idea, insight, or experience? You are welcome to submit a blog post or article for review and possible publication on this platform.
+        </p>
+        <p className="mt-2 text-sm text-muted">At the moment, submissions are handled by email only.</p>
       </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="glass rounded-2xl p-5">
+          <p className="text-xs uppercase tracking-[0.16em] text-muted">Where to send</p>
+          <a
+            className="mt-2 inline-block rounded-xl bg-white/10 px-3 py-2 font-medium underline decoration-cyan-300/60 underline-offset-4"
+            href="mailto:rharifanass@gmail.com?subject=X1%20Article%20Submission%3A%20%5BTopic%20Title%5D"
+          >
+            rharifanass@gmail.com
+          </a>
+          <p className="mt-3 text-xs text-muted">Please use a clear subject line to help review routing.</p>
+        </div>
+
+        <div className="glass rounded-2xl p-5">
+          <p className="text-xs uppercase tracking-[0.16em] text-muted">Submission guidelines</p>
+          <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-muted">
+            <li>Write your submission directly in the email body.</li>
+            <li>Use text only.</li>
+            <li>Avoid attachments.</li>
+            <li>Avoid external links or files.</li>
+            <li>Send a complete version ready for review.</li>
+          </ul>
+        </div>
+      </div>
+
       <div className="glass rounded-2xl p-5">
-        <p className="mb-2 text-sm text-muted">Use this exact template:</p>
+        <p className="mb-2 text-xs uppercase tracking-[0.16em] text-muted">Use this format</p>
         <pre className="overflow-x-auto rounded-xl bg-black/30 p-4 text-xs leading-6 text-slate-100">{`Full Name: [full name]
 Email: [email address]
 Topic Title: [topic title]
 Category: [category]
-Blogs/Article Content:
+
+Blog/Article Content:
 [body content]`}</pre>
       </div>
-      <a href="mailto:rharifanass@gmail.com?subject=X1%20Submitting%3A%20%5BTopic%20Title%5D" className="inline-block rounded-xl bg-white/15 px-4 py-2 text-sm hover:bg-white/25">Send by Email</a>
+
+      <div className="glass rounded-2xl p-5 text-sm text-muted leading-7">
+        <p className="text-white font-medium">Note</p>
+        <p className="mt-2">All submissions are reviewed before publication.</p>
+        <p>Some articles may be edited slightly for clarity, grammar, formatting, and consistency.</p>
+        <p className="mt-3 text-white">Thank you for contributing.</p>
+      </div>
     </section>
   );
 }
@@ -439,13 +557,13 @@ function Shell() {
       </main>
       <SiteAssistantLauncher />
       <footer className="mx-auto mt-8 flex max-w-6xl items-center border-t border-white/10 p-6 text-sm text-muted">
-        <div className="flex items-center gap-3">
-          <span>arharif © 2026</span>
+        <div className="footer-inline">
+          <span className="footer-brand">arharif © 2026</span>
           <a href="https://www.linkedin.com/in/rharif-anass-/" target="_blank" rel="noopener noreferrer" aria-label="Open LinkedIn profile" title="LinkedIn" className="social-icon-link">
-            <Linkedin size={14} />
+            <Linkedin size={12} strokeWidth={2.15} />
           </a>
           <a href="https://github.com/arharif" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub profile" title="GitHub" className="social-icon-link">
-            <Github size={14} />
+            <Github size={12} strokeWidth={2.15} />
           </a>
         </div>
       </footer>

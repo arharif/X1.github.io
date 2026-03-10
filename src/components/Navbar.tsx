@@ -12,9 +12,8 @@ export function Navbar({ mode, onTheme }: { mode: ThemeMode; onTheme: (m: ThemeM
     { to: '/professional', label: 'Technology & Innovation' },
     { to: '/personal', label: 'Curiosities & Philosophy' },
     { to: '/security-mindmap', label: 'Security Map' },
-    { to: '/search', label: 'Search' },
     { to: '/submitting', label: 'Submitting' },
-    { to: '/games', label: 'Games' },
+    { to: '/games#games-zone', label: 'Games' },
     { to: '/admin', label: 'Admin' },
   ];
 
