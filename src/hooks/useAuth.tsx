@@ -50,6 +50,15 @@ const readPendingMfa = (): PendingMfa | null => {
 const writePendingMfa = (value: PendingMfa) => safeStorage.set(pendingMfaKey, JSON.stringify(value), 'session');
 const clearPendingMfaStorage = () => safeStorage.remove(pendingMfaKey, 'session');
 
+const readAuthStorage = () => safeStorage.get(storageKey, 'session') ?? safeStorage.get(storageKey, 'local');
+
+const writeAuthStorage = (value: string) => {
+  safeStorage.set(storageKey, value, 'session');
+  safeStorage.remove(storageKey, 'local');
+};
+
+const clearAuthStorage = () => safeStorage.remove(storageKey, 'both');
+
 export function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<AuthSession | null>(() => {
     try {
