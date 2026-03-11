@@ -3,19 +3,18 @@ import { Link, useLocation } from 'react-router-dom';
 import { listPublishedContent } from '@/lib/cms';
 import { ContentRecord } from '@/content/types';
 import { CardSheddingGame } from '@/components/games/CardSheddingGame';
-import { Puzzle2048Game } from '@/components/games/Puzzle2048Game';
-import { SudokuMiniGame } from '@/components/games/SudokuMiniGame';
 import { MemoryPuzzleGame } from '@/components/games/MemoryPuzzleGame';
 import { safeStorage } from '@/lib/storage';
 import { MCQQuizEngine } from '@/components/games/MCQQuizEngine';
 import { PacmanGame } from '@/components/games/PacmanGame';
+import { RetroCarRacingGame } from '@/components/games/RetroCarRacingGame';
 import { gamesZoneQuizzes } from '@/data/gamesZoneData';
 import { GamesZoneCategory } from '@/types/games';
 
 type GameKey =
   | 'full-ciso-qsa-pack' | 'security-awareness-qsm' | 'ai-topic-qsm' | 'otaku-general-culture-quiz' | 'fc-barcelona-hardcore-fan-quiz'
-  | 'snake' | 'battleship' | 'tictactoe' | 'reaction' | 'rps' | 'math' | 'pacman' | 'geo'
-  | 'card-shedding' | 'puzzle-2048' | 'sudoku' | 'memory';
+  | 'snake' | 'tictactoe' | 'reaction' | 'rps' | 'pacman' | 'retro-car-racing'
+  | 'card-shedding' | 'memory';
 
 type GameEntry = {
   key: GameKey;
@@ -32,17 +31,13 @@ type GameEntry = {
 
 const staticGames: GameEntry[] = [
   { key: 'card-shedding', title: 'Card Shedding Duel', desc: 'A mature shedding-card strategy round against computer AI.', color: 'from-indigo-500/35 to-blue-500/25', icon: '🂡', category: 'Entertainment', typeLabel: 'Card Game', sortOrder: 20 },
-  { key: 'puzzle-2048', title: '2048', desc: 'Merge tiles and plan your board progression.', color: 'from-amber-500/35 to-orange-500/25', icon: '🔢', category: 'Entertainment', typeLabel: 'Puzzle', sortOrder: 21 },
-  { key: 'sudoku', title: 'Sudoku', desc: 'Compact logic grid challenge focused on deduction.', color: 'from-slate-500/35 to-slate-400/25', icon: '🧩', category: 'Entertainment', typeLabel: 'Puzzle', sortOrder: 22 },
   { key: 'memory', title: 'Memory Puzzle', desc: 'Pattern recall challenge with calm pacing.', color: 'from-cyan-500/35 to-sky-500/25', icon: '🧠', category: 'Entertainment', typeLabel: 'Puzzle', sortOrder: 23 },
   { key: 'rps', title: 'Rock Paper Scissors', desc: 'Classic duel versus computer.', color: 'from-violet-500/35 to-fuchsia-400/25', icon: '🪨', category: 'Entertainment', typeLabel: 'Classic', sortOrder: 24 },
   { key: 'snake', title: 'Snake', desc: 'Precision movement with increasing pressure.', color: 'from-emerald-400/35 to-cyan-400/25', icon: '🐍', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 25 },
-  { key: 'battleship', title: 'Battleship Lite', desc: 'Tactical grid targeting in compact rounds.', color: 'from-blue-500/35 to-cyan-400/25', icon: '🚢', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 26 },
   { key: 'tictactoe', title: 'Tic Tac Toe', desc: 'Fast strategic duels.', color: 'from-slate-400/35 to-indigo-400/25', icon: '✖️', category: 'Entertainment', typeLabel: 'Classic', sortOrder: 27 },
   { key: 'reaction', title: 'Reaction Time', desc: 'Measure and improve your response speed.', color: 'from-amber-400/35 to-orange-400/25', icon: '⚡', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 28 },
-  { key: 'math', title: 'Quick Math', desc: 'Solve rapidly under a short timer.', color: 'from-rose-500/35 to-pink-400/25', icon: '➗', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 29 },
   { key: 'pacman', title: 'Pac-Man Arcade', desc: 'Navigate the maze, collect pellets, and avoid ghosts.', color: 'from-yellow-400/35 to-orange-400/25', icon: '🟡', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 30 },
-  { key: 'geo', title: 'Country Locator', desc: 'Region-based world challenge.', color: 'from-cyan-500/35 to-sky-400/25', icon: '🌍', category: 'Culture', typeLabel: 'Quiz', sortOrder: 30 },
+  { key: 'retro-car-racing', title: 'Retro Car Racing', desc: 'Nokia-style lane dodging challenge with arcade pacing.', color: 'from-emerald-500/35 to-lime-400/25', icon: '🏎️', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 31 },
 ];
 
 const quizEntries: GameEntry[] = gamesZoneQuizzes.map((quiz) => ({
@@ -163,17 +158,13 @@ export function GamesHub() {
       <section id="games-zone" ref={gamesZoneRef} tabIndex={-1} className="game-panel rounded-2xl p-4" aria-label="Interactive games zone">
         {activeQuiz && <MCQQuizEngine game={activeQuiz} />}
         {active === 'snake' && <SnakeGame />}
-        {active === 'battleship' && <BattleshipGame />}
         {active === 'tictactoe' && <TicTacToeGame />}
         {active === 'reaction' && <ReactionGame />}
         {active === 'card-shedding' && <CardSheddingGame />}
-        {active === 'puzzle-2048' && <Puzzle2048Game />}
-        {active === 'sudoku' && <SudokuMiniGame />}
         {active === 'memory' && <MemoryPuzzleGame />}
         {active === 'rps' && <RPSGame />}
-        {active === 'math' && <QuickMathGame />}
-        {active === 'geo' && <CountryLocatorGame />}
         {active === 'pacman' && <PacmanGame />}
+        {active === 'retro-car-racing' && <RetroCarRacingGame />}
       </section>
     </section>
   );

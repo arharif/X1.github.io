@@ -752,7 +752,259 @@ D. Their red shoes
 Answer: C
 `;
 
+
+
+const countriesCapitalsRaw = `
+Q1. What is the capital of Morocco?
+A. Casablanca
+B. Marrakesh
+C. Rabat
+D. Fez
+
+Q2. What is the capital of Egypt?
+A. Alexandria
+B. Cairo
+C. Giza
+D. Luxor
+
+Q3. What is the capital of Nigeria?
+A. Lagos
+B. Kano
+C. Abuja
+D. Port Harcourt
+
+Q4. What is the capital of South Africa?
+A. Johannesburg only
+B. Durban only
+C. Cape Town only
+D. Pretoria, Bloemfontein, and Cape Town
+
+Q5. What is the capital of Kenya?
+A. Mombasa
+B. Nairobi
+C. Kisumu
+D. Eldoret
+
+Q6. What is the capital of Saudi Arabia?
+A. Jeddah
+B. Riyadh
+C. Mecca
+D. Medina
+
+Q7. What is the capital of Japan?
+A. Osaka
+B. Kyoto
+C. Tokyo
+D. Hiroshima
+
+Q8. What is the capital of China?
+A. Shanghai
+B. Beijing
+C. Hong Kong
+D. Guangzhou
+
+Q9. What is the capital of India?
+A. Mumbai
+B. New Delhi
+C. Bengaluru
+D. Chennai
+
+Q10. What is the capital of Thailand?
+A. Phuket
+B. Chiang Mai
+C. Pattaya
+D. Bangkok
+
+Q11. What is the capital of France?
+A. Lyon
+B. Paris
+C. Marseille
+D. Nice
+
+Q12. What is the capital of Germany?
+A. Munich
+B. Frankfurt
+C. Berlin
+D. Hamburg
+
+Q13. What is the capital of Italy?
+A. Milan
+B. Venice
+C. Naples
+D. Rome
+
+Q14. What is the capital of Spain?
+A. Barcelona
+B. Seville
+C. Madrid
+D. Valencia
+
+Q15. What is the capital of the United Kingdom?
+A. Manchester
+B. Birmingham
+C. Edinburgh
+D. London
+
+Q16. What is the capital of the United States?
+A. New York City
+B. Washington, D.C.
+C. Los Angeles
+D. Chicago
+
+Q17. What is the capital of Canada?
+A. Toronto
+B. Montreal
+C. Vancouver
+D. Ottawa
+
+Q18. What is the capital of Brazil?
+A. Rio de Janeiro
+B. São Paulo
+C. Brasília
+D. Salvador
+
+Q19. What is the capital of Argentina?
+A. Córdoba
+B. Buenos Aires
+C. Rosario
+D. Mendoza
+
+Q20. What is the capital of Australia?
+A. Sydney
+B. Melbourne
+C. Perth
+D. Canberra
+
+Q21. Rabat is the capital of:
+A. Algeria
+B. Tunisia
+C. Morocco
+D. Libya
+
+Q22. Abuja is the capital of:
+A. Ghana
+B. Nigeria
+C. Kenya
+D. Ethiopia
+
+Q23. Nairobi is the capital of:
+A. Tanzania
+B. Uganda
+C. Kenya
+D. Rwanda
+
+Q24. Riyadh is the capital of:
+A. United Arab Emirates
+B. Qatar
+C. Oman
+D. Saudi Arabia
+
+Q25. Tokyo is the capital of:
+A. South Korea
+B. China
+C. Japan
+D. Singapore
+
+Q26. Berlin is the capital of:
+A. Austria
+B. Germany
+C. Switzerland
+D. Belgium
+
+Q27. Brasília is the capital of:
+A. Argentina
+B. Chile
+C. Brazil
+D. Peru
+
+Q28. Ottawa is the capital of:
+A. Canada
+B. Australia
+C. Ireland
+D. New Zealand
+
+Q29. Cairo is the capital of:
+A. Egypt
+B. Jordan
+C. Sudan
+D. Lebanon
+
+Q30. Islamabad is the capital of:
+A. Afghanistan
+B. Pakistan
+C. Bangladesh
+D. Iran
+
+Q31. Morocco is located in:
+A. South America
+B. Europe
+C. North Africa
+D. Southeast Asia
+
+Q32. Brazil is located in:
+A. North America
+B. South America
+C. Europe
+D. Oceania
+
+Q33. Japan is located in:
+A. East Asia
+B. South Asia
+C. North Africa
+D. Central America
+
+Q34. Canada is located in:
+A. South Asia
+B. North America
+C. South America
+D. Oceania
+
+Q35. Australia is located in:
+A. Europe
+B. South America
+C. Oceania
+D. Africa
+
+Q36. Egypt is generally grouped in:
+A. East Asia
+B. Sub-Saharan Africa only
+C. Middle East and North Africa
+D. Central Europe
+
+Q37. India is located in:
+A. South Asia
+B. East Asia
+C. Latin America
+D. Central Africa
+
+Q38. France is located in:
+A. Europe
+B. Africa
+C. South America
+D. Oceania
+
+Q39. Nigeria is located in:
+A. North America
+B. Sub-Saharan Africa
+C. Europe
+D. East Asia
+
+Q40. Argentina is located in:
+A. South America
+B. Europe
+C. North Africa
+D. South Asia
+`;
+
+const countriesCapitalsKey = `
+1.C 2.B 3.C 4.D 5.B 6.B 7.C 8.B 9.B 10.D
+11.B 12.C 13.D 14.C 15.D 16.B 17.D 18.C 19.B 20.D
+21.C 22.B 23.C 24.D 25.C 26.B 27.C 28.A 29.A 30.B
+31.C 32.B 33.A 34.B 35.C 36.C 37.A 38.A 39.B 40.A
+`;
+
 const aiTopicQuestions = parseWithKeyQuestions(aiTopicRaw, aiTopicAnswerKey);
+const countriesCapitalsQuestions = parseWithKeyQuestions(countriesCapitalsRaw, countriesCapitalsKey);
 const barcelonaQuestions = parseInlineAnswerQuestions(barcelonaRaw);
 
 const cisoQuestions = parseInlineAnswerQuestions(cisoSampleRaw);
@@ -826,6 +1078,19 @@ export const gamesZoneQuizzes: QuizGameData[] = [
     type: 'trivia',
     sortOrder: 4,
     questions: otakuQuestions,
+  },
+  {
+    id: 'countries-capitals-locations-quiz',
+    slug: 'countries-capitals-locations-quiz',
+    title: 'Countries, Capitals, and Locations Quiz',
+    category: 'Culture',
+    shortDescription: '40-question world geography quiz on countries, capitals, and global regions.',
+    longDescription: 'A premium geography challenge covering capitals and world locations across Africa, Europe, Asia, and the Americas.',
+    questionCount: 40,
+    difficulty: 'Intermediate',
+    type: 'quiz',
+    sortOrder: 12,
+    questions: countriesCapitalsQuestions,
   },
   {
     id: 'fc-barcelona-hardcore-fan-quiz',
