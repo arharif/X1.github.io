@@ -29,6 +29,8 @@ const safeRoute = (value: string) => (/^\/[a-zA-Z0-9/_#.%~-]*$/.test(value) ? va
 const isPublicRoute = (route: string) => ['/', '/professional', '/personal', '/security-mindmap', '/Security_Mindmap', '/games', '/submitting', '/search'].some((item) => route === item || route.startsWith(`${item}/`) || route.startsWith(`${item}#`));
 const safeSlug = (value: string) => encodeURIComponent(value.trim().toLowerCase()).replace(/%2F/g, '');
 
+let cachedPublishedSources: AssistantSource[] | null = null;
+
 export function sanitizeUserText(value: string) {
   return normalize(value).slice(0, 220);
 }
@@ -38,15 +40,18 @@ function sanitizeDisplay(text: string) {
 }
 
 async function loadPublishedSources(): Promise<AssistantSource[]> {
+  if (cachedPublishedSources) return cachedPublishedSources;
+
   try {
     const rows = await listPublishedContent();
-    return rows.slice(0, 120).map((item) => ({
+    cachedPublishedSources = rows.slice(0, 120).map((item) => ({
       title: sanitizeDisplay(item.title),
       route: safeRoute(normalizeUniverse(item.topic?.universe) === 'professional' ? `/professional/topic/${safeSlug(item.topic?.slug || '')}` : `/personal/post/${safeSlug(item.slug)}`),
-      excerpt: sanitizeDisplay(`${item.excerpt || ''} ${item.body.slice(0, 240)}`.trim()),
+      excerpt: sanitizeDisplay(`${item.excerpt || ''} ${(item.body || '').slice(0, 240)}`.trim()),
     }));
+    return cachedPublishedSources;
   } catch {
-    return seedContent
+    cachedPublishedSources = seedContent
       .filter((item) => item.status === 'published')
       .slice(0, 80)
       .map((item) => ({
@@ -54,6 +59,7 @@ async function loadPublishedSources(): Promise<AssistantSource[]> {
         route: safeRoute(`/personal/post/${safeSlug(item.slug)}`),
         excerpt: sanitizeDisplay(`${item.excerpt || ''} ${item.body.slice(0, 240)}`.trim()),
       }));
+    return cachedPublishedSources;
   }
 }
 
@@ -83,21 +89,35 @@ export async function querySiteAssistant(rawQuery: string): Promise<AssistantRep
   const sources = [...sitePages, ...contentSources, ...mapSources];
 
   const terms = query.split(' ').filter((term) => term.length > 2).slice(0, 8);
+  if (terms.length === 0) {
+    return {
+      text: 'Please include at least one meaningful keyword (3+ letters), for example: “governance”, “ciso”, or “games”.',
+      sources: sitePages.slice(0, 4),
+    };
+  }
+
   const scored = sources
     .map((item) => {
+      const normalizedTitle = normalize(item.title);
       const hay = normalize(`${item.title} ${item.excerpt}`);
-      const score = terms.reduce((acc, term) => acc + (hay.includes(term) ? 1 : 0), 0);
-      const titleBoost = terms.some((term) => normalize(item.title).includes(term)) ? 1 : 0;
-      return { item, score: score + titleBoost };
+      const score = terms.reduce((acc, term) => {
+        if (normalizedTitle === term) return acc + 4;
+        if (normalizedTitle.startsWith(term)) return acc + 3;
+        if (normalizedTitle.includes(term)) return acc + 2;
+        if (hay.includes(term)) return acc + 1;
+        return acc;
+      }, 0);
+      return { item, score };
     })
-    .filter((x) => x.score >= Math.max(1, Math.ceil(terms.length / 3)))
+    .filter((x) => x.score >= Math.max(2, Math.ceil(terms.length / 2)))
     .sort((a, b) => b.score - a.score)
-    .slice(0, 5)
+    .slice(0, 8)
     .map((x) => ({ ...x.item, route: safeRoute(x.item.route) }));
 
   const uniqueScored = scored
     .filter((item, index, arr) => arr.findIndex((x) => x.route === item.route && x.title === item.title) === index)
-    .filter((item) => isPublicRoute(item.route));
+    .filter((item) => isPublicRoute(item.route))
+    .slice(0, 5);
 
   if (!uniqueScored.length) {
     return {

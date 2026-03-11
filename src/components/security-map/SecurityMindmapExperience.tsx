@@ -92,6 +92,12 @@ export function SecurityMindmapExperience() {
     const element = mapViewportRef.current;
     if (!element) return;
 
+    if (typeof ResizeObserver === 'undefined') {
+      const rect = element.getBoundingClientRect();
+      setViewportSize({ width: rect.width, height: rect.height });
+      return;
+    }
+
     const observer = new ResizeObserver((entries) => {
       const next = entries[0]?.contentRect;
       if (!next) return;
