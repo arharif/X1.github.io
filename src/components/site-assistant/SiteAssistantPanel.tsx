@@ -81,6 +81,14 @@ export function SiteAssistantPanel({ open, onClose }: { open: boolean; onClose: 
         kind: 'default',
       };
       setMessages((m) => [...m, replyMessage].slice(-18));
+    } catch {
+      const fallback: Message = {
+        id: mkId(),
+        role: 'assistant',
+        kind: 'default',
+        text: 'I had trouble checking the website content just now. Please retry with shorter keywords.',
+      };
+      setMessages((m) => [...m, fallback].slice(-18));
     } finally {
       setLoading(false);
     }
@@ -129,18 +137,23 @@ export function SiteAssistantPanel({ open, onClose }: { open: boolean; onClose: 
             ))}
             {loading && <p className="text-xs text-muted">X1 is checking website content…</p>}
           </div>
-          <div className="assistant-foot">
+          <form
+            className="assistant-foot"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void ask();
+            }}
+          >
             <input
               className="assistant-input"
               value={input}
               onChange={(e) => setInput(e.target.value.slice(0, 280))}
               placeholder="Ask about website content"
-              onKeyDown={(e) => { if (e.key === 'Enter') ask(); }}
               aria-label="Ask X1 about this website"
               autoComplete="off"
             />
-            <button className="assistant-send" onClick={ask} disabled={loading || !input.trim()}>{loading ? '…' : 'Send'}</button>
-          </div>
+            <button type="submit" className="assistant-send" disabled={loading || !input.trim()}>{loading ? '…' : 'Send'}</button>
+          </form>
           <p className="assistant-note">How can I help you today? I can help you navigate the website.</p>
         </motion.section>
       )}
