@@ -12,14 +12,49 @@ const toRgba = (hex: string, alpha: number) => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
-function OperatingModelTree({ node }: { node: OrgNode }) {
+const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
+
+function buildRadialSkills(role: SecurityRole) {
+  const count = Math.max(role.mustHaveDomains.length, 12);
+  const radiusX = 340;
+  const radiusY = 210;
+  return role.mustHaveDomains.map((skill, index) => {
+    const angle = (Math.PI * 2 * index) / count - Math.PI / 2;
+    return {
+      id: `${role.id}-${index}`,
+      skill,
+      x: Math.cos(angle) * radiusX,
+      y: Math.sin(angle) * radiusY,
+    };
+  });
+}
+
+function OrgBranch({ node, path, expanded, onToggle }: { node: OrgNode; path: string; expanded: Set<string>; onToggle: (key: string) => void }) {
+  const hasChildren = Boolean(node.children?.length);
+  const isOpen = expanded.has(path);
+
   return (
-    <li className="pl-4">
-      <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100">{node.title}</div>
-      {node.children && node.children.length > 0 && (
+    <li className="pl-3">
+      <div className="flex items-center gap-2">
+        {hasChildren ? (
+          <button
+            onClick={() => onToggle(path)}
+            aria-label={`${isOpen ? 'Collapse' : 'Expand'} ${node.title}`}
+            aria-expanded={isOpen}
+            className="h-6 w-6 rounded-md border border-white/15 bg-white/5 text-xs transition hover:bg-white/10"
+          >
+            {isOpen ? '⌄' : '›'}
+          </button>
+        ) : (
+          <span className="h-6 w-6" aria-hidden />
+        )}
+        <div className="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100">{node.title}</div>
+      </div>
+
+      {hasChildren && isOpen && (
         <ul className="mt-2 space-y-2 border-l border-white/10 pl-3">
-          {node.children.map((child) => (
-            <OperatingModelTree key={`${node.title}-${child.title}`} node={child} />
+          {node.children?.map((child, index) => (
+            <OrgBranch key={`${path}-${child.title}`} node={child} path={`${path}.${index}`} expanded={expanded} onToggle={onToggle} />
           ))}
         </ul>
       )}
@@ -27,26 +62,13 @@ function OperatingModelTree({ node }: { node: OrgNode }) {
   );
 }
 
-function buildRadialDomains(role: SecurityRole) {
-  const count = Math.max(role.mustHaveDomains.length, 12);
-  const radiusX = 340;
-  const radiusY = 210;
-  return role.mustHaveDomains.map((domain, index) => {
-    const angle = (Math.PI * 2 * index) / count - Math.PI / 2;
-    return {
-      id: `${role.id}-${index}`,
-      domain,
-      x: Math.cos(angle) * radiusX,
-      y: Math.sin(angle) * radiusY,
-    };
-  });
-}
-
 export function SecurityMindmapExperience() {
   const operatingModelRef = useRef<HTMLElement | null>(null);
   const [query, setQuery] = useState('');
   const [family, setFamily] = useState<string>('All');
   const [activeId, setActiveId] = useState(securityRoles[0]?.id ?? '');
+  const [zoom, setZoom] = useState(1);
+  const [expandedTree, setExpandedTree] = useState<Set<string>>(() => new Set(['0-root', '1-root']));
 
   const filteredRoles = useMemo(() => {
     const term = query.trim().toLowerCase();
@@ -62,7 +84,16 @@ export function SecurityMindmapExperience() {
     return filteredRoles.find((role) => role.id === activeId) ?? filteredRoles[0];
   }, [filteredRoles, activeId]);
 
-  const radialDomains = useMemo(() => (activeRole ? buildRadialDomains(activeRole) : []), [activeRole]);
+  const radialSkills = useMemo(() => (activeRole ? buildRadialSkills(activeRole) : []), [activeRole]);
+
+  const onToggleTree = (key: string) => {
+    setExpandedTree((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   if (!activeRole) return null;
 
@@ -138,41 +169,56 @@ export function SecurityMindmapExperience() {
       <section className="mindmap-layout">
         <article className="mindmap-canvas rounded-2xl p-4 md:p-6">
           <div className="mb-4 flex items-center justify-between gap-2">
-            <h2 className="text-lg font-semibold">Must-Have Domains Map</h2>
-            <span className="text-xs text-muted">Centered on selected role</span>
+            <h2 className="text-lg font-semibold">Must Have Skills by Role</h2>
+            <div className="flex items-center gap-2" role="group" aria-label="Map zoom controls">
+              <button onClick={() => setZoom((v) => clamp(v - 0.1, 0.7, 1.5))} className="mindmap-btn px-3 py-1 text-xs">−</button>
+              <span className="text-xs text-muted">{Math.round(zoom * 100)}%</span>
+              <button onClick={() => setZoom((v) => clamp(v + 0.1, 0.7, 1.5))} className="mindmap-btn px-3 py-1 text-xs">+</button>
+              <button onClick={() => setZoom(1)} className="mindmap-btn px-3 py-1 text-xs">Reset</button>
+            </div>
           </div>
 
           <div className="relative mx-auto min-h-[620px] max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/70 to-slate-950/65 p-4">
-            <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 1200 700" preserveAspectRatio="none" aria-hidden>
-              {radialDomains.map((node) => {
-                const x2 = 600 + (node.x / 420) * 410;
-                const y2 = 350 + (node.y / 260) * 250;
-                return <line key={`edge-${node.id}`} x1={600} y1={350} x2={x2} y2={y2} stroke={toRgba(activeRole.color, 0.5)} strokeWidth={1.6} />;
-              })}
-            </svg>
-
-            {radialDomains.map((node) => (
-              <div
-                key={node.id}
-                className="absolute left-1/2 top-1/2 z-10 w-52"
-                style={{ transform: `translate(calc(-50% + ${node.x}px), calc(-50% + ${node.y}px))` }}
-              >
-                <div
-                  className="rounded-xl border px-3 py-2 text-center text-xs font-medium leading-relaxed text-slate-100 shadow-lg"
-                  style={{ borderColor: toRgba(activeRole.color, 0.6), background: toRgba(activeRole.color, 0.2) }}
-                >
-                  {node.domain}
-                </div>
-              </div>
-            ))}
-
             <div
-              className="absolute left-1/2 top-1/2 z-20 w-[24rem] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-5 text-center shadow-2xl"
-              style={{ borderColor: activeRole.color, background: toRgba(activeRole.color, 0.2) }}
+              key={activeRole.id}
+              className="h-full w-full"
+              style={{ transform: `scale(${zoom})`, transformOrigin: 'center center', transition: 'transform 260ms ease, opacity 320ms ease', opacity: 1 }}
             >
-              <p className="text-[11px] uppercase tracking-[0.14em] text-slate-100/90">Selected Role</p>
-              <h3 className="mt-2 text-xl font-semibold text-white">{activeRole.title}</h3>
-              <p className="mt-1 text-xs text-slate-200">{activeRole.family}</p>
+              <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 1200 700" preserveAspectRatio="none" aria-hidden>
+                {radialSkills.map((node) => {
+                  const x2 = 600 + (node.x / 420) * 410;
+                  const y2 = 350 + (node.y / 260) * 250;
+                  return <line key={`edge-${node.id}`} x1={600} y1={350} x2={x2} y2={y2} stroke={toRgba(activeRole.color, 0.5)} strokeWidth={1.6} />;
+                })}
+              </svg>
+
+              {radialSkills.map((node, index) => (
+                <div
+                  key={node.id}
+                  className="absolute left-1/2 top-1/2 z-10 w-52"
+                  style={{
+                    transform: `translate(calc(-50% + ${node.x}px), calc(-50% + ${node.y}px))`,
+                    opacity: 1,
+                    transition: `opacity 280ms ease ${Math.min(index * 16, 160)}ms, transform 280ms ease ${Math.min(index * 16, 160)}ms`,
+                  }}
+                >
+                  <div
+                    className="rounded-xl border px-3 py-2 text-center text-xs font-medium leading-relaxed text-slate-100 shadow-lg"
+                    style={{ borderColor: toRgba(activeRole.color, 0.6), background: toRgba(activeRole.color, 0.2) }}
+                  >
+                    {node.skill}
+                  </div>
+                </div>
+              ))}
+
+              <div
+                className="absolute left-1/2 top-1/2 z-20 w-[24rem] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-5 text-center shadow-2xl"
+                style={{ borderColor: activeRole.color, background: toRgba(activeRole.color, 0.2), transition: 'all 260ms ease' }}
+              >
+                <p className="text-[11px] uppercase tracking-[0.14em] text-slate-100/90">Selected Role</p>
+                <h3 className="mt-2 text-xl font-semibold text-white">{activeRole.title}</h3>
+                <p className="mt-1 text-xs text-slate-200">{activeRole.family}</p>
+              </div>
             </div>
           </div>
         </article>
@@ -185,6 +231,15 @@ export function SecurityMindmapExperience() {
           <section>
             <h3 className="text-xs uppercase tracking-[0.14em] text-muted">Main responsibilities</h3>
             <p className="mt-2 text-sm text-slate-200">{activeRole.mainResponsibilities}</p>
+          </section>
+
+          <section>
+            <h3 className="text-xs uppercase tracking-[0.14em] text-muted">Must have skills</h3>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {activeRole.mustHaveDomains.slice(0, 8).map((skill) => (
+                <span key={skill} className="mindmap-tag" style={{ borderColor: toRgba(activeRole.color, 0.45), background: toRgba(activeRole.color, 0.16) }}>{skill}</span>
+              ))}
+            </div>
           </section>
 
           <section>
@@ -219,11 +274,11 @@ export function SecurityMindmapExperience() {
         </div>
 
         <div className="grid gap-4 xl:grid-cols-2">
-          {cyberOperatingModelSections.map((section) => (
+          {cyberOperatingModelSections.map((section, sectionIndex) => (
             <article key={section.title} className="rounded-2xl border border-white/10 bg-white/5 p-4">
               <h3 className="text-base font-semibold">{section.title}</h3>
               <ul className="mt-3 space-y-2 border-l border-white/10 pl-2">
-                <OperatingModelTree node={section.root} />
+                <OrgBranch node={section.root} path={`${sectionIndex}-root`} expanded={expandedTree} onToggle={onToggleTree} />
               </ul>
             </article>
           ))}
