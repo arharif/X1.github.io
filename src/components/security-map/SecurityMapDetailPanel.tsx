@@ -1,4 +1,5 @@
 import { securityMapData } from '@/data/securityMap';
+import { getCertificationPath } from '@/data/certificationPaths';
 import { SecurityMapNode } from './types';
 
 export function SecurityMapDetailPanel({ node }: { node?: SecurityMapNode }) {
@@ -9,6 +10,7 @@ export function SecurityMapDetailPanel({ node }: { node?: SecurityMapNode }) {
   const category = securityMapData.categories.find((c) => c.id === node.categoryId);
   const relatedRoles = securityMapData.nodes.filter((n) => n.categoryId === node.categoryId && n.type === 'role').slice(0, 8);
   const relatedSub = securityMapData.nodes.filter((n) => n.categoryId === node.categoryId && n.type === 'subdomain').slice(0, 8);
+  const certificationPath = getCertificationPath(node.label);
 
   return (
     <aside className="mindmap-panel">
@@ -29,6 +31,10 @@ export function SecurityMapDetailPanel({ node }: { node?: SecurityMapNode }) {
       )}
       {node.type === 'role' && (
         <>
+          <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3">
+            <p className="text-xs uppercase tracking-[0.18em] text-muted">Best Certification Path</p>
+            <p className="mt-2 text-sm text-slate-200">{certificationPath}</p>
+          </div>
           <p className="mt-3 text-xs uppercase tracking-[0.18em] text-muted">Associated subdomains</p>
           <div className="mt-2 flex flex-wrap gap-2">{relatedSub.map((item) => <span key={item.id} className="mindmap-tag">{item.label}</span>)}</div>
           <p className="mt-3 text-xs uppercase tracking-[0.18em] text-muted">Adjacent roles</p>
