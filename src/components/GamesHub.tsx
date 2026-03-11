@@ -1,36 +1,64 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { listPublishedContent } from '@/lib/cms';
 import { ContentRecord } from '@/content/types';
-import { CyberAwarenessQuiz } from '@/components/games/CyberAwarenessQuiz';
-import { GeneralKnowledgeQuiz } from '@/components/games/GeneralKnowledgeQuiz';
-import { CardSheddingGame } from '@/components/games/CardSheddingGame';
-import { Puzzle2048Game } from '@/components/games/Puzzle2048Game';
-import { SudokuMiniGame } from '@/components/games/SudokuMiniGame';
 import { MemoryPuzzleGame } from '@/components/games/MemoryPuzzleGame';
 import { safeStorage } from '@/lib/storage';
+import { MCQQuizEngine } from '@/components/games/MCQQuizEngine';
+import { PacmanGame } from '@/components/games/PacmanGame';
+import { RetroCarRacingGame } from '@/components/games/RetroCarRacingGame';
+import { gamesZoneQuizzes } from '@/data/gamesZoneData';
+import { GamesZoneCategory } from '@/types/games';
 
-type GameCategory = 'Card Games' | 'Puzzle Games' | 'Classic Games' | 'Arcade & Skills' | 'Knowledge';
 type GameKey =
-  | 'snake' | 'battleship' | 'tictactoe' | 'reaction' | 'rps' | 'math' | 'geo'
-  | 'cyber-awareness' | 'general-knowledge'
-  | 'card-shedding' | 'puzzle-2048' | 'sudoku' | 'memory';
+  | 'full-ciso-qsa-pack' | 'security-awareness-qsm' | 'ai-topic-qsm' | 'otaku-general-culture-quiz' | 'countries-capitals-locations-quiz' | 'fc-barcelona-hardcore-fan-quiz'
+  | 'snake' | 'tictactoe' | 'reaction' | 'rps' | 'pacman' | 'retro-car-racing'
+  | 'memory';
 
-const gameMeta: Record<GameKey, { title: string; desc: string; color: string; icon: string; category: GameCategory }> = {
-  'card-shedding': { title: 'Card Shedding Duel', desc: 'A mature shedding-card strategy round against computer AI.', color: 'from-indigo-500/35 to-blue-500/25', icon: '🂡', category: 'Card Games' },
-  'puzzle-2048': { title: '2048', desc: 'Merge tiles and plan your board progression.', color: 'from-amber-500/35 to-orange-500/25', icon: '🔢', category: 'Puzzle Games' },
-  sudoku: { title: 'Sudoku', desc: 'Compact logic grid challenge focused on deduction.', color: 'from-slate-500/35 to-slate-400/25', icon: '🧩', category: 'Puzzle Games' },
-  memory: { title: 'Memory Puzzle', desc: 'Pattern recall challenge with calm pacing.', color: 'from-cyan-500/35 to-sky-500/25', icon: '🧠', category: 'Puzzle Games' },
-  rps: { title: 'Rock Paper Scissors', desc: 'Classic duel versus computer.', color: 'from-violet-500/35 to-fuchsia-400/25', icon: '🪨', category: 'Classic Games' },
-  snake: { title: 'Snake', desc: 'Precision movement with increasing pressure.', color: 'from-emerald-400/35 to-cyan-400/25', icon: '🐍', category: 'Arcade & Skills' },
-  battleship: { title: 'Battleship Lite', desc: 'Tactical grid targeting in compact rounds.', color: 'from-blue-500/35 to-cyan-400/25', icon: '🚢', category: 'Arcade & Skills' },
-  tictactoe: { title: 'Tic Tac Toe', desc: 'Fast strategic duels.', color: 'from-slate-400/35 to-indigo-400/25', icon: '✖️', category: 'Classic Games' },
-  reaction: { title: 'Reaction Time', desc: 'Measure and improve your response speed.', color: 'from-amber-400/35 to-orange-400/25', icon: '⚡', category: 'Arcade & Skills' },
-  math: { title: 'Quick Math', desc: 'Solve rapidly under a short timer.', color: 'from-rose-500/35 to-pink-400/25', icon: '➗', category: 'Arcade & Skills' },
-  geo: { title: 'Country Locator', desc: 'Region-based world challenge.', color: 'from-cyan-500/35 to-sky-400/25', icon: '🌍', category: 'Knowledge' },
-  'cyber-awareness': { title: 'Cyber Culture Quiz', desc: 'Practice phishing awareness and secure habits.', color: 'from-emerald-500/35 to-teal-400/25', icon: '🛡️', category: 'Knowledge' },
-  'general-knowledge': { title: 'General Knowledge Quiz', desc: 'Quick mixed culture trivia in lightweight rounds.', color: 'from-indigo-500/35 to-sky-400/25', icon: '📚', category: 'Knowledge' },
+type GameEntry = {
+  key: GameKey;
+  title: string;
+  desc: string;
+  color: string;
+  icon: string;
+  category: GamesZoneCategory;
+  typeLabel: string;
+  questionCount?: number;
+  difficulty?: string;
+  sortOrder: number;
 };
+
+const staticGames: GameEntry[] = [
+  { key: 'memory', title: 'Memory Puzzle', desc: 'Pattern recall challenge with calm pacing.', color: 'from-cyan-500/35 to-sky-500/25', icon: '🧠', category: 'Entertainment', typeLabel: 'Puzzle', sortOrder: 23 },
+  { key: 'rps', title: 'Rock Paper Scissors', desc: 'Classic duel versus computer.', color: 'from-violet-500/35 to-fuchsia-400/25', icon: '🪨', category: 'Entertainment', typeLabel: 'Classic', sortOrder: 24 },
+  { key: 'snake', title: 'Snake', desc: 'Precision movement with increasing pressure.', color: 'from-emerald-400/35 to-cyan-400/25', icon: '🐍', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 25 },
+  { key: 'tictactoe', title: 'Tic Tac Toe', desc: 'Fast strategic duels.', color: 'from-slate-400/35 to-indigo-400/25', icon: '✖️', category: 'Entertainment', typeLabel: 'Classic', sortOrder: 27 },
+  { key: 'reaction', title: 'Reaction Time', desc: 'Measure and improve your response speed.', color: 'from-amber-400/35 to-orange-400/25', icon: '⚡', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 28 },
+  { key: 'pacman', title: 'Pac-Man Arcade', desc: 'Navigate the maze, collect pellets, and avoid ghosts.', color: 'from-yellow-400/35 to-orange-400/25', icon: '🟡', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 30 },
+  { key: 'retro-car-racing', title: 'Retro Car Racing', desc: 'Nokia-style lane dodging challenge with arcade pacing.', color: 'from-emerald-500/35 to-lime-400/25', icon: '🏎️', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 31 },
+];
+
+const quizEntries: GameEntry[] = gamesZoneQuizzes.map((quiz) => ({
+  key: quiz.slug as GameKey,
+  title: quiz.title,
+  desc: quiz.shortDescription,
+  color: quiz.category === 'Security' ? 'from-emerald-500/40 to-teal-500/25' : 'from-indigo-500/35 to-sky-400/25',
+  icon:
+    quiz.slug === 'countries-capitals-locations-quiz'
+      ? '🧭'
+      : quiz.slug === 'fc-barcelona-hardcore-fan-quiz'
+        ? '⚽'
+        : quiz.category === 'Security'
+          ? '🛡️'
+          : '🎌',
+  category: quiz.category,
+  typeLabel: quiz.type,
+  questionCount: quiz.questionCount,
+  difficulty: quiz.difficulty,
+  sortOrder: quiz.sortOrder,
+}));
+
+const catalog: GameEntry[] = [...quizEntries, ...staticGames].sort((a, b) => a.sortOrder - b.sortOrder);
 
 const readBest = (key: string) => {
   const value = safeStorage.get(key);
@@ -41,8 +69,10 @@ const readBest = (key: string) => {
 const saveBest = (key: string, value: number) => safeStorage.set(key, String(value));
 
 export function GamesHub() {
-  const [active, setActive] = useState<GameKey>('card-shedding');
+  const [active, setActive] = useState<GameKey>('full-ciso-qsa-pack');
   const [games, setGames] = useState<ContentRecord[]>([]);
+  const [category, setCategory] = useState<'All' | GamesZoneCategory>('All');
+  const [search, setSearch] = useState('');
   const location = useLocation();
   const gamesZoneRef = useRef<HTMLElement | null>(null);
 
@@ -62,25 +92,27 @@ export function GamesHub() {
     return () => window.cancelAnimationFrame(frame);
   }, [location.pathname, location.hash]);
 
-  const categories: GameCategory[] = ['Card Games', 'Puzzle Games', 'Classic Games', 'Arcade & Skills', 'Knowledge'];
-
-  const scrollToGamesZone = () => {
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    gamesZoneRef.current?.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'start' });
-    gamesZoneRef.current?.focus({ preventScroll: true });
-  };
+  const filteredCatalog = useMemo(() => {
+    return catalog.filter((game) => {
+      const categoryMatch = category === 'All' || game.category === category;
+      const searchMatch = game.title.toLowerCase().includes(search.toLowerCase());
+      return categoryMatch && searchMatch;
+    });
+  }, [category, search]);
 
   const selectGame = (key: GameKey) => {
     setActive(key);
-    window.requestAnimationFrame(scrollToGamesZone);
+    window.requestAnimationFrame(() => gamesZoneRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   };
+
+  const activeQuiz = gamesZoneQuizzes.find((game) => game.slug === active);
 
   return (
     <section className="space-y-5">
       <header className="game-store rounded-3xl p-6">
-        <p className="text-xs uppercase tracking-[0.25em] text-muted">Game Studio</p>
+        <p className="text-xs uppercase tracking-[0.25em] text-muted">Games Zone</p>
         <h1 className="mt-2 text-3xl font-semibold">Games</h1>
-        <p className="mt-2 text-sm text-muted">A curated collection of strategy, puzzle, classic, and learning games designed for thoughtful play.</p>
+        <p className="mt-2 text-sm text-muted">Explore professional security practice packs and fun culture or entertainment quizzes with polished filtering and discovery.</p>
       </header>
 
       {games.length > 0 && (
@@ -95,30 +127,32 @@ export function GamesHub() {
         </div>
       )}
 
-      <div className="space-y-4">
-        {categories.map((category) => {
-          const entries = Object.entries(gameMeta).filter(([, meta]) => meta.category === category);
-          if (!entries.length) return null;
-          return (
-            <section key={category}>
-              <h2 className="mb-2 text-sm font-semibold uppercase tracking-[0.16em] text-muted">{category}</h2>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {entries.map(([k, meta]) => (
-                  <button
-                    key={k}
-                    onClick={() => selectGame(k as GameKey)}
-                    className={`game-card rounded-2xl bg-gradient-to-br ${meta.color} p-5 text-left transition duration-200 hover:-translate-y-0.5 ${active === k ? 'ring-2 ring-cyan-300/60' : ''}`}
-                    aria-pressed={active === k}
-                  >
-                    <p className="text-xl">{meta.icon}</p>
-                    <h3 className="text-lg font-semibold">{meta.title}</h3>
-                    <p className="mt-1 text-sm text-muted">{meta.desc}</p>
-                  </button>
-                ))}
-              </div>
-            </section>
-          );
-        })}
+      <div className="flex flex-wrap gap-2">
+        {(['All', 'Security', 'Culture', 'Entertainment'] as const).map((chip) => (
+          <button key={chip} onClick={() => setCategory(chip)} className={`rounded-full px-4 py-2 text-sm ${category === chip ? 'bg-cyan-500/25 ring-1 ring-cyan-300/60' : 'bg-white/5 hover:bg-white/10'}`}>
+            {chip}
+          </button>
+        ))}
+        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search games" className="ml-auto rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm" />
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {filteredCatalog.map((game) => (
+          <button key={game.key} onClick={() => selectGame(game.key)} aria-pressed={active === game.key} className={`game-card rounded-2xl bg-gradient-to-br ${game.color} p-5 text-left transition hover:-translate-y-0.5 ${active === game.key ? 'ring-2 ring-cyan-300/60' : ''}`}>
+            <div className="flex items-center justify-between">
+              <p className="text-xl">{game.icon}</p>
+              <span className="rounded-full bg-black/20 px-2 py-1 text-[11px] uppercase tracking-wide">{game.category}</span>
+            </div>
+            <h3 className="mt-2 text-lg font-semibold">{game.title}</h3>
+            <p className="mt-1 text-sm text-muted">{game.desc}</p>
+            <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted">
+              <span>{game.typeLabel}</span>
+              {game.questionCount && <span>{game.questionCount} questions</span>}
+              {game.difficulty && <span>{game.difficulty}</span>}
+            </div>
+            <span className="mt-3 inline-block rounded-lg bg-white/15 px-3 py-1 text-xs">Open Quiz</span>
+          </button>
+        ))}
       </div>
 
       <div className="glass rounded-2xl p-4">
@@ -127,19 +161,14 @@ export function GamesHub() {
       </div>
 
       <section id="games-zone" ref={gamesZoneRef} tabIndex={-1} className="game-panel rounded-2xl p-4" aria-label="Interactive games zone">
+        {activeQuiz && <MCQQuizEngine game={activeQuiz} />}
         {active === 'snake' && <SnakeGame />}
-        {active === 'battleship' && <BattleshipGame />}
         {active === 'tictactoe' && <TicTacToeGame />}
         {active === 'reaction' && <ReactionGame />}
-        {active === 'card-shedding' && <CardSheddingGame />}
-        {active === 'puzzle-2048' && <Puzzle2048Game />}
-        {active === 'sudoku' && <SudokuMiniGame />}
         {active === 'memory' && <MemoryPuzzleGame />}
         {active === 'rps' && <RPSGame />}
-        {active === 'math' && <QuickMathGame />}
-        {active === 'geo' && <CountryLocatorGame />}
-        {active === 'cyber-awareness' && <CyberAwarenessQuiz />}
-        {active === 'general-knowledge' && <GeneralKnowledgeQuiz />}
+        {active === 'pacman' && <PacmanGame />}
+        {active === 'retro-car-racing' && <RetroCarRacingGame />}
       </section>
     </section>
   );
@@ -204,27 +233,41 @@ function SnakeGame() {
   );
 }
 
-function BattleshipGame() {
-  const size = 6;
-  const [ships] = useState(() => new Set([3, 9, 18, 29, 31]));
-  const [hits, setHits] = useState<Set<number>>(new Set());
-  const [misses, setMisses] = useState<Set<number>>(new Set());
-  const won = hits.size === ships.size;
-  const shoot = (i: number) => {
-    if (won || hits.has(i) || misses.has(i)) return;
-    if (ships.has(i)) setHits(new Set([...hits, i]));
-    else setMisses(new Set([...misses, i]));
-  };
-  return <div><p className="mb-3 text-sm text-muted">Hit all hidden ships. Hits: {hits.size}/{ships.size}</p><div className="grid grid-cols-6 gap-2">{Array.from({ length: size * size }).map((_, i) => <button key={i} onClick={() => shoot(i)} className={`h-10 rounded ${hits.has(i) ? 'bg-emerald-300' : misses.has(i) ? 'bg-rose-300/70' : 'bg-white/8 hover:bg-white/15'}`} />)}</div>{won && <p className="mt-3 text-sm text-emerald-300">Mission complete.</p>}</div>;
-}
-
 function TicTacToeGame() {
   const [cells, setCells] = useState<Array<'X' | 'O' | null>>(Array(9).fill(null));
   const [xTurn, setXTurn] = useState(true);
   const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  const winner = wins.find(([a,b,c]) => cells[a] && cells[a] === cells[b] && cells[a] === cells[c]);
-  const status = winner ? `Winner: ${cells[winner[0]]}` : cells.every(Boolean) ? 'Draw' : `Turn: ${xTurn ? 'X' : 'O'}`;
-  return <div><div className="mb-3 flex items-center justify-between text-sm text-muted"><p>{status}</p><button onClick={() => { setCells(Array(9).fill(null)); setXTurn(true); }} className="rounded-lg bg-white/10 px-3 py-1 text-xs">Restart</button></div><div className="grid grid-cols-3 gap-2">{cells.map((cell, i) => <button key={i} className="h-16 rounded bg-white/10 text-xl font-semibold hover:bg-white/15" onClick={() => { if (cell || winner) return; const next = [...cells]; next[i] = xTurn ? 'X' : 'O'; setCells(next); setXTurn(!xTurn); }}>{cell}</button>)}</div></div>;
+  const winnerLine = wins.find(([a,b,c]) => cells[a] && cells[a] === cells[b] && cells[a] === cells[c]);
+  const winner = winnerLine ? cells[winnerLine[0]] : null;
+  const status = winner ? `Winner: ${winner}` : cells.every(Boolean) ? 'Draw' : `Turn: ${xTurn ? 'X' : 'O'}`;
+  const isWinningCell = (idx: number) => Boolean(winnerLine?.includes(idx));
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between text-sm text-muted">
+        <p>{status}</p>
+        <button onClick={() => { setCells(Array(9).fill(null)); setXTurn(true); }} className="rounded-lg bg-white/10 px-3 py-1 text-xs">Restart</button>
+      </div>
+      <div className="relative grid grid-cols-3 gap-2">
+        {cells.map((cell, i) => (
+          <button
+            key={i}
+            className={`h-16 rounded text-xl font-semibold transition ${isWinningCell(i) ? 'bg-emerald-400/30 ring-2 ring-emerald-300/60 animate-pulse' : 'bg-white/10 hover:bg-white/15'}`}
+            onClick={() => {
+              if (cell || winner) return;
+              const next = [...cells];
+              next[i] = xTurn ? 'X' : 'O';
+              setCells(next);
+              setXTurn(!xTurn);
+            }}
+          >
+            {cell}
+          </button>
+        ))}
+      </div>
+      {winnerLine && <p className="text-xs text-emerald-300">Winning pattern highlighted.</p>}
+    </div>
+  );
 }
 
 function ReactionGame() {
@@ -253,79 +296,78 @@ function ReactionGame() {
 
 function RPSGame() {
   const options = ['Rock', 'Paper', 'Scissors'] as const;
-  const [msg, setMsg] = useState('Pick your move.');
+  const [phase, setPhase] = useState<'idle' | 'shake' | 'reveal'>('idle');
+  const [playerChoice, setPlayerChoice] = useState<typeof options[number] | null>(null);
+  const [cpuChoice, setCpuChoice] = useState<typeof options[number] | null>(null);
+  const [result, setResult] = useState('Choose your move to start.');
   const [score, setScore] = useState({ you: 0, cpu: 0 });
+  const [pulse, setPulse] = useState<'you' | 'cpu' | null>(null);
+
   const play = (choice: typeof options[number]) => {
+    if (phase === 'shake') return;
     const cpu = options[Math.floor(Math.random() * options.length)];
-    if (cpu === choice) { setMsg(`Draw · both chose ${choice}`); return; }
-    const win = (choice === 'Rock' && cpu === 'Scissors') || (choice === 'Paper' && cpu === 'Rock') || (choice === 'Scissors' && cpu === 'Paper');
-    if (win) { setScore((s) => ({ ...s, you: s.you + 1 })); setMsg(`You win · ${choice} beats ${cpu}`); }
-    else { setScore((s) => ({ ...s, cpu: s.cpu + 1 })); setMsg(`CPU wins · ${cpu} beats ${choice}`); }
-  };
-  return <div><div className="mb-3 flex items-center justify-between text-sm text-muted"><p>{msg}</p><p>You {score.you} · CPU {score.cpu}</p></div><div className="flex flex-wrap gap-2">{options.map((o) => <button key={o} onClick={() => play(o)} className="rounded-xl bg-white/10 px-4 py-2 hover:bg-white/15">{o}</button>)}</div></div>;
-}
+    setPlayerChoice(choice);
+    setCpuChoice(null);
+    setResult('Ready…');
+    setPhase('shake');
 
-function QuickMathGame() {
-  const newRound = () => {
-    const a = Math.floor(Math.random() * 20) + 1;
-    const b = Math.floor(Math.random() * 20) + 1;
-    return { a, b, answer: a + b };
-  };
-  const [round, setRound] = useState(newRound);
-  const [value, setValue] = useState('');
-  const [score, setScore] = useState(0);
-  const [best, setBest] = useState(() => readBest('game-best-math'));
-  const [time, setTime] = useState(30);
+    window.setTimeout(() => {
+      setCpuChoice(cpu);
+      setPhase('reveal');
+      if (cpu === choice) {
+        setResult(`Draw · both chose ${choice}`);
+        setPulse(null);
+        return;
+      }
+      const win = (choice === 'Rock' && cpu === 'Scissors') || (choice === 'Paper' && cpu === 'Rock') || (choice === 'Scissors' && cpu === 'Paper');
+      if (win) {
+        setScore((prev) => ({ ...prev, you: prev.you + 1 }));
+        setResult(`You win · ${choice} beats ${cpu}`);
+        setPulse('you');
+      } else {
+        setScore((prev) => ({ ...prev, cpu: prev.cpu + 1 }));
+        setResult(`CPU wins · ${cpu} beats ${choice}`);
+        setPulse('cpu');
+      }
 
-  useEffect(() => {
-    if (time <= 0) return;
-    const t = setTimeout(() => setTime((v) => v - 1), 1000);
-    return () => clearTimeout(t);
-  }, [time]);
-
-  const submit = () => {
-    if (time <= 0) return;
-    if (Number(value) === round.answer) {
-      const next = score + 1;
-      setScore(next);
-      if (next > best) { setBest(next); saveBest('game-best-math', next); }
-    }
-    setValue('');
-    setRound(newRound());
+      window.setTimeout(() => setPhase('idle'), 380);
+      window.setTimeout(() => setPulse(null), 550);
+    }, 420);
   };
 
-  const restart = () => { setScore(0); setTime(30); setValue(''); setRound(newRound()); };
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between text-sm">
+        <p className={`rounded-lg px-3 py-1 transition ${phase === 'reveal' ? 'bg-white/10' : ''}`}>{result}</p>
+        <p className="text-muted">
+          You <span className={`inline-block transition ${pulse === 'you' ? 'scale-125 text-cyan-200' : ''}`}>{score.you}</span>
+          {' · '}CPU <span className={`inline-block transition ${pulse === 'cpu' ? 'scale-125 text-rose-200' : ''}`}>{score.cpu}</span>
+        </p>
+      </div>
 
-  return <div><div className="mb-3 flex items-center justify-between text-sm text-muted"><p>Time: {time}s · Score: {score}</p><p>Best: {best}</p></div><p className="mb-2 text-lg">{round.a} + {round.b} = ?</p><div className="flex flex-wrap gap-2"><input className="rounded-lg bg-white/10 px-3 py-2" value={value} onChange={(e) => setValue(e.target.value.replace(/[^0-9-]/g, ''))} /><button onClick={submit} className="rounded-lg bg-white/10 px-3 py-2 hover:bg-white/15">Submit</button><button onClick={restart} className="rounded-lg bg-white/10 px-3 py-2 hover:bg-white/15">Restart</button></div>{time <= 0 && <p className="mt-2 text-amber-300">Time over — restart to play again.</p>}</div>;
-}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className={`rounded-xl border border-white/10 bg-white/5 p-4 text-center transition ${phase === 'shake' ? 'animate-pulse' : ''}`}>
+          <p className="text-xs uppercase tracking-[0.12em] text-muted">You</p>
+          <p className="mt-2 text-xl font-semibold">{playerChoice || '—'}</p>
+        </div>
+        <div className={`rounded-xl border border-white/10 bg-white/5 p-4 text-center transition ${phase === 'shake' ? 'animate-pulse' : ''}`}>
+          <p className="text-xs uppercase tracking-[0.12em] text-muted">CPU</p>
+          <p className="mt-2 text-xl font-semibold">{cpuChoice || (phase === 'shake' ? '…' : '—')}</p>
+        </div>
+      </div>
 
-
-function CountryLocatorGame() {
-  const rounds = [
-    { country: 'Spain', answer: 'Europe', options: ['Europe', 'Asia', 'Africa', 'South America'] },
-    { country: 'Japan', answer: 'Asia', options: ['North America', 'Asia', 'Africa', 'Europe'] },
-    { country: 'Brazil', answer: 'South America', options: ['South America', 'Europe', 'Oceania', 'Asia'] },
-    { country: 'Kenya', answer: 'Africa', options: ['Africa', 'Europe', 'North America', 'Asia'] },
-    { country: 'Canada', answer: 'North America', options: ['North America', 'Europe', 'Asia', 'Africa'] },
-    { country: 'Australia', answer: 'Oceania', options: ['Oceania', 'Europe', 'South America', 'Asia'] },
-  ];
-  const [index, setIndex] = useState(0);
-  const [score, setScore] = useState(0);
-  const [best, setBest] = useState(() => readBest('game-best-geo'));
-  const [note, setNote] = useState('Select the region.');
-  const current = rounds[index % rounds.length];
-
-  const choose = (option: string) => {
-    const ok = option === current.answer;
-    const nextScore = ok ? score + 1 : score;
-    setScore(nextScore);
-    if (nextScore > best) {
-      setBest(nextScore);
-      saveBest('game-best-geo', nextScore);
-    }
-    setNote(ok ? `Correct: ${current.country} is in ${current.answer}.` : `Not quite. ${current.country} is in ${current.answer}.`);
-    setIndex((v) => v + 1);
-  };
-
-  return <div><div className="mb-3 flex items-center justify-between text-sm text-muted"><p>{note}</p><p>Score: {score} · Best: {best}</p></div><p className="mb-3 text-lg">Where is <span className="font-semibold">{current.country}</span>?</p><div className="grid gap-2 sm:grid-cols-2">{current.options.map((o) => <button key={o} className="rounded-xl bg-white/10 px-4 py-2 text-left hover:bg-white/15" onClick={() => choose(o)}>{o}</button>)}</div><button className="mt-3 rounded-lg bg-white/10 px-3 py-1 text-xs hover:bg-white/15" onClick={() => { setIndex(0); setScore(0); setNote('Select the region.'); }}>Restart</button></div>;
+      <div className="flex flex-wrap gap-2">
+        {options.map((option) => (
+          <button
+            key={option}
+            onClick={() => play(option)}
+            disabled={phase === 'shake'}
+            className="rounded-xl border border-white/15 bg-white/10 px-4 py-2 transition duration-150 hover:-translate-y-0.5 hover:bg-white/20 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 }
