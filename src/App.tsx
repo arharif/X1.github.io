@@ -233,7 +233,6 @@ function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
-  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [attempts, setAttempts] = useState(0);
   const [lockUntil, setLockUntil] = useState<number | null>(null);
@@ -260,7 +259,7 @@ function LoginPage() {
   const sanitizedEmail = email.trim().toLowerCase();
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedEmail);
   const sanitizedOtp = otp.trim();
-  const otpLike = /^[A-Za-z0-9-]{4,12}$/.test(sanitizedOtp);
+  const otpReady = sanitizedOtp.length > 0;
   const inOtpStep = Boolean(pendingMfa);
 
   const registerFailure = () => {
@@ -290,13 +289,12 @@ function LoginPage() {
                   className="mt-3 w-full rounded-xl bg-white/15 px-4 py-2"
                   disabled={loading || locked || !hasSupabaseCoreConfig || !validEmail || password.length < 8}
                   onClick={async()=>{
-                    setError(''); setMessage('');
+                    setError('');
                     try {
                       await beginSecureLogin(sanitizedEmail, password);
                       setPassword('');
                       setOtp('');
                       setAttempts(0);
-                      setMessage('Verification code sent. Enter the one-time code to continue.');
                     } catch {
                       registerFailure();
                       if (!locked) setError(genericAuthError);
@@ -308,13 +306,12 @@ function LoginPage() {
               </>
             ) : (
               <>
-                <p className="mt-4 text-xs text-muted">Enter the one-time code to finish authentication.</p>
                 <input className="mt-3 w-full rounded-xl bg-white/10 p-2" value={otp} onChange={(e) => setOtp(e.target.value.slice(0, 64))} placeholder="One-time code" autoComplete="one-time-code" disabled={locked} aria-label="One-time code" />
                 <button
                   className="mt-3 w-full rounded-xl bg-white/15 px-4 py-2"
-                  disabled={loading || locked || !hasSupabaseCoreConfig || !otpLike}
+                  disabled={loading || locked || !hasSupabaseCoreConfig || !otpReady}
                   onClick={async () => {
-                    setError(''); setMessage('');
+                    setError('');
                     try {
                       await verifyOtpCode(sanitizedOtp);
                       setAttempts(0);
@@ -331,10 +328,9 @@ function LoginPage() {
                   className="mt-2 w-full rounded-xl bg-white/5 px-4 py-2 text-xs text-muted"
                   disabled={loading || locked || !hasSupabaseCoreConfig}
                   onClick={async () => {
-                    setError(''); setMessage('');
+                    setError('');
                     try {
                       await resendOtpChallenge();
-                      setMessage('A new verification code was sent if the request can be completed.');
                     } catch {
                       registerFailure();
                       if (!locked) setError(genericAuthError);
@@ -343,12 +339,11 @@ function LoginPage() {
                 >
                   Resend code
                 </button>
-                <button className="mt-2 w-full rounded-xl bg-white/5 px-4 py-2 text-xs text-muted" onClick={() => { cancelPendingLogin(); setOtp(''); setMessage(''); setError(''); }} disabled={loading || locked}>Back</button>
+                <button className="mt-2 w-full rounded-xl bg-white/5 px-4 py-2 text-xs text-muted" onClick={() => { cancelPendingLogin(); setOtp(''); setError(''); }} disabled={loading || locked}>Back</button>
               </>
             )}
           </motion.div>
         </AnimatePresence>
-        {message && <p className="mt-3 text-xs text-emerald-300">{message}</p>}
         {error && <p className="mt-3 text-xs text-rose-300">{error}</p>}
         {locked && <p className="mt-3 text-xs text-amber-300">Temporary lock active. Try again in {lockSeconds}s.</p>}
         {!hasSupabaseCoreConfig && <p className="mt-3 text-xs text-amber-300">Authentication could not be completed.</p>}
