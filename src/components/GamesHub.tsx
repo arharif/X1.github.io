@@ -11,7 +11,7 @@ import { gamesZoneQuizzes } from '@/data/gamesZoneData';
 import { GamesZoneCategory } from '@/types/games';
 
 type GameKey =
-  | 'full-ciso-qsa-pack' | 'security-awareness-qsm' | 'ai-topic-qsm' | 'otaku-general-culture-quiz' | 'fc-barcelona-hardcore-fan-quiz'
+  | 'full-ciso-qsa-pack' | 'security-awareness-qsm' | 'ai-topic-qsm' | 'otaku-general-culture-quiz' | 'countries-capitals-locations-quiz' | 'fc-barcelona-hardcore-fan-quiz'
   | 'snake' | 'tictactoe' | 'reaction' | 'rps' | 'pacman' | 'retro-car-racing'
   | 'memory';
 
@@ -21,6 +21,7 @@ type GameEntry = {
   desc: string;
   color: string;
   icon: string;
+  logoSrc?: string;
   category: GamesZoneCategory;
   typeLabel: string;
   questionCount?: number;
@@ -43,7 +44,13 @@ const quizEntries: GameEntry[] = gamesZoneQuizzes.map((quiz) => ({
   title: quiz.title,
   desc: quiz.shortDescription,
   color: quiz.category === 'Security' ? 'from-emerald-500/40 to-teal-500/25' : 'from-indigo-500/35 to-sky-400/25',
-  icon: quiz.category === 'Security' ? '🛡️' : '🎌',
+  icon: quiz.slug === 'countries-capitals-locations-quiz' ? '🗺️' : quiz.category === 'Security' ? '🛡️' : '🎌',
+  logoSrc:
+    quiz.slug === 'fc-barcelona-hardcore-fan-quiz'
+      ? '/fc-barcelona-logo.svg'
+      : quiz.slug === 'countries-capitals-locations-quiz'
+        ? '/countries-quiz-logo.svg'
+        : undefined,
   category: quiz.category,
   typeLabel: quiz.type,
   questionCount: quiz.questionCount,
@@ -133,7 +140,11 @@ export function GamesHub() {
         {filteredCatalog.map((game) => (
           <button key={game.key} onClick={() => selectGame(game.key)} aria-pressed={active === game.key} className={`game-card rounded-2xl bg-gradient-to-br ${game.color} p-5 text-left transition hover:-translate-y-0.5 ${active === game.key ? 'ring-2 ring-cyan-300/60' : ''}`}>
             <div className="flex items-center justify-between">
-              <p className="text-xl">{game.icon}</p>
+              {game.logoSrc ? (
+                <img src={game.logoSrc} alt={`${game.title} logo`} className="h-8 w-8 rounded-md object-contain" loading="lazy" />
+              ) : (
+                <p className="text-xl">{game.icon}</p>
+              )}
               <span className="rounded-full bg-black/20 px-2 py-1 text-[11px] uppercase tracking-wide">{game.category}</span>
             </div>
             <h3 className="mt-2 text-lg font-semibold">{game.title}</h3>
@@ -230,9 +241,37 @@ function TicTacToeGame() {
   const [cells, setCells] = useState<Array<'X' | 'O' | null>>(Array(9).fill(null));
   const [xTurn, setXTurn] = useState(true);
   const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  const winner = wins.find(([a,b,c]) => cells[a] && cells[a] === cells[b] && cells[a] === cells[c]);
-  const status = winner ? `Winner: ${cells[winner[0]]}` : cells.every(Boolean) ? 'Draw' : `Turn: ${xTurn ? 'X' : 'O'}`;
-  return <div><div className="mb-3 flex items-center justify-between text-sm text-muted"><p>{status}</p><button onClick={() => { setCells(Array(9).fill(null)); setXTurn(true); }} className="rounded-lg bg-white/10 px-3 py-1 text-xs">Restart</button></div><div className="grid grid-cols-3 gap-2">{cells.map((cell, i) => <button key={i} className="h-16 rounded bg-white/10 text-xl font-semibold hover:bg-white/15" onClick={() => { if (cell || winner) return; const next = [...cells]; next[i] = xTurn ? 'X' : 'O'; setCells(next); setXTurn(!xTurn); }}>{cell}</button>)}</div></div>;
+  const winnerLine = wins.find(([a,b,c]) => cells[a] && cells[a] === cells[b] && cells[a] === cells[c]);
+  const winner = winnerLine ? cells[winnerLine[0]] : null;
+  const status = winner ? `Winner: ${winner}` : cells.every(Boolean) ? 'Draw' : `Turn: ${xTurn ? 'X' : 'O'}`;
+  const isWinningCell = (idx: number) => Boolean(winnerLine?.includes(idx));
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between text-sm text-muted">
+        <p>{status}</p>
+        <button onClick={() => { setCells(Array(9).fill(null)); setXTurn(true); }} className="rounded-lg bg-white/10 px-3 py-1 text-xs">Restart</button>
+      </div>
+      <div className="relative grid grid-cols-3 gap-2">
+        {cells.map((cell, i) => (
+          <button
+            key={i}
+            className={`h-16 rounded text-xl font-semibold transition ${isWinningCell(i) ? 'bg-emerald-400/30 ring-2 ring-emerald-300/60 animate-pulse' : 'bg-white/10 hover:bg-white/15'}`}
+            onClick={() => {
+              if (cell || winner) return;
+              const next = [...cells];
+              next[i] = xTurn ? 'X' : 'O';
+              setCells(next);
+              setXTurn(!xTurn);
+            }}
+          >
+            {cell}
+          </button>
+        ))}
+      </div>
+      {winnerLine && <p className="text-xs text-emerald-300">Winning pattern highlighted.</p>}
+    </div>
+  );
 }
 
 function ReactionGame() {
