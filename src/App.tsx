@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Github, Linkedin, Mail } from 'lucide-react';
+import { BookOpen, Compass, Github, Linkedin, Mail, Shield, Sparkles } from 'lucide-react';
 import { Component, lazy, ReactNode, Suspense, useEffect, useState } from 'react';
 import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AdminEditor } from '@/components/admin/AdminEditor';
@@ -8,6 +8,8 @@ import { X1Mark } from '@/components/branding/X1Mark';
 import { ArticleView } from '@/components/ArticleView';
 import { ContentCard, EntryCard } from '@/components/Cards';
 import { Navbar } from '@/components/Navbar';
+import { ThemeMotionBackground } from '@/components/ThemeMotionBackground';
+import { SearchBar } from '@/components/SearchBar';
 import { GamesHub } from '@/components/GamesHub';
 import { TopicFilterBar } from '@/components/TopicFilterBar';
 import { SecurityMindmapPage } from '@/pages/SecurityMindmapPage';
@@ -48,85 +50,22 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 
 function Landing() {
   const nav = useNavigate();
-  const featured = [
-    { category: 'Cybersecurity', title: 'Generative AI for Cyber Threat Detection', description: 'How AI augments SOC analysis, anomaly triage, and incident signal prioritization.', tags: ['AI', 'SOC', 'Threat Detection'] },
-    { category: 'IAM', title: 'Introduction to Identity & Access Management', description: 'A practical foundation for identities, authorization models, and access governance.', tags: ['IAM', 'Access Control', 'GRC'] },
-    { category: 'Philosophy', title: 'The Philosophy of Haku', description: 'A reflection on identity, purpose, and growth through symbolic storytelling.', tags: ['Philosophy', 'Anime', 'Reflection'] },
-  ] as const;
-  const paths = [
-    { title: 'Cybersecurity Foundations', description: 'Start with core security principles, governance, and risk foundations.', level: 'Beginner', cta: 'Begin path', icon: Shield, to: '/security-mindmap' },
-    { title: 'AI & Emerging Technology', description: 'Explore AI, modern engineering shifts, and future-ready technology concepts.', level: 'Intermediate', cta: 'Explore path', icon: Sparkles, to: '/professional' },
-    { title: 'Philosophy & Anime Reflections', description: 'Dive into reflective notes blending philosophy and creative narratives.', level: 'Beginner', cta: 'Read reflections', icon: BookOpen, to: '/personal' },
-    { title: 'Security Map Exploration', description: 'Navigate visual relationships across security domains and operating roles.', level: 'Advanced', cta: 'Open map', icon: Compass, to: '/security-mindmap' },
-  ] as const;
-  const stats = [{ value: '24+', label: 'Articles' }, { value: '12', label: 'Topics' }, { value: '80+', label: 'Security Concepts' }, { value: '5', label: 'Games' }, { value: '3', label: 'Knowledge Maps' }] as const;
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const frameRef = useRef<number>();
-  const fadeOutRef = useRef(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const reducedMotion = useMemo(() => window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false, []);
-
-  const animateOpacity = (to: number, duration = 500) => {
-    if (!videoRef.current) return;
-    if (frameRef.current) cancelAnimationFrame(frameRef.current);
-    const video = videoRef.current;
-    const from = Number(video.style.opacity || '0');
-    const start = performance.now();
-    const tick = (now: number) => {
-      const progress = Math.min(1, (now - start) / duration);
-      video.style.opacity = `${from + (to - from) * progress}`;
-      if (progress < 1) frameRef.current = requestAnimationFrame(tick);
-    };
-    frameRef.current = requestAnimationFrame(tick);
-  };
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (reducedMotion) return;
-    const onTimeUpdate = () => {
-      if (!video.duration || fadeOutRef.current) return;
-      if (video.duration - video.currentTime <= 0.55) {
-        fadeOutRef.current = true;
-        animateOpacity(0, 500);
-      }
-    };
-    const onEnded = () => {
-      video.style.opacity = '0';
-      window.setTimeout(() => {
-        video.currentTime = 0;
-        fadeOutRef.current = false;
-        video.play().catch(() => undefined);
-        animateOpacity(1, 500);
-      }, 100);
-    };
-    video.style.opacity = '0';
-    video.play().catch(() => undefined);
-    animateOpacity(1, 500);
-    video.addEventListener('timeupdate', onTimeUpdate);
-    video.addEventListener('ended', onEnded);
-    return () => {
-      video.removeEventListener('timeupdate', onTimeUpdate);
-      video.removeEventListener('ended', onEnded);
-      if (frameRef.current) cancelAnimationFrame(frameRef.current);
-    };
-  }, [reducedMotion]);
 
   return (
-    <section className="relative">
+    <section className="relative"> 
       <div className="landing-ambient pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-3xl" aria-hidden="true">
         <span className="landing-orb landing-orb--a" />
         <span className="landing-orb landing-orb--b" />
         <span className="landing-orb landing-orb--c" />
       </div>
-      <motion.section className="grid gap-6 py-10 md:grid-cols-2" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}>
+      <SearchBar />
+      <motion.section className="grid gap-6 py-6 md:grid-cols-2" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}>
         <EntryCard title={universeMeta.professional.label} description={universeMeta.professional.description} onClick={() => nav('/professional')} />
         <EntryCard title={universeMeta.personal.label} description={universeMeta.personal.description} onClick={() => nav('/personal')} />
       </motion.section>
     </section>
   );
 }
-
 function SearchPage() {
   const [topics, setTopics] = useState<TopicRecord[]>([]);
   const [content, setContent] = useState<ContentRecord[]>([]);
@@ -624,6 +563,7 @@ function Shell() {
 
   return (
     <div className="gradient-bg min-h-screen transition-colors duration-500">
+      <ThemeMotionBackground mode={mode} />
       <Navbar mode={mode} onTheme={setMode} />
       <main className="mx-auto max-w-6xl p-4 md:p-8">
         {!hasSupabaseCoreConfig && <div className="glass mb-4 rounded-xl p-3 text-xs text-amber-300">Configuration is incomplete. Some authenticated features may be unavailable.</div>}
@@ -665,7 +605,6 @@ function Shell() {
             </a>
           </div>
         </div>
-        <p className="mt-3 text-xs">Built with React, TypeScript & Supabase</p>
       </footer>
     </div>
   );
