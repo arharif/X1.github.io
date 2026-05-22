@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { BookOpen, Compass, Github, Linkedin, Mail, Shield, Sparkles } from 'lucide-react';
-import { Component, lazy, ReactNode, Suspense, useEffect, useState } from 'react';
+import { Component, lazy, ReactNode, Suspense, useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AdminEditor } from '@/components/admin/AdminEditor';
 import { TopicEditor } from '@/components/admin/TopicEditor';
@@ -84,6 +84,7 @@ function ProfessionalHome() {
   const [collections, setCollections] = useState<CollectionRecord[]>([]);
   const [posts, setPosts] = useState<ContentRecord[]>([]);
   const [activeTopic, setActiveTopic] = useState('all');
+  const [query, setQuery] = useState('');
   const nav = useNavigate();
 
   useEffect(() => {
@@ -105,8 +106,18 @@ function ProfessionalHome() {
   }, []);
 
   const filterOptions = [{ id: 'all', label: 'All' }, ...topics.map((t) => ({ id: t.id, label: t.title }))];
-  const filteredTopics = activeTopic === 'all' ? topics : topics.filter((t) => t.id === activeTopic);
-  const filteredPosts = activeTopic === 'all' ? posts : posts.filter((p) => p.topicId === activeTopic);
+  const filteredTopics = useMemo(() => {
+    const base = activeTopic === 'all' ? topics : topics.filter((t) => t.id === activeTopic);
+    const q = query.trim().toLowerCase();
+    if (!q || q.length < 2) return base;
+    return base.filter((item) => `${item.title ?? ''} ${item.description ?? ''} ${item.category ?? ''}`.toLowerCase().includes(q));
+  }, [activeTopic, query, topics]);
+  const filteredPosts = useMemo(() => {
+    const base = activeTopic === 'all' ? posts : posts.filter((p) => p.topicId === activeTopic);
+    const q = query.trim().toLowerCase();
+    if (!q || q.length < 2) return base;
+    return base.filter((item) => `${item.title ?? ''} ${item.excerpt ?? ''} ${item.contentType ?? ''} ${(item.tags ?? []).join(' ')}`.toLowerCase().includes(q));
+  }, [activeTopic, posts, query]);
 
   return (
     <section>
@@ -114,6 +125,11 @@ function ProfessionalHome() {
       <p className="mb-5 text-muted">This universe is for everything related to the latest technology including AI, Cybersecurity, IoT, OT/ICS, Blockchain, and modern engineering insights.</p>
 
       <TopicFilterBar label="Technology & Innovation Topics" options={filterOptions} active={activeTopic} onChange={setActiveTopic} count={filteredPosts.length + filteredTopics.length} />
+
+      <div className="glass mb-4 mt-4 rounded-2xl p-4">
+        <input aria-label="Search technology and innovation content" className="w-full rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm" placeholder="Search technology, AI, cybersecurity, cloud, blockchain…" value={query} onChange={(e) => setQuery(e.target.value.slice(0, 120))} />
+        <p className="mt-2 text-xs text-muted">Try searching by topic, tag, or keyword.</p>
+      </div>
 
       {filteredTopics.length > 0 ? (
         <div className="mb-6 mt-4 grid gap-4 md:grid-cols-3">
@@ -131,7 +147,7 @@ function ProfessionalHome() {
           </div>
         </>
       ) : (
-        <div className="glass mb-6 rounded-2xl p-4 text-sm text-muted">No technology and innovation posts match this filter yet.</div>
+        <div className="glass mb-6 rounded-2xl p-4 text-sm text-muted">No matching content found.</div>
       )}
 
       <h2 className="mb-3 text-xl font-semibold">Curated Collections</h2>
@@ -203,7 +219,12 @@ function CuriositiesHub() {
   const filterOptions = [{ id: 'all', label: 'All' }, ...topics.map((t) => ({ id: t.id, label: t.title }))];
 
   const filteredByTopic = activeTopic === 'all' ? content : content.filter((item) => item.topicId === activeTopic);
-  const searched = searchContent(filteredByTopic.filter((c) => (!tag || (c.tags || []).includes(tag))), query);
+  const searched = useMemo(() => {
+    const base = filteredByTopic.filter((c) => (!tag || (c.tags || []).includes(tag)));
+    const q = query.trim().toLowerCase();
+    if (!q || q.length < 2) return base;
+    return base.filter((item) => `${item.title ?? ''} ${item.excerpt ?? ''} ${item.contentType ?? ''} ${(item.tags ?? []).join(' ')}`.toLowerCase().includes(q));
+  }, [filteredByTopic, query, tag]);
 
   return (
     <section>
@@ -213,11 +234,12 @@ function CuriositiesHub() {
       <TopicFilterBar label="Curiosities & Philosophy Topics" options={filterOptions} active={activeTopic} onChange={setActiveTopic} count={searched.length} />
 
       <div className="glass mb-6 mt-4 rounded-2xl p-4">
-        <input className="w-full bg-transparent outline-none" placeholder="Search themes and notes" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <input className="w-full bg-transparent outline-none" placeholder="Search philosophy, anime, books, science, reflections…" aria-label="Search curiosities and philosophy content" value={query} onChange={(e) => setQuery(e.target.value)} />
         <div className="mt-3 flex flex-wrap gap-2">
           {allTags.map((t)=><button key={t} onClick={()=>setTag(t)} className={`rounded-full px-3 py-1 text-xs ${tag===t?'bg-white/30':'bg-white/10'}`}>#{t}</button>)}
           <button className="text-xs" onClick={()=>setTag('')}>clear</button>
         </div>
+              <p className="mt-2 text-xs text-muted">Try searching by topic, tag, or keyword.</p>
       </div>
 
       {searched.length > 0 ? (
@@ -225,7 +247,7 @@ function CuriositiesHub() {
           {searched.map((p) => <ContentCard key={p.id} item={p} onOpen={() => nav(`/personal/post/${p.slug}`)} />)}
         </div>
       ) : (
-        <div className="glass rounded-xl p-4 text-sm text-muted">No curiosities and philosophy posts match your current filters.</div>
+        <div className="glass rounded-xl p-4 text-sm text-muted">No matching content found.</div>
       )}
     </section>
   );
