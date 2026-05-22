@@ -73,7 +73,23 @@ export const certifications: Certification[] = [
 ];
 
 export const certificationGroups: CertificationGroup[] = [
-  { id: 'recommended-grc-ciso-track', title: 'Recommended for this profile', description: 'Prioritized for GRC, PCI, SOC 2, PCA/DR Drill, privacy, AI governance, NIST, ISO, and CISO-track progression.', certifications: ['iso-27001-lead-implementer', 'cism', 'crisc', 'cisa', 'iso-22301-lead-implementer', 'cippe', 'iapp-aigp', 'iso-42001-lead-implementer', 'cissp'] },
+  {
+    id: 'recommended-grc-ciso-track',
+    title: 'Recommended for this profile',
+    description:
+      'Recommended for professionals targeting governance, security leadership, audit, risk, privacy, resilience, AI governance, and senior cybersecurity roles.',
+    certifications: [
+      'iso-27001-lead-implementer',
+      'cism',
+      'crisc',
+      'cisa',
+      'iso-22301-lead-implementer',
+      'cippe',
+      'iapp-aigp',
+      'iso-42001-lead-implementer',
+      'cissp',
+    ],
+  },
 ];
 
 
