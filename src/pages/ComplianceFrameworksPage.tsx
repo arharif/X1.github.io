@@ -32,10 +32,19 @@ export function ComplianceFrameworksPage() {
 
   return (
     <section className="space-y-6">
-      <div className="glass rounded-3xl p-6 md:p-8">
-        <p className="text-xs uppercase tracking-[0.2em] text-muted">GRC Knowledge Dashboard</p>
-        <h1 className="mt-2 text-4xl font-semibold">Compliance Frameworks</h1>
-        <p className="mt-3 text-muted">Explore leading cybersecurity, privacy, resilience, AI governance, payment security, and IT governance frameworks through structured summaries, domains, evidence, KPIs, and implementation roadmaps.</p>
+      <div className="glass rounded-2xl p-5 md:p-6">
+        <h1 className="text-3xl font-semibold">Compliance Frameworks</h1>
+        <p className="mt-2 text-sm text-muted">Explore cybersecurity, privacy, resilience, AI governance, payment security, audit, and IT governance frameworks through structured summaries, implementation guidance, KPIs, and certification paths.</p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button onClick={() => document.getElementById('frameworks-library')?.scrollIntoView({ behavior: 'smooth' })} className="rounded-full bg-white/15 px-3 py-1.5 text-sm" aria-label="Explore frameworks section">Explore Frameworks</button>
+          <button onClick={() => document.getElementById('certification-mind-map')?.scrollIntoView({ behavior: 'smooth' })} className="rounded-full bg-white/10 px-3 py-1.5 text-sm" aria-label="View certifications section">View Certifications</button>
+        </div>
+      </div>
+
+      <section id="frameworks-library" className="space-y-3">
+      <div className="space-y-1">
+        <h2 className="text-2xl font-semibold">Frameworks Library</h2>
+        <p className="text-sm text-muted">Compare international security, privacy, resilience, payment, AI governance, and IT governance frameworks using a consistent structure.</p>
       </div>
 
       <section className="space-y-3">
@@ -87,6 +96,14 @@ export function ComplianceFrameworksPage() {
       </section>
 
       <CertificationMindMap />
+
+      <section className="space-y-3">
+        <h2 className="text-2xl font-semibold">Recommended Certification Roadmap</h2>
+        <p className="text-sm text-muted">A focused path aligned with GRC, PCI, SOC 2, PCA/DR Drill, privacy, AI governance, NIST, ISO, and CISO-track development.</p>
+        <div className="grid gap-2 md:grid-cols-2">
+          {['ISO 27001 Lead Implementer — Strong base for ISMS, controls, risk, and certification projects.','CISM — Best match for security governance and CISO-track thinking.','CRISC — Strengthens IT risk and control management expertise.','CISA — Helps with audit, evidence, SOC 2, control testing, and assurance.','ISO 22301 Lead Implementer — Directly aligned with PCA/DR Drill work.','CIPP/E or CIPM — Useful for privacy, GDPR, and DPO-style governance.','AIGP or ISO 42001 Lead Implementer — Strong choice for AI governance and responsible AI programs.','CISSP — Excellent senior-level certification once broad security foundation is mature.'].map((step, idx) => <div key={step} className="glass rounded-xl p-3 text-sm"><span className="mr-2 text-cyan-200">{idx+1}.</span>{step}</div>)}
+        </div>
+      </section>
 
       <div className="space-y-3">
         <h2 className="text-2xl font-semibold">Unified Compliance Framework</h2>

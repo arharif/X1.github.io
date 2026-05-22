@@ -9,7 +9,7 @@ export function CertificationMindMap() {
   const selected = useMemo(() => safeCerts.find((c) => c.id === selectedCertId) ?? safeCerts[0], [selectedCertId]);
 
   return (
-    <section className="space-y-4">
+    <section id="certification-mind-map" className="space-y-4">
       <div className="glass rounded-3xl p-6">
         <h2 className="text-2xl font-semibold">Certification Mind Map</h2>
         <p className="mt-2 text-sm text-muted">Visualize how cybersecurity, GRC, privacy, AI governance, cloud, audit, resilience, and leadership certifications support different career paths.</p>
@@ -59,7 +59,8 @@ export function CertificationMindMap() {
             <p><strong>Best for:</strong> {selected?.bestFor ?? 'No data available.'}</p>
             <p><strong>Career path:</strong> {selected?.careerPath ?? 'No data available.'}</p>
             <p><strong>Main domains:</strong> {(selected?.domains ?? []).join(' · ') || 'No data available.'}</p>
-            <p><strong>Suggested career objective:</strong> {selected?.objective ?? 'Advance practical and governance-ready cybersecurity capabilities.'}</p>
+            <p><strong>What this certification helps you prove:</strong> {selected?.objective ?? 'Advance practical and governance-ready cybersecurity capabilities.'}</p>
+            <p><strong>Recommended profile fit:</strong> {selected?.bestFor ?? 'No data available.'}</p>
             <p><strong>Recommended priority:</strong> {selected?.priority ? `${selected.priority}/8` : 'Context-dependent'} {selected?.priorityReason ? `— ${selected.priorityReason}` : ''}</p>
           </div>
 
