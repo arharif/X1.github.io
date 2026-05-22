@@ -46,8 +46,13 @@ export function ComplianceFrameworksPage() {
   );
 
   return (
-    <section className="space-y-6">
-      <div className="glass rounded-2xl p-5 md:p-6">
+    <section className="compliance-universe relative isolate space-y-6 overflow-hidden rounded-3xl px-3 py-4 md:px-4">
+      <div className="compliance-universe__bg pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+        <span className="compliance-orb compliance-orb--a" />
+        <span className="compliance-orb compliance-orb--b" />
+        <span className="compliance-stars" />
+      </div>
+      <div className="rounded-2xl border border-white/10 bg-transparent p-5 md:p-6">
         <h1 className="text-3xl font-semibold">Compliance Frameworks</h1>
         <p className="mt-2 text-sm text-muted">
           Explore cybersecurity, privacy, resilience, AI governance, payment security, audit, and IT governance
@@ -56,14 +61,14 @@ export function ComplianceFrameworksPage() {
         <div className="mt-4 flex flex-wrap gap-2">
           <button
             onClick={() => document.getElementById('frameworks-library')?.scrollIntoView({ behavior: 'smooth' })}
-            className="rounded-full bg-white/15 px-3 py-1.5 text-sm"
+            className="rounded-full border border-cyan-200/60 bg-gradient-to-r from-cyan-400/90 via-sky-400/85 to-blue-500/80 px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_0_25px_rgba(34,211,238,0.35)] hover:brightness-110 focus-visible:ring-2 focus-visible:ring-cyan-200"
             aria-label="Explore frameworks section"
           >
             Explore Frameworks
           </button>
           <button
-            onClick={() => document.getElementById('certification-architecture')?.scrollIntoView({ behavior: 'smooth' })}
-            className="rounded-full bg-white/10 px-3 py-1.5 text-sm"
+            onClick={() => document.getElementById('certification-explorer')?.scrollIntoView({ behavior: 'smooth' })}
+            className="rounded-full border border-violet-200/40 bg-slate-900/60 px-4 py-2 text-sm font-medium text-violet-100 hover:border-cyan-300/60 hover:bg-slate-800/70 focus-visible:ring-2 focus-visible:ring-violet-200"
             aria-label="View certifications section"
           >
             View Certifications

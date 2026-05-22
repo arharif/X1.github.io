@@ -1,4 +1,5 @@
 import { complianceFrameworks } from '@/data/complianceFrameworks';
+import { certifications } from '@/data/certifications';
 
 export type SearchItem = {
   id: string;
@@ -30,19 +31,13 @@ const frameworkIndex: SearchItem[] = complianceFrameworks.map((f) => ({
 }));
 
 
-const certificationIndex: SearchItem[] = [
-  { id: 'cert-security-plus', title: 'CompTIA Security+', description: 'Foundation certification path.', type: 'security', path: '/compliance-frameworks#cert-security-plus', keywords: ['certification', 'foundation', 'comptia'] },
-  { id: 'cert-isc2-cc', title: 'ISC2 CC', description: 'Entry-level cybersecurity certification.', type: 'security', path: '/compliance-frameworks#cert-isc2-cc', keywords: ['certification', 'foundation', 'isc2'] },
-  { id: 'cert-cysa-plus', title: 'CySA+', description: 'Blue team and SOC certification path.', type: 'security', path: '/compliance-frameworks#cert-cysa-plus', keywords: ['soc', 'blue team', 'certification'] },
-  { id: 'cert-cissp', title: 'CISSP', description: 'Advanced leadership and architecture certification.', type: 'security', path: '/compliance-frameworks#cert-cissp', keywords: ['leadership', 'architecture', 'certification'] },
-  { id: 'cert-cism', title: 'CISM', description: 'Information security management certification.', type: 'security', path: '/compliance-frameworks#cert-cism', keywords: ['management', 'isaca', 'certification'] },
-  { id: 'cert-cisa', title: 'CISA', description: 'Audit and assurance certification.', type: 'security', path: '/compliance-frameworks#cert-cisa', keywords: ['audit', 'assurance', 'certification'] },
-  { id: 'cert-crisc', title: 'CRISC', description: 'Risk management certification.', type: 'security', path: '/compliance-frameworks#cert-crisc', keywords: ['grc', 'risk', 'certification'] },
-  { id: 'cert-ccsp', title: 'CCSP', description: 'Cloud security certification path.', type: 'security', path: '/compliance-frameworks#cert-ccsp', keywords: ['cloud security', 'certification'] },
-  { id: 'cert-iso-27001-lead-auditor', title: 'ISO 27001 Lead Auditor', description: 'ISMS audit certification.', type: 'security', path: '/compliance-frameworks#cert-iso-27001-lead-auditor', keywords: ['iso', 'audit', 'certification'] },
-  { id: 'cert-iso-27001-lead-implementer', title: 'ISO 27001 Lead Implementer', description: 'ISMS implementation certification.', type: 'security', path: '/compliance-frameworks#cert-iso-27001-lead-implementer', keywords: ['iso', 'implementer', 'certification'] },
-  { id: 'cert-iso-22301-lead-implementer', title: 'ISO 22301 Lead Implementer', description: 'Business continuity certification path.', type: 'security', path: '/compliance-frameworks#cert-iso-22301-lead-implementer', keywords: ['resilience', 'business continuity', 'certification'] },
-  { id: 'cert-cippe', title: 'CIPP/E', description: 'Privacy and data protection certification.', type: 'security', path: '/compliance-frameworks#cert-cippe', keywords: ['privacy', 'gdpr', 'certification'] },
-];
+const certificationIndex: SearchItem[] = certifications.map((certification) => ({
+  id: `cert-${certification.id}`,
+  title: certification.name,
+  description: `${certification.area} · ${certification.level}`,
+  type: 'security',
+  path: '/compliance-frameworks#certification-explorer',
+  keywords: [certification.name, certification.area, certification.level, certification.bestFit, certification.careerPath, ...certification.domains],
+}));
 
 export const searchIndex: SearchItem[] = [...pageIndex, ...frameworkIndex, ...certificationIndex];
