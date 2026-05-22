@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { BadgeCheck, BrainCircuit, Building2, CreditCard, LockKeyhole, Scale, ShieldCheck, SquareStack, Workflow } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { complianceFilters, complianceFrameworks, ComplianceFramework, FrameworkCategory } from '@/data/complianceFrameworks';
+import { ComplianceSecurityMap } from '@/components/compliance/ComplianceSecurityMap';
 
 const layerCards = [
   { title: 'Governance Layer', items: ['COBIT', 'ISO 27001', 'NIST CSF'], icon: Building2 },
@@ -36,6 +37,8 @@ export function ComplianceFrameworksPage() {
         <h1 className="mt-2 text-4xl font-semibold">Compliance Frameworks</h1>
         <p className="mt-3 text-muted">Explore leading cybersecurity, privacy, resilience, AI governance, payment security, and IT governance frameworks through structured summaries, domains, evidence, KPIs, and implementation roadmaps.</p>
       </div>
+
+      <ComplianceSecurityMap />
 
       <div className="flex flex-wrap gap-2">
         {complianceFilters.map((chip) => (
