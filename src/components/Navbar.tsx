@@ -16,6 +16,7 @@ export function Navbar({ mode, onTheme }: { mode: ThemeMode; onTheme: (m: ThemeM
     { to: '/professional', label: 'Technology & Innovation', match: (path) => path === '/professional' || path.startsWith('/professional/') },
     { to: '/personal', label: 'Curiosities & Philosophy', match: (path) => path === '/personal' || path.startsWith('/personal/') },
     { to: '/security-mindmap', label: 'Security Map', match: (path) => path === '/security-mindmap' || path === '/Security_Mindmap' },
+    { to: '/compliance-frameworks', label: 'Compliance Frameworks', match: (path) => path === '/compliance-frameworks' },
     { to: '/submitting', label: 'Submitting', match: (path) => path === '/submitting' },
     { to: '/games#games-zone', label: 'Games', match: (path) => path === '/games' },
     { to: '/admin', label: 'Admin', match: (path) => path === '/admin' || path === '/login' },
@@ -25,7 +26,7 @@ export function Navbar({ mode, onTheme }: { mode: ThemeMode; onTheme: (m: ThemeM
     `nav-link ${active ? 'is-active' : ''} ${admin ? 'is-admin' : ''}`;
 
   return (
-    <header className="nav-shell sticky top-0 z-50">
+    <header className="nav-shell nav-enter sticky top-0 z-50">
       <div className="mx-auto flex max-w-6xl items-center justify-between p-4">
         <Link to="/" className="flex items-center" aria-label="Home">
           <X1Mark size="sm" mode={mode} />

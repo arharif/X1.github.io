@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Github, Linkedin, Mail } from 'lucide-react';
-import { Component, ReactNode, useEffect, useState } from 'react';
+import { Component, lazy, ReactNode, Suspense, useEffect, useState } from 'react';
 import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AdminEditor } from '@/components/admin/AdminEditor';
 import { TopicEditor } from '@/components/admin/TopicEditor';
@@ -21,6 +21,7 @@ import { initTheme, ThemeMode, themeMap } from '@/lib/theme';
 import { normalizeUniverse, universeMeta } from '@/lib/universe';
 import { safeStorage } from '@/lib/storage';
 import { CollectionRecord, ContentRecord, TopicRecord } from './content/types';
+const ComplianceFrameworksPage = lazy(() => import('@/pages/ComplianceFrameworksPage').then((m) => ({ default: m.ComplianceFrameworksPage })));
 
 const inferUniverseFromContentType = (contentType?: string | null) => normalizeUniverse(contentType);
 
@@ -48,9 +49,16 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 function Landing() {
   const nav = useNavigate();
   return (
-    <section className="grid gap-6 py-10 md:grid-cols-2">
-      <EntryCard title={universeMeta.professional.label} description={universeMeta.professional.description} onClick={() => nav('/professional')} />
-      <EntryCard title={universeMeta.personal.label} description={universeMeta.personal.description} onClick={() => nav('/personal')} />
+    <section className="relative">
+      <div className="landing-ambient pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-3xl" aria-hidden="true">
+        <span className="landing-orb landing-orb--a" />
+        <span className="landing-orb landing-orb--b" />
+        <span className="landing-orb landing-orb--c" />
+      </div>
+      <motion.section className="grid gap-6 py-10 md:grid-cols-2" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}>
+        <EntryCard title={universeMeta.professional.label} description={universeMeta.professional.description} onClick={() => nav('/professional')} />
+        <EntryCard title={universeMeta.personal.label} description={universeMeta.personal.description} onClick={() => nav('/personal')} />
+      </motion.section>
     </section>
   );
 }
@@ -564,6 +572,7 @@ function Shell() {
               <Route path="/professional/topic/:slug" element={<TechnologyBook />} />
               <Route path="/personal" element={<CuriositiesHub />} />
               <Route path="/personal/post/:slug" element={<CuriosityPost />} />
+              <Route path="/compliance-frameworks" element={<Suspense fallback={<div className="glass rounded-2xl p-6">Loading compliance frameworks…</div>}><ComplianceFrameworksPage /></Suspense>} />
               <Route path="/submitting" element={<SubmittingPage />} />
               <Route path="/games" element={<GamesHub />} />
               <Route path="/Security_Mindmap" element={<SecurityMindmapPage />} />
@@ -576,7 +585,7 @@ function Shell() {
         </AnimatePresence>
       </main>
       <SiteAssistantLauncher />
-      <footer className="mx-auto mt-8 flex max-w-6xl items-center border-t border-white/10 p-6 text-sm text-muted">
+      <footer className="footer-enter mx-auto mt-8 flex max-w-6xl items-center border-t border-white/10 p-6 text-sm text-muted">
         <div className="footer-inline">
           <span className="footer-brand">arharif © 2026</span>
           <span className="footer-separator" aria-hidden="true">|</span>
