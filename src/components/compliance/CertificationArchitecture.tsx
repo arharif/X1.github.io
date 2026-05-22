@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Search } from 'lucide-react';
 import { certificationAreas, certificationGroups, certifications } from '@/data/certifications';
 
 const safeArray = <T,>(value: T[] | undefined | null): T[] => (Array.isArray(value) ? value : []);
@@ -42,15 +43,18 @@ export function CertificationArchitecture() {
       ) : (
         <div className="grid gap-4 lg:grid-cols-[1.1fr_1.2fr]">
           <div className="glass space-y-4 rounded-2xl p-4">
-            <div>
-              <input
-                aria-label="Search certifications"
-                className="w-full rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm focus-visible:border-cyan-300/70"
-                placeholder="Search certifications…"
-                value={searchValue}
-                onChange={(event) => setSearchValue(event.target.value.slice(0, 120))}
-              />
-              <p className="mt-2 text-xs text-muted">Try searching by topic, tag, or keyword.</p>
+            <div className="space-y-2">
+              <label className="compliance-premium-search">
+                <Search size={16} className="compliance-premium-search__icon" aria-hidden="true" />
+                <input
+                  aria-label="Search certifications, domains, career paths, or keywords"
+                  className="compliance-premium-search__input"
+                  placeholder="Search certifications, domains, career paths, or keywords…"
+                  value={searchValue}
+                  onChange={(event) => setSearchValue(event.target.value.slice(0, 120))}
+                />
+              </label>
+              <p className="text-xs text-muted">Search by certification name, category, level, domain, best fit, practical value, or career path.</p>
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -106,9 +110,17 @@ export function CertificationArchitecture() {
                   </ul>
                 </div>
                 {recommendedSet.length > 0 && (
-                  <div className="rounded-xl border border-cyan-300/25 bg-cyan-400/10 p-3">
+                  <div className="rounded-xl border border-cyan-300/30 bg-cyan-400/10 p-3">
                     <p className="text-sm font-semibold text-cyan-100">Recommended for this profile</p>
-                    <p className="mt-1 text-xs text-muted">GRC, PCI, SOC 2, PCA/DR Drill, privacy, AI governance, NIST, ISO, and CISO-track focus.</p>
+                    <p className="mt-1 text-xs text-muted">
+                      These certifications are recommended for professionals targeting governance, security leadership, audit, risk, privacy, resilience, AI governance, and senior cybersecurity roles.
+                    </p>
+                    <div className="mt-2 space-y-2 text-xs">
+                      <p><strong>Target professional profile:</strong> Professionals who want to grow from cybersecurity governance, audit, risk, compliance, privacy, resilience, or security operations into senior security governance and leadership roles.</p>
+                      <p><strong>Best-fit job roles:</strong> GRC Analyst / GRC Consultant · IT Risk Analyst · Compliance Analyst · IT Auditor / Internal Auditor · Information Security Officer · Security Governance Analyst · ISMS Manager · Privacy / DPO Support · Business Continuity &amp; Resilience Specialist · AI Governance Analyst · Security Manager · Future CISO</p>
+                      <p><strong>Why this path is recommended:</strong> This path combines governance, risk, audit, resilience, privacy, AI governance, and enterprise security leadership capabilities to manage controls, evidence, risks, audits, security programs, and executive-level governance.</p>
+                      <p><strong>Recommended certification path:</strong> Start with ISO/IEC 27001 Lead Implementer, CISM, and CRISC; then strengthen assurance with CISA, resilience with ISO 22301 Lead Implementer, privacy with CIPP/E, AI governance with IAPP AIGP or ISO/IEC 42001 Lead Implementer, and cap with CISSP.</p>
+                    </div>
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {recommendedSet.map((id) => {
                         const item = safeCertifications.find((certification) => certification.id === id);
