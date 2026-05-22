@@ -16,8 +16,7 @@ import {
   type ComplianceFramework,
   type FrameworkCategory,
 } from '@/data/complianceFrameworks';
-import { CertificationMindMap } from '@/components/compliance/CertificationMindMap';
-import { roadmap } from '@/data/certifications';
+import { CertificationArchitecture } from '@/components/compliance/CertificationArchitecture';
 
 const layerCards = [
   { title: 'Governance Layer', items: ['COBIT', 'ISO 27001', 'NIST CSF'], icon: Building2 },
@@ -63,7 +62,7 @@ export function ComplianceFrameworksPage() {
             Explore Frameworks
           </button>
           <button
-            onClick={() => document.getElementById('certification-mind-map')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => document.getElementById('certification-architecture')?.scrollIntoView({ behavior: 'smooth' })}
             className="rounded-full bg-white/10 px-3 py-1.5 text-sm"
             aria-label="View certifications section"
           >
@@ -177,44 +176,7 @@ export function ComplianceFrameworksPage() {
         )}
       </section>
 
-      <CertificationMindMap />
-
-      <section className="space-y-3">
-        <h2 className="text-2xl font-semibold">Recommended Certification Roadmap</h2>
-        <p className="text-sm text-muted">
-          A structured learning path aligned with GRC, PCI, SOC 2, PCA/DR Drill, privacy, AI governance, NIST, ISO, and CISO-track development.
-        </p>
-        {roadmap.length === 0 ? (
-          <div className="glass rounded-2xl p-4 text-sm text-muted">No certifications available.</div>
-        ) : (
-          <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-            <ol className="glass rounded-2xl p-3">
-              {roadmap.map((item) => (
-                <li key={item.id} className="border-b border-white/10 last:border-b-0">
-                  <a href={`#${item.id}`} className="flex items-center gap-2 px-2 py-2 text-sm hover:bg-white/5">
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-cyan-300/20 text-xs text-cyan-100">{item.priority}</span>
-                    <span>{item.certificationName}</span>
-                  </a>
-                </li>
-              ))}
-            </ol>
-            <div className="space-y-3">
-              {roadmap.map((item) => (
-                <details key={`panel-${item.id}`} className="glass rounded-2xl p-4">
-                  <summary className="cursor-pointer text-sm font-semibold">{item.priority}. {item.certificationName}</summary>
-                  <div className="mt-3 space-y-2 text-sm">
-                    <p><strong>Why it matters:</strong> {item.whyItMatters}</p>
-                    <p><strong>What knowledge it gives:</strong> {safeArray(item.knowledgeGained).join(' · ') || 'No data available.'}</p>
-                    <p><strong>Key domains / chapters covered:</strong> {safeArray(item.domainsCovered).join(' · ') || 'No data available.'}</p>
-                    <p><strong>Practical value:</strong> {item.practicalValue}</p>
-                    <p><strong>Suggested learning outcome:</strong> {item.learningOutcome}</p>
-                  </div>
-                </details>
-              ))}
-            </div>
-          </div>
-        )}
-      </section>
+      <CertificationArchitecture />
 
       <section className="space-y-3">
         <h2 className="text-2xl font-semibold">Unified Compliance Model Summary</h2>

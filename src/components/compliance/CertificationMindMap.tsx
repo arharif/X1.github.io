@@ -49,8 +49,8 @@ export function CertificationMindMap() {
               <p><strong>Main domains:</strong> {safeArray(selected?.domains).join(' · ') || 'No data available.'}</p>
               <p><strong>What this certification covers:</strong> {safeArray(selected?.covers).join(' · ') || 'No data available.'}</p>
               <p><strong>What knowledge you gain:</strong> {safeArray(selected?.knowledgeGained).join(' · ') || 'No data available.'}</p>
-              <p><strong>Practical use cases:</strong> {safeArray(selected?.practicalUseCases).join(' · ') || 'No data available.'}</p>
-              <p><strong>How it supports GRC/CISO/audit/privacy/resilience/AI governance:</strong> {selected?.supportAreas ?? 'No data available.'}</p>
+              <p><strong>Practical use cases:</strong> {safeArray(selected ? [selected.practicalValue] : []).join(' · ') || 'No data available.'}</p>
+              <p><strong>How it supports GRC/CISO/audit/privacy/resilience/AI governance:</strong> {selected?.learningOutcome ?? 'No data available.'}</p>
               <p><strong>Recommended profile fit:</strong> {selected?.profileFit ?? 'No data available.'}</p>
               <p><strong>Priority:</strong> {selected?.priority ? `${selected.priority}/8` : 'Context-dependent'} {selected?.priorityReason ? `— ${selected.priorityReason}` : ''}</p>
             </div>
