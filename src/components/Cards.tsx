@@ -3,11 +3,16 @@ import { ContentRecord } from '@/content/types';
 
 export function EntryCard({ title, description, onClick }: { title: string; description: string; onClick: () => void }) {
   return (
-    <motion.button whileHover={{ y: -4, scale: 1.01 }} className="glass group rounded-3xl p-8 text-left" onClick={onClick}>
+    <motion.button
+      whileHover={{ y: -6, scale: 1.015 }}
+      transition={{ duration: 0.24, ease: 'easeOut' }}
+      className="glass card-premium group rounded-3xl p-8 text-left"
+      onClick={onClick}
+    >
       <p className="text-xs uppercase tracking-[0.2em] text-muted">Universe</p>
-      <h2 className="mt-2 text-4xl font-semibold">{title}</h2>
-      <p className="mt-4 text-muted">{description}</p>
-      <div className="mt-6 h-1 w-16 rounded-full bg-gradient-to-r from-cyan-400 to-violet-500 transition-all group-hover:w-28" />
+      <h2 className="mt-2 text-4xl font-semibold transition-colors duration-300 group-hover:text-white">{title}</h2>
+      <p className="mt-4 text-muted transition-colors duration-300 group-hover:text-slate-200">{description}</p>
+      <div className="mt-6 h-1 w-16 rounded-full bg-gradient-to-r from-cyan-400 to-violet-500 transition-all duration-400 group-hover:w-28" />
     </motion.button>
   );
 }

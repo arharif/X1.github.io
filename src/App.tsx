@@ -112,41 +112,10 @@ function Landing() {
   }, [reducedMotion]);
 
   return (
-    <div className="space-y-16 pb-14">
-      <section className="relative min-h-screen overflow-hidden rounded-3xl bg-black">
-        <video ref={videoRef} className="absolute inset-0 h-full w-full translate-y-[17%] object-cover" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_115001_bcdaa3b4-03de-47e7-ad63-ae3e392c32d4.mp4" muted playsInline preload="metadata" />
-        <div className="absolute inset-0 bg-black/55" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/35 to-black/90" />
-        <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-4 text-center">
-          <p className="liquid-glass mb-6 rounded-full px-4 py-1 text-xs tracking-[0.25em] text-slate-200">PERSONAL KNOWLEDGE LAB</p>
-          <h1 className="text-5xl md:text-6xl lg:text-7xl" style={{ fontFamily: "'Instrument Serif', serif" }}>Built for the curious mind</h1>
-          <p className="mt-6 max-w-3xl text-base text-slate-200 md:text-lg">A personal space where cybersecurity, emerging technology, philosophy, creativity, and structured learning meet.</p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <button onClick={() => nav('/professional')} className="rounded-full bg-white px-5 py-2.5 font-medium text-black"><span className="inline-flex items-center gap-2">Explore the Library <ArrowRight size={16} /></span></button>
-            <button onClick={() => nav('/security-mindmap')} className="rounded-full bg-white/90 px-5 py-2.5 font-medium text-black"><span className="inline-flex items-center gap-2">View Security Map <Shield size={16} /></span></button>
-            <button onClick={() => nav('/personal')} className="liquid-glass rounded-full px-5 py-2.5 font-medium text-white"><span className="inline-flex items-center gap-2">Start Here <Compass size={16} /></span></button>
-          </div>
-          <div className="liquid-glass mt-8 flex w-full max-w-2xl items-center gap-3 rounded-full px-4 py-3">
-            <Search size={18} className="text-slate-200" />
-            <input aria-label="Search website content" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full border-0 bg-transparent p-0 text-sm placeholder:text-slate-300/75 focus:outline-none" placeholder="Search articles, topics, security concepts, games…" />
-          </div>
-        </div>
-      </section>
-      <section className="space-y-12">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl font-semibold md:text-4xl">More than a portfolio. A living knowledge system.</h2>
-          <p className="mt-4 text-muted">This website is a personal knowledge space where I publish structured notes, research ideas, cybersecurity maps, technology explainers, philosophy reflections, and interactive learning experiments. The goal is to make complex ideas simple, visual, and enjoyable to explore.</p>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          <EntryCard title={universeMeta.professional.label} description={universeMeta.professional.description} onClick={() => nav('/professional')} />
-          <EntryCard title={universeMeta.personal.label} description={universeMeta.personal.description} onClick={() => nav('/personal')} />
-        </div>
-        <div><h3 className="mb-4 text-2xl font-semibold">Featured explorations</h3><div className="grid gap-4 md:grid-cols-3">{featured.map((item) => <article key={item.title} className="liquid-glass rounded-2xl p-5"><p className="text-xs uppercase tracking-[0.18em] text-muted">{item.category}</p><h4 className="mt-2 text-lg font-semibold">{item.title}</h4><p className="mt-2 text-sm text-muted">{item.description}</p><div className="mt-3 flex flex-wrap gap-2">{item.tags.map((tag) => <span key={tag} className="rounded-full bg-white/10 px-2 py-1 text-xs">#{tag}</span>)}</div><button className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-cyan-200">Read more <ArrowRight size={14} /></button></article>)}</div></div>
-        <div><h3 className="mb-4 text-2xl font-semibold">Start here</h3><div className="grid gap-4 md:grid-cols-2">{paths.map((item) => <article key={item.title} className="liquid-glass rounded-2xl p-5"><item.icon size={18} className="text-cyan-200" /><h4 className="mt-3 text-lg font-semibold">{item.title}</h4><p className="mt-2 text-sm text-muted">{item.description}</p><p className="mt-2 text-xs uppercase tracking-[0.16em] text-muted">Level: {item.level}</p><button onClick={() => nav(item.to)} className="mt-3 inline-flex items-center gap-1 text-sm text-cyan-200">{item.cta} <ArrowRight size={14} /></button></article>)}</div></div>
-        <div><h3 className="mb-4 text-2xl font-semibold">Areas I explore</h3><div className="flex flex-wrap gap-2">{['Cybersecurity & GRC', 'AI & Emerging Technologies', 'Business Continuity', 'IAM & Risk Management', 'Privacy & Compliance', 'Philosophy & Creative Thinking', 'Learning Games', 'Knowledge Maps'].map((item) => <span key={item} className="liquid-glass rounded-full px-4 py-2 text-sm">{item}</span>)}</div></div>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">{stats.map((s) => <div key={s.label} className="liquid-glass rounded-xl p-4 text-center"><p className="text-xl font-semibold">{s.value}</p><p className="text-xs text-muted">{s.label}</p></div>)}</div>
-      </section>
-    </div>
+    <motion.section className="grid gap-6 py-10 md:grid-cols-2" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}>
+      <EntryCard title={universeMeta.professional.label} description={universeMeta.professional.description} onClick={() => nav('/professional')} />
+      <EntryCard title={universeMeta.personal.label} description={universeMeta.personal.description} onClick={() => nav('/personal')} />
+    </motion.section>
   );
 }
 
@@ -671,8 +640,7 @@ function Shell() {
         </AnimatePresence>
       </main>
       <SiteAssistantLauncher />
-      <footer className="mx-auto mt-8 max-w-6xl border-t border-white/10 p-6 text-sm text-muted">
-        <p className="mb-3 text-xs text-slate-300">Built as a personal knowledge lab for cybersecurity, technology, philosophy, and creative learning.</p>
+      <footer className="footer-enter mx-auto mt-8 flex max-w-6xl items-center border-t border-white/10 p-6 text-sm text-muted">
         <div className="footer-inline">
           <span className="footer-brand">arharif © 2026</span>
           <span className="footer-separator" aria-hidden="true">|</span>
