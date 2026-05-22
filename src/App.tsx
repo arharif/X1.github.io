@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { BookOpen, Compass, Github, Linkedin, Mail, Shield, Sparkles } from 'lucide-react';
+import { BookOpen, Compass, Github, Linkedin, Mail, Search, Shield, Sparkles } from 'lucide-react';
 import { Component, lazy, ReactNode, Suspense, useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AdminEditor } from '@/components/admin/AdminEditor';
@@ -194,6 +194,7 @@ function TechnologyBook() {
 }
 
 function CuriositiesHub() {
+  const safeArray = <T,>(value: T[] | undefined | null): T[] => (Array.isArray(value) ? value : []);
   const [topics, setTopics] = useState<TopicRecord[]>([]);
   const [content, setContent] = useState<ContentRecord[]>([]);
   const [query, setQuery] = useState('');
@@ -215,15 +216,17 @@ function CuriositiesHub() {
     });
   }, []);
 
-  const allTags = [...new Set(content.flatMap((c) => c.tags || []))].slice(0, 16);
+  const allTags = [...new Set(safeArray(content).flatMap((c) => safeArray(c.tags)))].slice(0, 16);
   const filterOptions = [{ id: 'all', label: 'All' }, ...topics.map((t) => ({ id: t.id, label: t.title }))];
 
-  const filteredByTopic = activeTopic === 'all' ? content : content.filter((item) => item.topicId === activeTopic);
+  const filteredByTopic = activeTopic === 'all' ? safeArray(content) : safeArray(content).filter((item) => item.topicId === activeTopic);
   const searched = useMemo(() => {
-    const base = filteredByTopic.filter((c) => (!tag || (c.tags || []).includes(tag)));
+    const base = filteredByTopic.filter((c) => (!tag || safeArray(c.tags).includes(tag)));
     const q = query.trim().toLowerCase();
     if (!q || q.length < 2) return base;
-    return base.filter((item) => `${item.title ?? ''} ${item.excerpt ?? ''} ${item.contentType ?? ''} ${(item.tags ?? []).join(' ')}`.toLowerCase().includes(q));
+    return base.filter((item) =>
+      `${item.title ?? ''} ${item.excerpt ?? ''} ${item.contentType ?? ''} ${safeArray(item.tags).join(' ')}`.toLowerCase().includes(q),
+    );
   }, [filteredByTopic, query, tag]);
 
   return (
@@ -233,13 +236,22 @@ function CuriositiesHub() {
 
       <TopicFilterBar label="Curiosities & Philosophy Topics" options={filterOptions} active={activeTopic} onChange={setActiveTopic} count={searched.length} />
 
-      <div className="glass mb-6 mt-4 rounded-2xl p-4">
-        <input className="w-full bg-transparent outline-none" placeholder="Search philosophy, anime, books, science, reflections…" aria-label="Search curiosities and philosophy content" value={query} onChange={(e) => setQuery(e.target.value)} />
+      <div className="mb-6 mt-4 rounded-2xl border border-white/10 bg-transparent p-3">
+        <label className="personal-premium-search">
+          <Search size={16} className="personal-premium-search__icon" aria-hidden="true" />
+          <input
+            className="personal-premium-search__input"
+            placeholder="Search philosophy, anime, books, science, reflections…"
+            aria-label="Search curiosities and philosophy content"
+            value={query}
+            onChange={(e) => setQuery(e.target.value.slice(0, 140))}
+          />
+        </label>
         <div className="mt-3 flex flex-wrap gap-2">
           {allTags.map((t)=><button key={t} onClick={()=>setTag(t)} className={`rounded-full px-3 py-1 text-xs ${tag===t?'bg-white/30':'bg-white/10'}`}>#{t}</button>)}
           <button className="text-xs" onClick={()=>setTag('')}>clear</button>
         </div>
-              <p className="mt-2 text-xs text-muted">Try searching by topic, tag, or keyword.</p>
+        <p className="mt-2 text-xs text-muted">Search by title, description, category, tags, or excerpt.</p>
       </div>
 
       {searched.length > 0 ? (
@@ -605,7 +617,7 @@ function Shell() {
       <main className="mx-auto max-w-6xl p-4 md:p-8">
         {!hasSupabaseCoreConfig && <div className="glass mb-4 rounded-xl p-3 text-xs text-amber-300">Configuration is incomplete. Some authenticated features may be unavailable.</div>}
         <AnimatePresence mode="wait">
-          <motion.div key={location.pathname} initial={{ opacity: 0, y: 10, filter: 'blur(6px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25 }}>
+          <motion.div key={location.pathname} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25 }}>
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/search" element={<SearchPage />} />
