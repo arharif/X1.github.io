@@ -46,13 +46,10 @@ export function CertificationMindMap() {
               <p><strong>Definition:</strong> {selected?.definition ?? 'No data available.'}</p>
               <p><strong>Best for:</strong> {selected?.bestFor ?? 'No data available.'}</p>
               <p><strong>Career path:</strong> {selected?.careerPath ?? 'No data available.'}</p>
-              <p><strong>Main domains:</strong> {safeArray(selected?.domains).join(' · ') || 'No data available.'}</p>
-              <p><strong>What this certification covers:</strong> {safeArray(selected?.covers).join(' · ') || 'No data available.'}</p>
-              <p><strong>What knowledge you gain:</strong> {safeArray(selected?.knowledgeGained).join(' · ') || 'No data available.'}</p>
+              <p><strong>Main domains:</strong> {safeArray(selected?.domainsCovered).join(' · ') || 'No data available.'}</p>
               <p><strong>Practical use cases:</strong> {safeArray(selected ? [selected.practicalValue] : []).join(' · ') || 'No data available.'}</p>
-              <p><strong>How it supports GRC/CISO/audit/privacy/resilience/AI governance:</strong> {selected?.learningOutcome ?? 'No data available.'}</p>
-              <p><strong>Recommended profile fit:</strong> {selected?.profileFit ?? 'No data available.'}</p>
-              <p><strong>Priority:</strong> {selected?.priority ? `${selected.priority}/8` : 'Context-dependent'} {selected?.priorityReason ? `— ${selected.priorityReason}` : ''}</p>
+              <p><strong>Why recommended:</strong> {selected?.whyRecommended ?? 'No data available.'}</p>
+              <p><strong>Priority:</strong> {selected?.priority ? `${selected.priority}` : 'Context-dependent'}</p>
             </div>
           </aside>
         </div>

@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { ContentRecord } from '@/content/types';
 
-export function EntryCard({ title, description, onClick }: { title: string; description: string; onClick: () => void }) {
+export function EntryCard({ title, description, onClick, label = 'Universe' }: { title: string; description: string; onClick: () => void; label?: string }) {
   return (
     <motion.button
       whileHover={{ y: -6, scale: 1.015 }}
@@ -9,7 +9,7 @@ export function EntryCard({ title, description, onClick }: { title: string; desc
       className="glass card-premium group rounded-3xl p-8 text-left"
       onClick={onClick}
     >
-      <p className="text-xs uppercase tracking-[0.2em] text-muted">Universe</p>
+      <p className="text-xs uppercase tracking-[0.2em] text-muted">{label}</p>
       <h2 className="mt-2 text-4xl font-semibold transition-colors duration-300 group-hover:text-white">{title}</h2>
       <p className="mt-4 text-muted transition-colors duration-300 group-hover:text-slate-200">{description}</p>
       <div className="mt-6 h-1 w-16 rounded-full bg-gradient-to-r from-cyan-400 to-violet-500 transition-all duration-400 group-hover:w-28" />
