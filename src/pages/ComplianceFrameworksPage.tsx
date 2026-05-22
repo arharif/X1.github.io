@@ -35,7 +35,7 @@ export function ComplianceFrameworksPage() {
         <span className="compliance-orb compliance-orb--b" />
         <span className="compliance-stars" />
       </div>
-      <div className="rounded-2xl border border-white/10 bg-transparent p-5 md:p-6">
+      <div className="compliance-panel rounded-2xl p-5 md:p-6">
         <h1 className="text-3xl font-semibold">Compliance Frameworks</h1>
         <p className="mt-2 text-sm text-muted">
           Explore cybersecurity, privacy, resilience, AI governance, payment security, audit, and IT governance
@@ -73,9 +73,7 @@ export function ComplianceFrameworksPage() {
             <button
               key={chip}
               onClick={() => setActiveFilter(chip)}
-              className={`rounded-full px-3 py-1.5 text-sm ${
-                activeFilter === chip ? 'bg-white/25' : 'bg-white/10 hover:bg-white/15'
-              }`}
+              className={`compliance-chip rounded-full px-3 py-1.5 text-sm ${activeFilter === chip ? 'compliance-chip--active' : ''}`}
             >
               {chip}
             </button>
@@ -93,7 +91,7 @@ export function ComplianceFrameworksPage() {
                   key={item.id}
                   id={item.id}
                   onClick={() => setActiveId(item.id)}
-                  className={`glass rounded-2xl p-5 text-left ${selectedFramework?.id === item.id ? 'border-cyan-300/50' : ''}`}
+                  className={`glass compliance-panel rounded-2xl p-5 text-left ${selectedFramework?.id === item.id ? 'border-cyan-300/55 bg-cyan-300/10' : ''}`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs">{item.category}</span>
@@ -110,7 +108,7 @@ export function ComplianceFrameworksPage() {
               ))}
             </div>
 
-            <aside className="glass rounded-2xl p-5">
+            <aside className="glass compliance-panel rounded-2xl p-5">
               <h2 className="text-2xl font-semibold">{selectedFramework?.name ?? 'Framework details'}</h2>
               <p className="mt-2 text-sm text-muted">{selectedFramework?.fullName ?? 'No framework selected.'}</p>
               <div className="mt-4 space-y-3 text-sm">
