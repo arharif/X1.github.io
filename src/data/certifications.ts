@@ -27,6 +27,13 @@ export type CertificationRoadmapItem = {
   learningOutcome: string;
 };
 
+export type CertificationTrack = {
+  id: string;
+  title: string;
+  description: string;
+  certifications: string[];
+};
+
 export const certifications: Certification[] = [
   { id:'iso-27001-lead-implementer', name:'ISO/IEC 27001 Lead Implementer', category:'GRC & Compliance', definition:'Professional certification focused on implementing and operating an ISO/IEC 27001 ISMS.', bestFor:'GRC professionals and ISMS leads.', careerPath:'GRC Analyst → ISMS Lead → Head of Compliance.', domains:['ISO 27001 clauses 4–10','Risk assessment and treatment','Statement of Applicability','Annex A controls','Internal audit'], covers:['Designing ISMS governance and scope','Building risk treatment workflow','Selecting Annex A controls','Preparing evidence ownership'], knowledgeGained:['ISMS implementation logic','Risk treatment governance','Control mapping','Audit readiness'], practicalValue:'Strong foundation for ISO programs and governance execution.', profileFit:'Very strong fit for GRC, SOC 2, PCI, resilience, and CISO-track growth.', learningOutcome:'Design and maintain a practical ISMS.', priority:1, priorityReason:'Best foundational starting point.', tracks:['strategic-ciso','grc-compliance'] },
   { id:'cism', name:'CISM', category:'Strategic / CISO Track', definition:'Information security management certification centered on governance and program leadership.', bestFor:'Security managers and future CISOs.', careerPath:'Security Lead → Security Manager → CISO.', domains:['Governance','Risk management','Program management','Incident management'], covers:['Security strategy alignment','Program governance','Risk oversight','Executive reporting'], knowledgeGained:['Business-aligned security leadership','Governance operating models','Leadership communication'], practicalValue:'Excellent for leadership-level security governance.', profileFit:'Strong fit for governance leadership and CISO-track planning.', learningOutcome:'Lead an enterprise security program.', priority:2, priorityReason:'Builds management depth after ISMS foundations.', tracks:['strategic-ciso','grc-compliance'] },
@@ -50,4 +57,17 @@ export const certifications: Certification[] = [
   { id:'itil4', name:'ITIL 4 Foundation', category:'IT Governance / Transformation', definition:'IT service management fundamentals.', bestFor:'Service operations teams.', careerPath:'Ops Analyst → Service Manager.', domains:['Service management','Continual improvement'], covers:['ITSM practices'], knowledgeGained:['Operational governance'], practicalValue:'Improves service governance consistency.', profileFit:'Useful for IT operations governance.', learningOutcome:'Run services with structured ITSM practices.', tracks:['it-governance'] },
   { id:'pmp', name:'PMP', category:'IT Governance / Transformation', definition:'Project and program management leadership certification.', bestFor:'Project/program leaders.', careerPath:'Project Manager → Program Manager.', domains:['Planning','Execution','Stakeholders'], covers:['Project governance lifecycle'], knowledgeGained:['Delivery leadership'], practicalValue:'Strengthens complex transformation delivery.', profileFit:'Useful for execution-heavy governance roles.', learningOutcome:'Lead complex initiatives with predictable outcomes.', tracks:['it-governance'] },
   { id:'togaf', name:'TOGAF', category:'IT Governance / Transformation', definition:'Enterprise architecture framework certification.', bestFor:'Enterprise architects.', careerPath:'Solution Architect → Enterprise Architect.', domains:['Architecture governance','Target-state design'], covers:['Architecture method and governance'], knowledgeGained:['Enterprise architecture strategy'], practicalValue:'Aligns architecture with business governance goals.', profileFit:'Strong for transformation and architecture leaders.', learningOutcome:'Define governable architecture roadmaps.', tracks:['it-governance'] },
+];
+
+export const certificationTracks: CertificationTrack[] = [
+  { id:'strategic-ciso', title:'Strategic / CISO Track', description:'Leadership and strategy certifications.', certifications:['iso-27001-lead-implementer','cism','crisc','cissp'] },
+  { id:'grc-compliance', title:'GRC & Compliance', description:'Governance and compliance-oriented certifications.', certifications:['iso-27001-lead-implementer','cism','crisc','cisa','iso-27001-lead-auditor'] },
+  { id:'audit-assurance', title:'Audit & Assurance', description:'Independent assurance and audit expertise.', certifications:['cisa','iso-27001-lead-auditor','iso-22301-lead-auditor','iso-42001-lead-auditor'] },
+  { id:'privacy-dpo', title:'Privacy & DPO', description:'Privacy governance and operations.', certifications:['cippe-cipm','cdpse'] },
+  { id:'ai-governance', title:'AI Governance', description:'Responsible AI governance and assurance.', certifications:['aigp-or-iso-42001-li','iso-42001-lead-auditor'] },
+  { id:'resilience', title:'Resilience / PCA / DR', description:'Operational resilience and continuity.', certifications:['iso-22301-lead-implementer','iso-22301-lead-auditor'] },
+  { id:'cloud-security', title:'Cloud Security', description:'Cloud security specialization.', certifications:['ccsp'] },
+  { id:'technical-cyber', title:'Technical Cybersecurity', description:'SOC and technical defense progression.', certifications:['security-plus','cysa-plus','casp-securityx'] },
+  { id:'offensive-security', title:'Offensive Security', description:'Hands-on offensive security path.', certifications:['ceh','oscp'] },
+  { id:'it-governance', title:'IT Governance / Transformation', description:'Enterprise governance and transformation.', certifications:['cgeit','itil4','pmp','togaf'] },
 ];
