@@ -48,10 +48,10 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 function Landing() {
   const nav = useNavigate();
   return (
-    <section className="grid gap-6 py-10 md:grid-cols-2">
+    <motion.section className="grid gap-6 py-10 md:grid-cols-2" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}>
       <EntryCard title={universeMeta.professional.label} description={universeMeta.professional.description} onClick={() => nav('/professional')} />
       <EntryCard title={universeMeta.personal.label} description={universeMeta.personal.description} onClick={() => nav('/personal')} />
-    </section>
+    </motion.section>
   );
 }
 
@@ -576,7 +576,7 @@ function Shell() {
         </AnimatePresence>
       </main>
       <SiteAssistantLauncher />
-      <footer className="mx-auto mt-8 flex max-w-6xl items-center border-t border-white/10 p-6 text-sm text-muted">
+      <footer className="footer-enter mx-auto mt-8 flex max-w-6xl items-center border-t border-white/10 p-6 text-sm text-muted">
         <div className="footer-inline">
           <span className="footer-brand">arharif © 2026</span>
           <span className="footer-separator" aria-hidden="true">|</span>
