@@ -24,11 +24,6 @@ export function CertificationArchitecture() {
     [safeCertifications],
   );
 
-  const roadmap = useMemo(
-    () => safeCertifications.filter((item) => item.priority).sort((a, b) => (a.priority ?? 99) - (b.priority ?? 99)),
-    [safeCertifications],
-  );
-
   return (
     <section id="certification-architecture" className="space-y-4">
       <div className="glass rounded-2xl p-5">
@@ -43,21 +38,9 @@ export function CertificationArchitecture() {
       ) : (
         <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
           <div className="glass rounded-2xl p-4 space-y-4">
-            <div className="flex flex-wrap gap-2">
-              {roadmap.map((item) => (
-                <button
-                  key={`priority-${item.id}`}
-                  onClick={() => setSelectedId(item.id)}
-                  className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-2.5 py-1 text-xs"
-                >
-                  P{item.priority}: {item.name}
-                </button>
-              ))}
-            </div>
-
             <div className="grid gap-3 sm:grid-cols-2">
               {safeTracks.map((track: CertificationTrack) => (
-                <div key={track.id} className="rounded-xl border border-white/15 bg-white/5 p-3">
+                <div key={track.id} id={`track-${track.id}`} className="rounded-xl border border-white/15 bg-white/5 p-3">
                   <p className="text-sm font-semibold text-cyan-100">{track.title}</p>
                   <p className="mt-1 text-xs text-muted">{track.description}</p>
                   <div className="mt-2 flex flex-wrap gap-1.5">
@@ -70,6 +53,7 @@ export function CertificationArchitecture() {
                           key={cert.id}
                           onClick={() => setSelectedId(cert.id)}
                           aria-label={`Select certification ${cert.name}`}
+                          id={`cert-${cert.id}`}
                           className={`rounded-full border px-2 py-1 text-xs ${
                             active ? 'border-violet-300/60 bg-violet-300/20' : 'border-white/20 bg-white/5 hover:bg-white/10'
                           }`}
@@ -90,11 +74,8 @@ export function CertificationArchitecture() {
             ) : (
               <>
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-xl font-semibold">{selectedCertification.name}</h3>
+                  <h3 id={`cert-detail-${selectedCertification.id}`} className="text-xl font-semibold">{selectedCertification.name}</h3>
                   <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs">{selectedCertification.category}</span>
-                  {selectedCertification.priority ? (
-                    <span className="rounded-full bg-cyan-300/20 px-2 py-0.5 text-xs text-cyan-100">Priority {selectedCertification.priority}</span>
-                  ) : null}
                 </div>
                 <div className="mt-3 space-y-2">
                   <p><strong>Definition:</strong> {selectedCertification.definition}</p>

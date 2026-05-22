@@ -103,6 +103,7 @@ export function ComplianceFrameworksPage() {
                 <motion.button
                   whileHover={{ y: -3 }}
                   key={item.id}
+                  id={item.id}
                   onClick={() => setActiveId(item.id)}
                   className={`glass rounded-2xl p-5 text-left ${selectedFramework?.id === item.id ? 'border-cyan-300/50' : ''}`}
                 >

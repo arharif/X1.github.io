@@ -562,6 +562,19 @@ function Shell() {
     document.title = base === 'arharif' ? 'arharif' : `${base} · arharif`; 
   }, [location.pathname]);
 
+  useEffect(() => {
+    const hash = location.hash.replace('#', '').trim();
+    if (!hash) return;
+    const run = () => {
+      const target = document.getElementById(hash);
+      if (!target) return;
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.classList.add('search-target-highlight');
+      window.setTimeout(() => target.classList.remove('search-target-highlight'), 2200);
+    };
+    window.setTimeout(run, 120);
+  }, [location.hash, location.pathname]);
+
 
   return (
     <div className="gradient-bg min-h-screen transition-colors duration-500">
