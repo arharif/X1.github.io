@@ -16,7 +16,7 @@ import {
   type ComplianceFramework,
   type FrameworkCategory,
 } from '@/data/complianceFrameworks';
-import { CertificationExplorer } from '@/components/compliance/CertificationExplorer';
+import { CertificationArchitecture } from '@/components/compliance/CertificationArchitecture';
 
 const layerCards = [
   { title: 'Governance Layer', items: ['COBIT', 'ISO 27001', 'NIST CSF'], icon: Building2 },
@@ -62,7 +62,7 @@ export function ComplianceFrameworksPage() {
             Explore Frameworks
           </button>
           <button
-            onClick={() => document.getElementById('certification-explorer')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => document.getElementById('certification-architecture')?.scrollIntoView({ behavior: 'smooth' })}
             className="rounded-full bg-white/10 px-3 py-1.5 text-sm"
             aria-label="View certifications section"
           >
@@ -176,7 +176,7 @@ export function ComplianceFrameworksPage() {
         )}
       </section>
 
-      <CertificationExplorer />
+      <CertificationArchitecture />
 
       <section className="space-y-3">
         <h2 className="text-2xl font-semibold">Unified Compliance Model Summary</h2>

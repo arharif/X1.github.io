@@ -11,6 +11,13 @@ export type Certification = {
   priority?: number;
 };
 
+export type CertificationTrack = {
+  id: string;
+  title: string;
+  description: string;
+  certifications: string[];
+};
+
 export const certificationCategories = [
   'All',
   'Foundation',
@@ -40,4 +47,16 @@ export const certifications: Certification[] = [
   { id: 'cippe', name: 'CIPP/E', category: 'Privacy', definition: 'IAPP privacy certification focused on European data protection law, GDPR obligations, and practical privacy governance requirements.', bestFor: 'Privacy officers, compliance leads, legal-tech professionals, and GRC teams managing personal-data risk.', careerPath: 'Privacy Analyst → Data Protection Specialist → Privacy Program Manager / DPO Track.', domainsCovered: ['European data protection framework', 'GDPR principles and lawful processing', 'Data subject rights', 'Cross-border data transfer considerations', 'Privacy governance and accountability'], practicalValue: 'Strengthens practical privacy compliance execution and policy-to-operations translation.', whyRecommended: 'Recommended for privacy governance integration in ISO/NIST/GRC programs and regulatory readiness.', priority: 6 },
   { id: 'iso-27001-lead-implementer', name: 'ISO/IEC 27001 Lead Implementer', category: 'GRC / Risk', definition: 'ISMS implementation certification focused on designing, deploying, and improving an ISO/IEC 27001-aligned security management system.', bestFor: 'GRC managers, compliance architects, and ISMS program owners implementing governance programs.', careerPath: 'GRC Analyst → ISMS Lead → Compliance Manager.', domainsCovered: ['ISMS scope and context', 'Risk assessment and risk treatment', 'Control selection and statement of applicability', 'ISMS governance lifecycle', 'Continual improvement and internal monitoring'], practicalValue: 'Provides a practical blueprint for turning policy and risk requirements into auditable ISMS execution.', whyRecommended: 'Recommended as an implementation foundation for ISO-centric governance and compliance programs.', priority: 1 },
   { id: 'iso-22301-lead-implementer', name: 'ISO 22301 Lead Implementer', category: 'GRC / Risk', definition: 'Business continuity management certification focused on designing and operationalizing BCMS capabilities and resilience planning.', bestFor: 'Resilience managers, continuity coordinators, and governance teams responsible for DR/PCA readiness.', careerPath: 'Business Continuity Analyst → BCMS Lead → Operational Resilience Manager.', domainsCovered: ['Business impact analysis', 'Continuity strategy design', 'Recovery planning and playbooks', 'Exercise and testing programs', 'BCMS governance and continual improvement'], practicalValue: 'Improves preparedness for disruption through structured continuity planning and verification.', whyRecommended: 'Recommended for PCA/DR drill readiness and resilience maturity in regulated operations.', priority: 5 },
+];
+
+export const certificationTracks: CertificationTrack[] = [
+  { id: 'foundation', title: 'Foundation', description: 'Core entry certifications for cybersecurity fundamentals.', certifications: ['security-plus', 'isc2-cc'] },
+  { id: 'blue-team-soc', title: 'Blue Team / SOC', description: 'Detection and response progression for defenders.', certifications: ['cysa-plus'] },
+  { id: 'leadership-ciso', title: 'Leadership / CISO', description: 'Strategic governance and executive cybersecurity leadership.', certifications: ['cism', 'cissp'] },
+  { id: 'grc-risk', title: 'GRC / Risk', description: 'Governance, risk, and resilience implementation path.', certifications: ['iso-27001-lead-implementer', 'crisc', 'iso-22301-lead-implementer'] },
+  { id: 'audit-assurance', title: 'Audit / Assurance', description: 'Independent assurance and control validation.', certifications: ['cisa', 'iso-27001-lead-auditor'] },
+  { id: 'cloud-security', title: 'Cloud Security', description: 'Cloud security architecture and governance.', certifications: ['ccsp'] },
+  { id: 'offensive-security', title: 'Offensive Security', description: 'Attacker-method and practical offensive testing.', certifications: ['ceh', 'oscp'] },
+  { id: 'privacy', title: 'Privacy', description: 'Data protection and privacy governance.', certifications: ['cippe'] },
+  { id: 'architecture-advanced', title: 'Architecture / Advanced', description: 'Advanced technical architecture and enterprise controls.', certifications: ['casp-securityx'] },
 ];
