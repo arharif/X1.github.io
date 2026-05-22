@@ -16,11 +16,15 @@ export type Certification = {
   tracks: string[];
 };
 
-export type CertificationTrack = {
+export type CertificationRoadmapItem = {
   id: string;
-  title: string;
-  description: string;
-  certifications: string[];
+  priority: number;
+  certificationName: string;
+  whyItMatters: string;
+  knowledgeGained: string[];
+  domainsCovered: string[];
+  practicalValue: string;
+  learningOutcome: string;
 };
 
 export const certifications: Certification[] = [
