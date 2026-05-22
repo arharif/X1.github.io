@@ -16,6 +16,7 @@ export function Navbar({ mode, onTheme }: { mode: ThemeMode; onTheme: (m: ThemeM
     { to: '/professional', label: 'Technology & Innovation', match: (path) => path === '/professional' || path.startsWith('/professional/') },
     { to: '/personal', label: 'Curiosities & Philosophy', match: (path) => path === '/personal' || path.startsWith('/personal/') },
     { to: '/security-mindmap', label: 'Security Map', match: (path) => path === '/security-mindmap' || path === '/Security_Mindmap' },
+    { to: '/compliance-frameworks', label: 'Compliance Frameworks', match: (path) => path === '/compliance-frameworks' },
     { to: '/submitting', label: 'Submitting', match: (path) => path === '/submitting' },
     { to: '/games#games-zone', label: 'Games', match: (path) => path === '/games' },
     { to: '/admin', label: 'Admin', match: (path) => path === '/admin' || path === '/login' },

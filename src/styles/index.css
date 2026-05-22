@@ -78,6 +78,43 @@ body {
     radial-gradient(circle at 84% 12%, rgba(168,85,247,0.22), transparent 42%),
     var(--bg);
 }
+.landing-ambient {
+  background:
+    radial-gradient(circle at 16% 18%, rgba(56, 189, 248, 0.10), transparent 28%),
+    radial-gradient(circle at 82% 22%, rgba(129, 140, 248, 0.12), transparent 34%),
+    radial-gradient(circle at 60% 78%, rgba(99, 102, 241, 0.08), transparent 36%);
+}
+.landing-orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(24px);
+  opacity: 0.35;
+  animation: landing-float 18s ease-in-out infinite alternate;
+}
+.landing-orb--a { width: 180px; height: 180px; left: 6%; top: 14%; background: rgba(56,189,248,0.35); }
+.landing-orb--b { width: 230px; height: 230px; right: 8%; top: 20%; background: rgba(167,139,250,0.34); animation-duration: 22s; }
+.landing-orb--c { width: 200px; height: 200px; left: 38%; bottom: 2%; background: rgba(59,130,246,0.28); animation-duration: 25s; }
+@keyframes landing-float { from { transform: translate3d(0,0,0); } to { transform: translate3d(0,-16px,0); } }
+.theme-light .landing-ambient {
+  background:
+    radial-gradient(circle at 14% 14%, rgba(59, 130, 246, 0.12), transparent 30%),
+    radial-gradient(circle at 78% 18%, rgba(168, 85, 247, 0.12), transparent 34%),
+    radial-gradient(circle at 62% 80%, rgba(14, 165, 233, 0.10), transparent 34%);
+}
+.theme-purple .landing-ambient {
+  background:
+    radial-gradient(circle at 16% 16%, rgba(192, 132, 252, 0.16), transparent 30%),
+    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.16), transparent 34%),
+    radial-gradient(circle at 58% 76%, rgba(124, 58, 237, 0.14), transparent 34%);
+}
+.theme-rainbow .landing-ambient {
+  background:
+    radial-gradient(circle at 8% 14%, rgba(244, 63, 94, 0.16), transparent 30%),
+    radial-gradient(circle at 30% 12%, rgba(234, 179, 8, 0.14), transparent 32%),
+    radial-gradient(circle at 55% 8%, rgba(34, 197, 94, 0.14), transparent 35%),
+    radial-gradient(circle at 80% 16%, rgba(59, 130, 246, 0.16), transparent 34%),
+    radial-gradient(circle at 92% 24%, rgba(168, 85, 247, 0.16), transparent 36%);
+}
 .theme-rainbow .gradient-bg {
   background:
     radial-gradient(circle at 8% 12%, rgba(244,63,94,0.28), transparent 36%),
