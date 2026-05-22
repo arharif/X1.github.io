@@ -44,7 +44,7 @@ export function Navbar({ mode, onTheme }: { mode: ThemeMode; onTheme: (m: ThemeM
         </nav>
 
         <div className="hidden md:block"><ThemeSwitcher mode={mode} onChange={onTheme} /></div>
-        <button className="md:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}>{open ? <X /> : <Menu />}</button>
+        <button className="rounded-full bg-white/5 p-2 md:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}>{open ? <X /> : <Menu />}</button>
       </div>
 
       {open && (
