@@ -47,6 +47,12 @@ export function ComplianceFrameworksPage() {
         <p className="text-sm text-muted">Compare international security, privacy, resilience, payment, AI governance, and IT governance frameworks using a consistent structure.</p>
       </div>
 
+      <section className="space-y-3">
+        <div className="glass rounded-2xl p-5">
+          <h2 className="text-2xl font-semibold">Frameworks Library</h2>
+          <p className="mt-2 text-sm text-muted">Compare international security, privacy, resilience, payment, AI governance, and IT governance frameworks using a consistent structure.</p>
+        </div>
+
       <div className="flex flex-wrap gap-2">
         {complianceFilters.map((chip) => (
           <button key={chip} onClick={() => setActiveFilter(chip)} className={`rounded-full px-3 py-1.5 text-sm ${activeFilter === chip ? 'bg-white/25' : 'bg-white/10 hover:bg-white/15'}`}>
