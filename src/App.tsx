@@ -9,6 +9,7 @@ import { ArticleView } from '@/components/ArticleView';
 import { ContentCard, EntryCard } from '@/components/Cards';
 import { Navbar } from '@/components/Navbar';
 import { ThemeMotionBackground } from '@/components/ThemeMotionBackground';
+import { SearchBar } from '@/components/SearchBar';
 import { GamesHub } from '@/components/GamesHub';
 import { TopicFilterBar } from '@/components/TopicFilterBar';
 import { SecurityMindmapPage } from '@/pages/SecurityMindmapPage';
@@ -120,7 +121,8 @@ function Landing() {
         <span className="landing-orb landing-orb--b" />
         <span className="landing-orb landing-orb--c" />
       </div>
-      <motion.section className="grid gap-6 py-10 md:grid-cols-2" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}>
+      <SearchBar />
+      <motion.section className="grid gap-6 py-6 md:grid-cols-2" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}>
         <EntryCard title={universeMeta.professional.label} description={universeMeta.professional.description} onClick={() => nav('/professional')} />
         <EntryCard title={universeMeta.personal.label} description={universeMeta.personal.description} onClick={() => nav('/personal')} />
       </motion.section>
