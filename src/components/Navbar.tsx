@@ -25,8 +25,8 @@ export function Navbar({ mode, onTheme }: { mode: ThemeMode; onTheme: (m: ThemeM
     `nav-link ${active ? 'is-active' : ''} ${admin ? 'is-admin' : ''}`;
 
   return (
-    <header className="nav-shell sticky top-0 z-50">
-      <div className="mx-auto flex max-w-6xl items-center justify-between p-4">
+    <header className="nav-shell sticky top-0 z-50 px-6 py-6">
+      <div className="liquid-glass mx-auto flex max-w-6xl items-center justify-between rounded-full px-4 py-3">
         <Link to="/" className="flex items-center" aria-label="Home">
           <X1Mark size="sm" mode={mode} />
         </Link>
@@ -43,7 +43,7 @@ export function Navbar({ mode, onTheme }: { mode: ThemeMode; onTheme: (m: ThemeM
         </nav>
 
         <div className="hidden md:block"><ThemeSwitcher mode={mode} onChange={onTheme} /></div>
-        <button className="md:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}>{open ? <X /> : <Menu />}</button>
+        <button className="rounded-full bg-white/5 p-2 md:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}>{open ? <X /> : <Menu />}</button>
       </div>
 
       {open && (
