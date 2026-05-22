@@ -17,6 +17,7 @@ import {
   type FrameworkCategory,
 } from '@/data/complianceFrameworks';
 import { CertificationMindMap } from '@/components/compliance/CertificationMindMap';
+import { roadmap } from '@/data/certifications';
 
 const layerCards = [
   { title: 'Governance Layer', items: ['COBIT', 'ISO 27001', 'NIST CSF'], icon: Building2 },
@@ -181,26 +182,38 @@ export function ComplianceFrameworksPage() {
       <section className="space-y-3">
         <h2 className="text-2xl font-semibold">Recommended Certification Roadmap</h2>
         <p className="text-sm text-muted">
-          A focused path aligned with GRC, PCI, SOC 2, PCA/DR Drill, privacy, AI governance, NIST, ISO, and CISO-track
-          development.
+          A structured learning path aligned with GRC, PCI, SOC 2, PCA/DR Drill, privacy, AI governance, NIST, ISO, and CISO-track development.
         </p>
-        <div className="grid gap-2 md:grid-cols-2">
-          {[
-            'ISO 27001 Lead Implementer — Strong base for ISMS, controls, risk, and certification projects.',
-            'CISM — Best match for security governance and CISO-track thinking.',
-            'CRISC — Strengthens IT risk and control management expertise.',
-            'CISA — Helps with audit, evidence, SOC 2, control testing, and assurance.',
-            'ISO 22301 Lead Implementer — Directly aligned with PCA/DR Drill work.',
-            'CIPP/E or CIPM — Useful for privacy, GDPR, and DPO-style governance.',
-            'AIGP or ISO 42001 Lead Implementer — Strong choice for AI governance and responsible AI programs.',
-            'CISSP — Excellent senior-level certification once broad security foundation is mature.',
-          ].map((step, idx) => (
-            <div key={step} className="glass rounded-xl p-3 text-sm">
-              <span className="mr-2 text-cyan-200">{idx + 1}.</span>
-              {step}
+        {roadmap.length === 0 ? (
+          <div className="glass rounded-2xl p-4 text-sm text-muted">No certifications available.</div>
+        ) : (
+          <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+            <ol className="glass rounded-2xl p-3">
+              {roadmap.map((item) => (
+                <li key={item.id} className="border-b border-white/10 last:border-b-0">
+                  <a href={`#${item.id}`} className="flex items-center gap-2 px-2 py-2 text-sm hover:bg-white/5">
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-cyan-300/20 text-xs text-cyan-100">{item.priority}</span>
+                    <span>{item.certificationName}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+            <div className="space-y-3">
+              {roadmap.map((item) => (
+                <details key={`panel-${item.id}`} className="glass rounded-2xl p-4">
+                  <summary className="cursor-pointer text-sm font-semibold">{item.priority}. {item.certificationName}</summary>
+                  <div className="mt-3 space-y-2 text-sm">
+                    <p><strong>Why it matters:</strong> {item.whyItMatters}</p>
+                    <p><strong>What knowledge it gives:</strong> {safeArray(item.knowledgeGained).join(' · ') || 'No data available.'}</p>
+                    <p><strong>Key domains / chapters covered:</strong> {safeArray(item.domainsCovered).join(' · ') || 'No data available.'}</p>
+                    <p><strong>Practical value:</strong> {item.practicalValue}</p>
+                    <p><strong>Suggested learning outcome:</strong> {item.learningOutcome}</p>
+                  </div>
+                </details>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </section>
 
       <section className="space-y-3">
