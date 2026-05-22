@@ -59,9 +59,11 @@ function Landing() {
         <span className="landing-orb landing-orb--c" />
       </div>
       <SearchBar />
-      <motion.section className="grid gap-6 py-6 md:grid-cols-2" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}>
-        <EntryCard title={universeMeta.professional.label} description={universeMeta.professional.description} onClick={() => nav('/professional')} />
-        <EntryCard title={universeMeta.personal.label} description={universeMeta.personal.description} onClick={() => nav('/personal')} />
+      <motion.section className="grid gap-5 py-4 md:grid-cols-2" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}>
+        <EntryCard title={universeMeta.professional.label} description={universeMeta.professional.description} onClick={() => nav('/professional')} label="Universe" />
+        <EntryCard title={universeMeta.personal.label} description={universeMeta.personal.description} onClick={() => nav('/personal')} label="Universe" />
+        <EntryCard title="Security Map" description="Explore cybersecurity roles, skills, capabilities, and growth paths through an interactive security mindmap." onClick={() => nav('/security-mindmap')} label="Capability" />
+        <EntryCard title="Compliance Frameworks" description="Explore cybersecurity, privacy, resilience, payment security, AI governance, and certification guidance in one structured compliance hub." onClick={() => nav('/compliance-frameworks')} label="Governance" />
       </motion.section>
     </section>
   );

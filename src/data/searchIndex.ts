@@ -10,7 +10,7 @@ export type SearchItem = {
 };
 
 const pageIndex: SearchItem[] = [
-  { id: 'landing', title: 'Landing', description: 'Main entry page with two universes.', type: 'page', path: '/', keywords: ['home'] },
+  { id: 'landing', title: 'Landing', description: 'Main entry page with featured exploration cards.', type: 'page', path: '/', keywords: ['home'] },
   { id: 'tech', title: 'Technology & Innovation', description: 'Professional technology and cybersecurity content.', type: 'page', path: '/professional', keywords: ['ai', 'cybersecurity'] },
   { id: 'personal', title: 'Curiosities & Philosophy', description: 'Personal reflections and philosophy posts.', type: 'page', path: '/personal', keywords: ['philosophy', 'curiosity'] },
   { id: 'security-map', title: 'Security Map', description: 'Explore security domains in a visual map.', type: 'security', path: '/security-mindmap', keywords: ['mindmap', 'security'] },
@@ -31,7 +31,7 @@ const frameworkIndex: SearchItem[] = complianceFrameworks.map((f) => ({
 
 
 const certificationTerms = [
-  'CISSP','CISM','CISA','CRISC','CGEIT','CCSP','ISO 27001 Lead Implementer','ISO 27001 Lead Auditor','ISO 22301 Lead Implementer','ISO 22301 Lead Auditor','CIPP/E','CIPM','AIGP','ISO 42001 Lead Implementer','ISO 42001 Lead Auditor','Security+','CySA+','CASP+','SecurityX','CEH','OSCP','CDPSE','ITIL 4 Foundation','ITIL','PMP','TOGAF'
+  'Security+','ISC2 CC','CySA+','CISSP','CISM','CISA','CRISC','CCSP','ISO 27001 Lead Auditor','ISO 27001 Lead Implementer','CASP+','SecurityX','CEH','OSCP','CIPP/E'
 ];
 
 const certificationIndex: SearchItem[] = certificationTerms.map((name) => ({
@@ -39,7 +39,7 @@ const certificationIndex: SearchItem[] = certificationTerms.map((name) => ({
   title: name,
   description: 'Certification path in the Unified Compliance & Security Map.',
   type: 'security',
-  path: '/compliance-frameworks#certification-architecture',
+  path: '/compliance-frameworks#certification-explorer',
   keywords: ['certification', 'career path', 'compliance map', name],
 }));
 
