@@ -1,23 +1,16 @@
 import { useMemo, useState } from 'react';
-import { certifications, type Certification, type CertificationTrack } from '@/data/certifications';
+import {
+  certifications,
+  certificationTracks,
+  type Certification,
+  type CertificationTrack,
+} from '@/data/certifications';
 
 const safeArray = <T,>(value: T[] | undefined | null): T[] => (Array.isArray(value) ? value : []);
 
-const trackMeta: CertificationTrack[] = [
-  { id:'strategic-ciso', title:'Strategic / CISO Track', description:'Leadership and strategy certifications.', certifications:['iso-27001-lead-implementer','cism','crisc','cissp'] },
-  { id:'grc-compliance', title:'GRC & Compliance', description:'Governance and compliance-oriented certifications.', certifications:['iso-27001-lead-implementer','cism','crisc','cisa','iso-27001-lead-auditor'] },
-  { id:'audit-assurance', title:'Audit & Assurance', description:'Independent assurance and audit expertise.', certifications:['cisa','iso-27001-lead-auditor','iso-22301-lead-auditor','iso-42001-lead-auditor'] },
-  { id:'privacy-dpo', title:'Privacy & DPO', description:'Privacy governance and operations.', certifications:['cippe-cipm','cdpse'] },
-  { id:'ai-governance', title:'AI Governance', description:'Responsible AI governance and assurance.', certifications:['aigp-or-iso-42001-li','iso-42001-lead-auditor'] },
-  { id:'resilience', title:'Resilience / PCA / DR', description:'Operational resilience and continuity.', certifications:['iso-22301-lead-implementer','iso-22301-lead-auditor'] },
-  { id:'cloud-security', title:'Cloud Security', description:'Cloud security specialization.', certifications:['ccsp'] },
-  { id:'technical-cyber', title:'Technical Cybersecurity', description:'SOC and technical defense progression.', certifications:['security-plus','cysa-plus','casp-securityx'] },
-  { id:'offensive-security', title:'Offensive Security', description:'Hands-on offensive security path.', certifications:['ceh','oscp'] },
-  { id:'it-governance', title:'IT Governance / Transformation', description:'Enterprise governance and transformation.', certifications:['cgeit','itil4','pmp','togaf'] },
-];
-
 export function CertificationArchitecture() {
   const certs = safeArray(certifications);
+  const tracks = safeArray(certificationTracks);
   const [selectedId, setSelectedId] = useState(certs[0]?.id ?? '');
 
   const selectedCertification = useMemo(
@@ -42,7 +35,7 @@ export function CertificationArchitecture() {
             {roadmap.map((item) => <button key={`path-${item.id}`} onClick={() => setSelectedId(item.id)} className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-2.5 py-1 text-xs">P{item.priority}: {item.name}</button>)}
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            {trackMeta.map((track) => (
+            {tracks.map((track: CertificationTrack) => (
               <div key={track.id} className="rounded-xl border border-white/15 bg-white/5 p-3">
                 <p className="text-sm font-semibold text-cyan-100">{track.title}</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
