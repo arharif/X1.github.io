@@ -1,13 +1,6 @@
 import { motion } from 'framer-motion';
 import {
-  BadgeCheck,
-  BrainCircuit,
-  Building2,
-  LockKeyhole,
   Scale,
-  ShieldCheck,
-  SquareStack,
-  Workflow,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import {
@@ -17,16 +10,6 @@ import {
   type FrameworkCategory,
 } from '@/data/complianceFrameworks';
 import { CertificationArchitecture } from '@/components/compliance/CertificationArchitecture';
-
-const layerCards = [
-  { title: 'Governance Layer', items: ['COBIT', 'ISO 27001', 'NIST CSF'], icon: Building2 },
-  { title: 'Security Control Layer', items: ['ISO 27002', 'NIST 800-53', 'CIS Controls', 'PCI DSS'], icon: ShieldCheck },
-  { title: 'Risk Authorization Layer', items: ['NIST RMF'], icon: Workflow },
-  { title: 'Privacy Layer', items: ['GDPR', 'ISO 27701'], icon: LockKeyhole },
-  { title: 'Resilience Layer', items: ['ISO 22301', 'DORA'], icon: SquareStack },
-  { title: 'AI Governance Layer', items: ['NIST AI RMF', 'ISO 42001'], icon: BrainCircuit },
-  { title: 'Assurance Layer', items: ['SOC 2', 'Internal Audit', 'Client Requirements'], icon: BadgeCheck },
-];
 
 const safeArray = <T,>(value: T[] | undefined | null): T[] => (Array.isArray(value) ? value : []);
 
@@ -61,14 +44,14 @@ export function ComplianceFrameworksPage() {
         <div className="mt-4 flex flex-wrap gap-2">
           <button
             onClick={() => document.getElementById('frameworks-library')?.scrollIntoView({ behavior: 'smooth' })}
-            className="rounded-full border border-cyan-200/60 bg-gradient-to-r from-cyan-400/90 via-sky-400/85 to-blue-500/80 px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_0_25px_rgba(34,211,238,0.35)] hover:brightness-110 focus-visible:ring-2 focus-visible:ring-cyan-200"
+            className="compliance-cta compliance-cta--primary"
             aria-label="Explore frameworks section"
           >
             Explore Frameworks
           </button>
           <button
             onClick={() => document.getElementById('certification-explorer')?.scrollIntoView({ behavior: 'smooth' })}
-            className="rounded-full border border-violet-200/40 bg-slate-900/60 px-4 py-2 text-sm font-medium text-violet-100 hover:border-cyan-300/60 hover:bg-slate-800/70 focus-visible:ring-2 focus-visible:ring-violet-200"
+            className="compliance-cta compliance-cta--secondary"
             aria-label="View certifications section"
           >
             View Certifications
@@ -184,25 +167,6 @@ export function ComplianceFrameworksPage() {
 
       <CertificationArchitecture />
 
-      <section className="space-y-3">
-        <h2 className="text-2xl font-semibold">Unified Compliance Model Summary</h2>
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {layerCards.map((layer) => {
-            const Icon = layer.icon;
-            return (
-              <div
-                key={layer.title}
-                className="glass rounded-2xl border border-cyan-300/25 bg-gradient-to-br from-white/10 to-white/5 p-4"
-              >
-                <p className="flex items-center gap-2 text-sm font-semibold">
-                  <Icon size={16} /> {layer.title}
-                </p>
-                <p className="mt-2 text-xs text-muted">{layer.items.join(' · ')}</p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
     </section>
   );
 }
