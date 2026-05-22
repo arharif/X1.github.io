@@ -39,7 +39,7 @@ const certificationIndex: SearchItem[] = certificationTerms.map((name) => ({
   title: name,
   description: 'Certification path in the Unified Compliance & Security Map.',
   type: 'security',
-  path: `/compliance-frameworks#${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+  path: '/compliance-frameworks#certification-architecture',
   keywords: ['certification', 'career path', 'compliance map', name],
 }));
 

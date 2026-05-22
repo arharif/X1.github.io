@@ -53,7 +53,7 @@ function Landing() {
 
   return (
     <section className="relative"> 
-      <div className="landing-ambient pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-3xl" aria-hidden="true">
+      <div className="landing-ambient pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
         <span className="landing-orb landing-orb--a" />
         <span className="landing-orb landing-orb--b" />
         <span className="landing-orb landing-orb--c" />
