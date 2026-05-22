@@ -27,12 +27,12 @@ export function Navbar({ mode, onTheme }: { mode: ThemeMode; onTheme: (m: ThemeM
 
   return (
     <header className="nav-shell nav-enter sticky top-0 z-50">
-      <div className="mx-auto flex max-w-6xl items-center justify-between p-4">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 p-3 md:gap-3 md:px-4">
         <Link to="/" className="flex items-center" aria-label="Home">
           <X1Mark size="sm" mode={mode} />
         </Link>
 
-        <nav className="hidden gap-3 md:flex" aria-label="Primary navigation">
+        <nav className="hidden gap-1.5 lg:gap-2 md:flex md:flex-wrap md:justify-end" aria-label="Primary navigation">
           {links.map((link) => {
             const active = link.match(location.pathname);
             return (
@@ -44,7 +44,7 @@ export function Navbar({ mode, onTheme }: { mode: ThemeMode; onTheme: (m: ThemeM
         </nav>
 
         <div className="hidden md:block"><ThemeSwitcher mode={mode} onChange={onTheme} /></div>
-        <button className="rounded-full bg-white/5 p-2 md:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}>{open ? <X /> : <Menu />}</button>
+        <button className="rounded-full bg-white/5 p-1.5 md:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}>{open ? <X /> : <Menu />}</button>
       </div>
 
       {open && (

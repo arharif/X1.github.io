@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Github, Linkedin, Mail } from 'lucide-react';
-import { Component, lazy, ReactNode, Suspense, useEffect, useState } from 'react';
+import { BookOpen, Compass, Github, Linkedin, Mail, Shield, Sparkles } from 'lucide-react';
+import { Component, lazy, ReactNode, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AdminEditor } from '@/components/admin/AdminEditor';
 import { TopicEditor } from '@/components/admin/TopicEditor';
@@ -8,6 +8,7 @@ import { X1Mark } from '@/components/branding/X1Mark';
 import { ArticleView } from '@/components/ArticleView';
 import { ContentCard, EntryCard } from '@/components/Cards';
 import { Navbar } from '@/components/Navbar';
+import { ThemeMotionBackground } from '@/components/ThemeMotionBackground';
 import { GamesHub } from '@/components/GamesHub';
 import { TopicFilterBar } from '@/components/TopicFilterBar';
 import { SecurityMindmapPage } from '@/pages/SecurityMindmapPage';
@@ -624,6 +625,7 @@ function Shell() {
 
   return (
     <div className="gradient-bg min-h-screen transition-colors duration-500">
+      <ThemeMotionBackground mode={mode} />
       <Navbar mode={mode} onTheme={setMode} />
       <main className="mx-auto max-w-6xl p-4 md:p-8">
         {!hasSupabaseCoreConfig && <div className="glass mb-4 rounded-xl p-3 text-xs text-amber-300">Configuration is incomplete. Some authenticated features may be unavailable.</div>}
@@ -665,7 +667,6 @@ function Shell() {
             </a>
           </div>
         </div>
-        <p className="mt-3 text-xs">Built with React, TypeScript & Supabase</p>
       </footer>
     </div>
   );
