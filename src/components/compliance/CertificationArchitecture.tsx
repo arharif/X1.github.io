@@ -33,7 +33,7 @@ export function CertificationArchitecture() {
 
   return (
     <section id="certification-explorer" className="space-y-4">
-      <div className="glass rounded-2xl p-5">
+      <div className="glass compliance-panel rounded-2xl p-5">
         <h2 className="text-2xl font-semibold">Certification Explorer</h2>
         <p className="mt-2 text-sm text-muted">Explore certifications by area, search by keyword, and inspect full exam domains with practical role alignment.</p>
       </div>
@@ -42,7 +42,7 @@ export function CertificationArchitecture() {
         <div className="glass rounded-2xl p-4 text-sm text-muted">No certifications available.</div>
       ) : (
         <div className="grid gap-4 lg:grid-cols-[1.1fr_1.2fr]">
-          <div className="glass space-y-4 rounded-2xl p-4">
+          <div className="glass compliance-panel space-y-4 rounded-2xl p-4">
             <div className="space-y-2">
               <label className="compliance-premium-search">
                 <Search size={16} className="compliance-premium-search__icon" aria-hidden="true" />
@@ -62,7 +62,7 @@ export function CertificationArchitecture() {
                 <button
                   key={area}
                   onClick={() => setActiveArea(area)}
-                  className={`rounded-full border px-3 py-1 text-xs ${activeArea === area ? 'border-cyan-300/70 bg-cyan-300/20 text-white' : 'border-white/20 bg-white/5 hover:bg-white/10'}`}
+                  className={`compliance-chip rounded-full px-3 py-1 text-xs ${activeArea === area ? 'compliance-chip--active' : ''}`}
                 >
                   {area}
                 </button>
@@ -79,7 +79,7 @@ export function CertificationArchitecture() {
                     id={`cert-${certification.id}`}
                     onClick={() => setSelectedId(certification.id)}
                     aria-label={`Select certification ${certification.name}`}
-                    className={`w-full rounded-xl border p-3 text-left ${selectedCertification?.id === certification.id ? 'border-cyan-300/60 bg-cyan-400/15' : 'border-white/15 bg-white/5 hover:bg-white/10'}`}
+                    className={`w-full rounded-xl border p-3 text-left ${selectedCertification?.id === certification.id ? 'border-cyan-300/60 bg-cyan-400/16' : 'border-white/20 bg-white/8 hover:bg-white/12'}`}
                   >
                     <p className="text-sm font-semibold">{certification.name}</p>
                     <p className="text-xs text-muted">{certification.area} · {certification.level}</p>
@@ -89,7 +89,7 @@ export function CertificationArchitecture() {
             </div>
           </div>
 
-          <aside className="glass rounded-2xl p-4 text-sm">
+          <aside className="glass compliance-panel rounded-2xl p-4 text-sm">
             {!selectedCertification ? (
               <p className="text-muted">Select a certification to view details.</p>
             ) : (
