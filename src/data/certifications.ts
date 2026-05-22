@@ -50,14 +50,13 @@ export const certifications: Certification[] = [
 ];
 
 export const certificationTracks: CertificationTrack[] = [
-  { id: 'strategic-ciso', title: 'Strategic / CISO Track', description: 'Leadership and strategy certifications.', certifications: ['iso-27001-lead-implementer', 'cism', 'crisc', 'cissp'] },
-  { id: 'grc-compliance', title: 'GRC & Compliance', description: 'Governance and compliance-oriented certifications.', certifications: ['iso-27001-lead-implementer', 'cism', 'crisc', 'cisa', 'iso-27001-lead-auditor'] },
-  { id: 'audit-assurance', title: 'Audit & Assurance', description: 'Independent assurance and audit expertise.', certifications: ['cisa', 'iso-27001-lead-auditor'] },
-  { id: 'privacy-dpo', title: 'Privacy & DPO', description: 'Privacy governance and operations.', certifications: ['cippe'] },
-  { id: 'ai-governance', title: 'AI Governance', description: 'Responsible AI governance and assurance.', certifications: ['cism', 'cissp'] },
-  { id: 'resilience', title: 'Resilience / PCA / DR', description: 'Operational resilience and continuity.', certifications: ['iso-22301-lead-implementer'] },
-  { id: 'cloud-security', title: 'Cloud Security', description: 'Cloud security specialization.', certifications: ['ccsp'] },
-  { id: 'technical-cyber', title: 'Technical Cybersecurity', description: 'SOC and technical defense progression.', certifications: ['security-plus', 'cysa-plus', 'casp-securityx'] },
+  { id: 'cyber-foundations', title: 'Cybersecurity Foundations', description: 'Foundational certifications for core cybersecurity readiness.', certifications: ['security-plus', 'isc2-cc'] },
+  { id: 'security-management', title: 'Information Security Management', description: 'Management and enterprise security program leadership.', certifications: ['cism', 'iso-27001-lead-implementer', 'cissp'] },
+  { id: 'grc-risk-audit', title: 'GRC, Risk & Audit', description: 'Governance, risk analysis, controls, and assurance disciplines.', certifications: ['crisc', 'cisa', 'iso-27001-lead-auditor'] },
+  { id: 'resilience', title: 'Business Continuity & Resilience', description: 'Business continuity and disruption-readiness capability.', certifications: ['iso-22301-lead-implementer'] },
+  { id: 'privacy-data-protection', title: 'Privacy & Data Protection', description: 'Data privacy governance and protection practices.', certifications: ['cippe'] },
+  { id: 'advanced-leadership', title: 'Advanced Security Leadership', description: 'Advanced architecture and executive-level security capability.', certifications: ['cissp', 'casp-securityx', 'ccsp'] },
+  { id: 'ai-governance-security', title: 'AI Governance & Security', description: 'AI governance pathway aligned with modern compliance needs.', certifications: ['cism', 'cissp', 'crisc'] },
+  { id: 'technical-cyber', title: 'Technical Cybersecurity', description: 'Operational defense and hands-on cybersecurity progression.', certifications: ['cysa-plus', 'casp-securityx'] },
   { id: 'offensive-security', title: 'Offensive Security', description: 'Hands-on offensive security path.', certifications: ['ceh', 'oscp'] },
-  { id: 'it-governance', title: 'IT Governance / Transformation', description: 'Enterprise governance and transformation.', certifications: ['cism', 'crisc', 'cissp'] },
 ];
