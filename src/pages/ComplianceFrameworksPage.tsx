@@ -47,6 +47,12 @@ export function ComplianceFrameworksPage() {
         <p className="text-sm text-muted">Compare international security, privacy, resilience, payment, AI governance, and IT governance frameworks using a consistent structure.</p>
       </div>
 
+      <section id="frameworks-library" className="space-y-3">
+      <div className="space-y-1">
+        <h2 className="text-2xl font-semibold">Frameworks Library</h2>
+        <p className="text-sm text-muted">Compare international security, privacy, resilience, payment, AI governance, and IT governance frameworks using a consistent structure.</p>
+      </div>
+
       <section className="space-y-3">
         <div className="glass rounded-2xl p-5">
           <h2 className="text-2xl font-semibold">Frameworks Library</h2>

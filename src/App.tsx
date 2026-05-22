@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { BookOpen, Compass, Github, Linkedin, Mail, Shield, Sparkles } from 'lucide-react';
-import { Component, lazy, ReactNode, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Component, lazy, ReactNode, Suspense, useEffect, useState } from 'react';
 import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AdminEditor } from '@/components/admin/AdminEditor';
 import { TopicEditor } from '@/components/admin/TopicEditor';
@@ -50,72 +50,9 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 
 function Landing() {
   const nav = useNavigate();
-  const featured = [
-    { category: 'Cybersecurity', title: 'Generative AI for Cyber Threat Detection', description: 'How AI augments SOC analysis, anomaly triage, and incident signal prioritization.', tags: ['AI', 'SOC', 'Threat Detection'] },
-    { category: 'IAM', title: 'Introduction to Identity & Access Management', description: 'A practical foundation for identities, authorization models, and access governance.', tags: ['IAM', 'Access Control', 'GRC'] },
-    { category: 'Philosophy', title: 'The Philosophy of Haku', description: 'A reflection on identity, purpose, and growth through symbolic storytelling.', tags: ['Philosophy', 'Anime', 'Reflection'] },
-  ] as const;
-  const paths = [
-    { title: 'Cybersecurity Foundations', description: 'Start with core security principles, governance, and risk foundations.', level: 'Beginner', cta: 'Begin path', icon: Shield, to: '/security-mindmap' },
-    { title: 'AI & Emerging Technology', description: 'Explore AI, modern engineering shifts, and future-ready technology concepts.', level: 'Intermediate', cta: 'Explore path', icon: Sparkles, to: '/professional' },
-    { title: 'Philosophy & Anime Reflections', description: 'Dive into reflective notes blending philosophy and creative narratives.', level: 'Beginner', cta: 'Read reflections', icon: BookOpen, to: '/personal' },
-    { title: 'Security Map Exploration', description: 'Navigate visual relationships across security domains and operating roles.', level: 'Advanced', cta: 'Open map', icon: Compass, to: '/security-mindmap' },
-  ] as const;
-  const stats = [{ value: '24+', label: 'Articles' }, { value: '12', label: 'Topics' }, { value: '80+', label: 'Security Concepts' }, { value: '5', label: 'Games' }, { value: '3', label: 'Knowledge Maps' }] as const;
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const frameRef = useRef<number>();
-  const fadeOutRef = useRef(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const reducedMotion = useMemo(() => window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false, []);
-
-  const animateOpacity = (to: number, duration = 500) => {
-    if (!videoRef.current) return;
-    if (frameRef.current) cancelAnimationFrame(frameRef.current);
-    const video = videoRef.current;
-    const from = Number(video.style.opacity || '0');
-    const start = performance.now();
-    const tick = (now: number) => {
-      const progress = Math.min(1, (now - start) / duration);
-      video.style.opacity = `${from + (to - from) * progress}`;
-      if (progress < 1) frameRef.current = requestAnimationFrame(tick);
-    };
-    frameRef.current = requestAnimationFrame(tick);
-  };
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (reducedMotion) return;
-    const onTimeUpdate = () => {
-      if (!video.duration || fadeOutRef.current) return;
-      if (video.duration - video.currentTime <= 0.55) {
-        fadeOutRef.current = true;
-        animateOpacity(0, 500);
-      }
-    };
-    const onEnded = () => {
-      video.style.opacity = '0';
-      window.setTimeout(() => {
-        video.currentTime = 0;
-        fadeOutRef.current = false;
-        video.play().catch(() => undefined);
-        animateOpacity(1, 500);
-      }, 100);
-    };
-    video.style.opacity = '0';
-    video.play().catch(() => undefined);
-    animateOpacity(1, 500);
-    video.addEventListener('timeupdate', onTimeUpdate);
-    video.addEventListener('ended', onEnded);
-    return () => {
-      video.removeEventListener('timeupdate', onTimeUpdate);
-      video.removeEventListener('ended', onEnded);
-      if (frameRef.current) cancelAnimationFrame(frameRef.current);
-    };
-  }, [reducedMotion]);
 
   return (
-    <section className="relative">
+    <section className="relative"> 
       <div className="landing-ambient pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-3xl" aria-hidden="true">
         <span className="landing-orb landing-orb--a" />
         <span className="landing-orb landing-orb--b" />
@@ -129,7 +66,6 @@ function Landing() {
     </section>
   );
 }
-
 function SearchPage() {
   const [topics, setTopics] = useState<TopicRecord[]>([]);
   const [content, setContent] = useState<ContentRecord[]>([]);
