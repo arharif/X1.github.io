@@ -16,6 +16,8 @@ export function X1Mark({ size = 'md', mode }: { size?: 'sm' | 'md' | 'lg'; mode?
       if (root.contains('theme-light')) setLiveMode('light');
       else if (root.contains('theme-purple')) setLiveMode('purple');
       else if (root.contains('theme-rainbow')) setLiveMode('rainbow');
+      else if (root.contains('theme-gold-egyptian')) setLiveMode('gold-egyptian');
+      else if (root.contains('theme-horror')) setLiveMode('horror');
       else setLiveMode('dark');
     };
     read();

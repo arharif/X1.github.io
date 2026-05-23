@@ -205,7 +205,7 @@ function TechnologyBook() {
 
   return (
     <section className="grid gap-6 lg:grid-cols-[260px_1fr]">
-      <div className="fixed left-0 top-0 z-40 h-1 bg-gradient-to-r from-cyan-400 via-violet-500 to-fuchsia-500" style={{ width: `${progress}%` }} />
+      <div className="fixed left-0 top-0 z-40 h-1 progress-accent" style={{ width: `${progress}%` }} />
       <aside className="glass sticky top-24 h-fit rounded-2xl p-4"><p className="text-xs uppercase tracking-[0.2em] text-muted">Table of contents</p><h2 className="mt-2 text-xl font-semibold">{topic.title}</h2><ul className="mt-3 space-y-2 text-sm">{chapters.map((c) => <li key={c.id}><a href={`#${c.slug}`} className="text-muted hover:text-white">{c.title}</a></li>)}</ul></aside>
       <div><div className="glass mb-6 rounded-3xl p-8"><p className="text-xs uppercase tracking-[0.2em] text-muted">Interactive guide · {topic.displayStyle}</p><h1 className="mt-2 text-4xl font-semibold">{topic.title}</h1><p className="mt-3 text-muted">{topic.description}</p></div><div className="space-y-8">{chapters.map((c) => <section key={c.id} id={c.slug} className="glass rounded-2xl p-5"><h3 className="mb-3 text-2xl font-semibold">{c.title}</h3><ArticleView item={c} /></section>)}</div></div>
     </section>
@@ -604,7 +604,7 @@ function NotFound() { return <section className="mx-auto max-w-xl py-24 text-cen
 function Shell() {
   const [mode, setMode] = useState<ThemeMode>(() => initTheme());
   const location = useLocation();
-  useEffect(() => { document.documentElement.classList.remove('theme-dark', 'theme-light', 'theme-purple', 'theme-rainbow'); document.documentElement.classList.add(themeMap[mode]); safeStorage.set('theme', mode); }, [mode]);
+  useEffect(() => { document.documentElement.classList.remove('theme-dark', 'theme-light', 'theme-purple', 'theme-rainbow', 'theme-gold-egyptian', 'theme-horror'); document.documentElement.classList.add(themeMap[mode]); safeStorage.set('theme', mode); }, [mode]);
   useEffect(() => {
     const labels: Record<string, string> = {
       '/': 'Landing', '/professional': 'Technology & Innovation', '/personal': 'Curiosities & Philosophy', '/security-mindmap': 'Security Map', '/Security_Mindmap': 'Security Map', '/search': 'Search', '/games': 'Games', '/submitting': 'Submitting', '/admin': 'Admin', '/login': 'Login',
