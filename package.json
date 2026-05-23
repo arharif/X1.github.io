@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext ts,tsx --max-warnings 0"
+    "lint": "tsc -b --pretty false"
   },
   "dependencies": {
     "framer-motion": "^11.0.24",

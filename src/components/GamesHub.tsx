@@ -13,7 +13,7 @@ import { GamesZoneCategory } from '@/types/games';
 type GameKey =
   | 'full-ciso-qsa-pack' | 'security-awareness-qsm' | 'ai-topic-qsm' | 'otaku-general-culture-quiz' | 'countries-capitals-locations-quiz' | 'fc-barcelona-hardcore-fan-quiz'
   | 'snake' | 'tictactoe' | 'reaction' | 'rps' | 'pacman' | 'retro-car-racing'
-  | 'memory';
+  | 'memory' | 'hangman-x1' | 'mystery-box' | 'truth-or-dare-x1';
 
 type GameEntry = {
   key: GameKey;
@@ -29,20 +29,23 @@ type GameEntry = {
 };
 
 const staticGames: GameEntry[] = [
-  { key: 'memory', title: 'Memory Puzzle', desc: 'Pattern recall challenge with calm pacing.', color: 'from-cyan-500/35 to-sky-500/25', icon: '🧠', category: 'Entertainment', typeLabel: 'Puzzle', sortOrder: 23 },
-  { key: 'rps', title: 'Rock Paper Scissors', desc: 'Classic duel versus computer.', color: 'from-violet-500/35 to-fuchsia-400/25', icon: '🪨', category: 'Entertainment', typeLabel: 'Classic', sortOrder: 24 },
-  { key: 'snake', title: 'Snake', desc: 'Precision movement with increasing pressure.', color: 'from-emerald-400/35 to-cyan-400/25', icon: '🐍', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 25 },
-  { key: 'tictactoe', title: 'Tic Tac Toe', desc: 'Fast strategic duels.', color: 'from-slate-400/35 to-indigo-400/25', icon: '✖️', category: 'Entertainment', typeLabel: 'Classic', sortOrder: 27 },
-  { key: 'reaction', title: 'Reaction Time', desc: 'Measure and improve your response speed.', color: 'from-amber-400/35 to-orange-400/25', icon: '⚡', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 28 },
-  { key: 'pacman', title: 'Pac-Man Arcade', desc: 'Navigate the maze, collect pellets, and avoid ghosts.', color: 'from-yellow-400/35 to-orange-400/25', icon: '🟡', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 30 },
-  { key: 'retro-car-racing', title: 'Retro Car Racing', desc: 'Nokia-style lane dodging challenge with arcade pacing.', color: 'from-emerald-500/35 to-lime-400/25', icon: '🏎️', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 31 },
+  { key: 'memory', title: 'Memory Puzzle', desc: 'Pattern recall challenge with calm pacing.', color: 'token', icon: '🧠', category: 'Entertainment', typeLabel: 'Puzzle', sortOrder: 23 },
+  { key: 'rps', title: 'Rock Paper Scissors', desc: 'Classic duel versus computer.', color: 'token', icon: '🪨', category: 'Entertainment', typeLabel: 'Classic', sortOrder: 24 },
+  { key: 'snake', title: 'Snake', desc: 'Precision movement with increasing pressure.', color: 'token', icon: '🐍', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 25 },
+  { key: 'tictactoe', title: 'Tic Tac Toe', desc: 'Fast strategic duels.', color: 'token', icon: '✖️', category: 'Entertainment', typeLabel: 'Classic', sortOrder: 27 },
+  { key: 'reaction', title: 'Reaction Time', desc: 'Measure and improve your response speed.', color: 'token', icon: '⚡', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 28 },
+  { key: 'pacman', title: 'Pac-Man Arcade', desc: 'Navigate the maze, collect pellets, and avoid ghosts.', color: 'token', icon: '🟡', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 30 },
+  { key: 'retro-car-racing', title: 'Retro Car Racing', desc: 'Nokia-style lane dodging challenge with arcade pacing.', color: 'token', icon: '🏎️', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 31 },
+  { key: 'hangman-x1', title: 'Hangman X1', desc: 'Premium word-guessing with categories and hints.', color: 'token', icon: '🔤', category: 'Entertainment', typeLabel: 'Word Game', sortOrder: 32 },
+  { key: 'mystery-box', title: 'Mystery Box', desc: 'Open the glowing box to reveal facts, riddles, and mini challenges.', color: 'token', icon: '🎁', category: 'Entertainment', typeLabel: 'Surprise', sortOrder: 33 },
+  { key: 'truth-or-dare-x1', title: 'Truth or Dare X1', desc: 'Safe, friendly prompts for everyone.', color: 'token', icon: '🎭', category: 'Entertainment', typeLabel: 'Party', sortOrder: 34 },
 ];
 
 const quizEntries: GameEntry[] = gamesZoneQuizzes.map((quiz) => ({
   key: quiz.slug as GameKey,
   title: quiz.title,
   desc: quiz.shortDescription,
-  color: quiz.category === 'Security' ? 'from-emerald-500/40 to-teal-500/25' : 'from-indigo-500/35 to-sky-400/25',
+  color: 'token',
   icon:
     quiz.slug === 'countries-capitals-locations-quiz'
       ? '🧭'
@@ -129,19 +132,19 @@ export function GamesHub() {
 
       <div className="flex flex-wrap gap-2">
         {(['All', 'Security', 'Culture', 'Entertainment'] as const).map((chip) => (
-          <button key={chip} onClick={() => setCategory(chip)} className={`rounded-full px-4 py-2 text-sm ${category === chip ? 'bg-cyan-500/25 ring-1 ring-cyan-300/60' : 'bg-white/5 hover:bg-white/10'}`}>
+          <button key={chip} onClick={() => setCategory(chip)} className={`rounded-full px-4 py-2 text-sm token-chip ${category === chip ? 'ring-1' : ''}`}>
             {chip}
           </button>
         ))}
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search games" className="ml-auto rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm" />
+        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search games" className="ml-auto rounded-full token-chip px-4 py-2 text-sm" />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {filteredCatalog.map((game) => (
-          <button key={game.key} onClick={() => selectGame(game.key)} aria-pressed={active === game.key} className={`game-card rounded-2xl bg-gradient-to-br ${game.color} p-5 text-left transition hover:-translate-y-0.5 ${active === game.key ? 'ring-2 ring-cyan-300/60' : ''}`}>
+          <button key={game.key} onClick={() => selectGame(game.key)} aria-pressed={active === game.key} className={`game-card token-card rounded-2xl p-5 text-left transition hover:-translate-y-0.5 ${active === game.key ? 'ring-2' : ''}`}>
             <div className="flex items-center justify-between">
               <p className="text-xl">{game.icon}</p>
-              <span className="rounded-full bg-black/20 px-2 py-1 text-[11px] uppercase tracking-wide">{game.category}</span>
+              <span className="rounded-full token-chip px-2 py-1 text-[11px] uppercase tracking-wide">{game.category}</span>
             </div>
             <h3 className="mt-2 text-lg font-semibold">{game.title}</h3>
             <p className="mt-1 text-sm text-muted">{game.desc}</p>
@@ -150,14 +153,14 @@ export function GamesHub() {
               {game.questionCount && <span>{game.questionCount} questions</span>}
               {game.difficulty && <span>{game.difficulty}</span>}
             </div>
-            <span className="mt-3 inline-block rounded-lg bg-white/15 px-3 py-1 text-xs">Open Quiz</span>
+            <span className="mt-3 inline-block rounded-lg token-chip px-3 py-1 text-xs">Open Quiz</span>
           </button>
         ))}
       </div>
 
       <div className="glass rounded-2xl p-4">
         <p className="text-sm text-muted">Looking for the strategic cybersecurity landscape?</p>
-        <Link to="/Security_Mindmap" className="mt-2 inline-block rounded-xl bg-white/15 px-4 py-2 text-sm hover:bg-white/25">Explore Security Map</Link>
+        <Link to="/Security_Mindmap" className="mt-2 inline-block rounded-xl token-chip px-4 py-2 text-sm hover:bg-white/25">Explore Security Map</Link>
       </div>
 
       <section id="games-zone" ref={gamesZoneRef} tabIndex={-1} className="game-panel rounded-2xl p-4" aria-label="Interactive games zone">
@@ -169,6 +172,9 @@ export function GamesHub() {
         {active === 'rps' && <RPSGame />}
         {active === 'pacman' && <PacmanGame />}
         {active === 'retro-car-racing' && <RetroCarRacingGame />}
+        {active === 'hangman-x1' && <HangmanX1 />}
+        {active === 'mystery-box' && <MysteryBoxGame />}
+        {active === 'truth-or-dare-x1' && <TruthOrDareX1 />}
       </section>
     </section>
   );
@@ -227,7 +233,7 @@ function SnakeGame() {
 
   return (
     <div>
-      <div className="mb-3 flex items-center justify-between text-sm text-muted"><p>Score: {score} · Best: {best}</p><button onClick={() => setRunning((v) => !v)} className="rounded-lg bg-white/10 px-3 py-1 text-xs">{running ? 'Pause' : 'Start'}</button></div>
+      <div className="mb-3 flex items-center justify-between text-sm text-muted"><p>Score: {score} · Best: {best}</p><button onClick={() => setRunning((v) => !v)} className="rounded-lg token-btn px-3 py-1 text-xs">{running ? 'Pause' : 'Start'}</button></div>
       <div className="grid grid-cols-12 gap-1">{Array.from({ length: size * size }).map((_, i) => <div key={i} className={`h-4 rounded ${snake.includes(i) ? 'bg-emerald-300' : food === i ? 'bg-pink-300' : 'bg-white/8'}`} />)}</div>
     </div>
   );
@@ -246,13 +252,13 @@ function TicTacToeGame() {
     <div className="space-y-3">
       <div className="flex items-center justify-between text-sm text-muted">
         <p>{status}</p>
-        <button onClick={() => { setCells(Array(9).fill(null)); setXTurn(true); }} className="rounded-lg bg-white/10 px-3 py-1 text-xs">Restart</button>
+        <button onClick={() => { setCells(Array(9).fill(null)); setXTurn(true); }} className="rounded-lg token-btn px-3 py-1 text-xs">Restart</button>
       </div>
       <div className="relative grid grid-cols-3 gap-2">
         {cells.map((cell, i) => (
           <button
             key={i}
-            className={`h-16 rounded text-xl font-semibold transition ${isWinningCell(i) ? 'bg-emerald-400/30 ring-2 ring-emerald-300/60 animate-pulse' : 'bg-white/10 hover:bg-white/15'}`}
+            className={`h-16 rounded text-xl font-semibold transition ${isWinningCell(i) ? 'bg-emerald-400/30 ring-2 ring-emerald-300/60 animate-pulse' : 'token-btn hover:token-chip'}`}
             onClick={() => {
               if (cell || winner) return;
               const next = [...cells];
@@ -265,7 +271,7 @@ function TicTacToeGame() {
           </button>
         ))}
       </div>
-      {winnerLine && <p className="text-xs text-emerald-300">Winning pattern highlighted.</p>}
+      {winnerLine && <p className="text-xs status-success">Winning pattern highlighted.</p>}
     </div>
   );
 }
@@ -291,7 +297,7 @@ function ReactionGame() {
     setPhase('idle');
   };
 
-  return <div><div className="mb-3 flex items-center justify-between text-sm text-muted"><p>{result ? `Last: ${result} ms` : 'Click to begin'}</p><p>Best: {best ? `${best} ms` : '—'}</p></div><button onClick={onClick} className={`w-full rounded-xl px-4 py-10 text-lg font-semibold ${phase === 'go' ? 'bg-emerald-400/50' : phase === 'wait' ? 'bg-amber-300/40' : 'bg-white/10 hover:bg-white/15'}`}>{phase === 'idle' ? 'Start' : phase === 'wait' ? 'Wait…' : 'Click!'}</button><p className="mt-2 text-xs text-muted">Clicking too early resets the round.</p></div>;
+  return <div><div className="mb-3 flex items-center justify-between text-sm text-muted"><p>{result ? `Last: ${result} ms` : 'Click to begin'}</p><p>Best: {best ? `${best} ms` : '—'}</p></div><button onClick={onClick} className={`w-full rounded-xl px-4 py-10 text-lg font-semibold ${phase === 'go' ? 'bg-emerald-400/50' : phase === 'wait' ? 'bg-amber-300/40' : 'token-btn hover:token-chip'}`}>{phase === 'idle' ? 'Start' : phase === 'wait' ? 'Wait…' : 'Click!'}</button><p className="mt-2 text-xs text-muted">Clicking too early resets the round.</p></div>;
 }
 
 function RPSGame() {
@@ -338,19 +344,19 @@ function RPSGame() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between text-sm">
-        <p className={`rounded-lg px-3 py-1 transition ${phase === 'reveal' ? 'bg-white/10' : ''}`}>{result}</p>
+        <p className={`rounded-lg px-3 py-1 transition ${phase === 'reveal' ? 'token-btn' : ''}`}>{result}</p>
         <p className="text-muted">
-          You <span className={`inline-block transition ${pulse === 'you' ? 'scale-125 text-cyan-200' : ''}`}>{score.you}</span>
-          {' · '}CPU <span className={`inline-block transition ${pulse === 'cpu' ? 'scale-125 text-rose-200' : ''}`}>{score.cpu}</span>
+          You <span className={`inline-block transition ${pulse === 'you' ? 'scale-125 status-info' : ''}`}>{score.you}</span>
+          {' · '}CPU <span className={`inline-block transition ${pulse === 'cpu' ? 'scale-125 status-error' : ''}`}>{score.cpu}</span>
         </p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className={`rounded-xl border border-white/10 bg-white/5 p-4 text-center transition ${phase === 'shake' ? 'animate-pulse' : ''}`}>
+        <div className={`rounded-xl border border-[color:var(--border)] token-card p-4 text-center transition ${phase === 'shake' ? 'animate-pulse' : ''}`}>
           <p className="text-xs uppercase tracking-[0.12em] text-muted">You</p>
           <p className="mt-2 text-xl font-semibold">{playerChoice || '—'}</p>
         </div>
-        <div className={`rounded-xl border border-white/10 bg-white/5 p-4 text-center transition ${phase === 'shake' ? 'animate-pulse' : ''}`}>
+        <div className={`rounded-xl border border-[color:var(--border)] token-card p-4 text-center transition ${phase === 'shake' ? 'animate-pulse' : ''}`}>
           <p className="text-xs uppercase tracking-[0.12em] text-muted">CPU</p>
           <p className="mt-2 text-xl font-semibold">{cpuChoice || (phase === 'shake' ? '…' : '—')}</p>
         </div>
@@ -362,7 +368,7 @@ function RPSGame() {
             key={option}
             onClick={() => play(option)}
             disabled={phase === 'shake'}
-            className="rounded-xl border border-white/15 bg-white/10 px-4 py-2 transition duration-150 hover:-translate-y-0.5 hover:bg-white/20 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-xl border border-white/15 token-btn px-4 py-2 transition duration-150 hover:-translate-y-0.5 hover:bg-white/20 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {option}
           </button>
@@ -371,3 +377,24 @@ function RPSGame() {
     </div>
   );
 }
+
+
+const HANGMAN_WORDS = [
+  { word:'ZERO TRUST', category:'Cybersecurity', hint:'Security model: never trust, always verify.' },
+  { word:'ISO 27001', category:'Cybersecurity', hint:'Information security management standard.' },
+  { word:'QUANTUM', category:'Science', hint:'Computing paradigm using qubits.' },
+  { word:'MONONOKE', category:'Anime', hint:'Studio Ghibli classic with forest spirits.' },
+  { word:'PLATO', category:'Philosophy', hint:'Ancient Greek philosopher.' },
+  { word:'DUNE', category:'Books', hint:'Epic sci-fi saga by Frank Herbert.' },
+  { word:'NEURAL NETWORK', category:'Technology', hint:'Core AI architecture.' },
+];
+function HangmanX1(){const [idx,setIdx]=useState(()=>Math.floor(Math.random()*HANGMAN_WORDS.length));const [used,setUsed]=useState<string[]>([]);const item=HANGMAN_WORDS[idx];const misses=used.filter(c=>!item.word.includes(c)).length;const won=[...new Set(item.word.replace(/[^A-Z0-9]/g,'').split(''))].every(c=>used.includes(c));const lost=misses>=7;const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');const guess=(c:string)=>!won&&!lost&&setUsed(u=>u.includes(c)?u:[...u,c]);useEffect(()=>{const on=(e:KeyboardEvent)=>{const k=e.key.toUpperCase();if(letters.includes(k))guess(k)};window.addEventListener('keydown',on);return()=>window.removeEventListener('keydown',on)},[won,lost]);return <div className='space-y-3'><p className='text-sm text-muted'>Category: {item.category} · Misses: {misses}/7</p><p className='text-xs text-muted'>Hint: {item.hint}</p><p className='text-2xl tracking-[0.4em]'>{item.word.split('').map(ch=>/[A-Z0-9]/.test(ch)?(used.includes(ch)?ch:'_'):ch).join(' ')}</p><div className='grid grid-cols-6 gap-2'>{letters.map(l=><button key={l} onClick={()=>guess(l)} disabled={used.includes(l)||won||lost} className='rounded token-btn px-2 py-1 text-xs disabled:opacity-40'>{l}</button>)}</div><div className='flex gap-2'><button onClick={()=>{setIdx(Math.floor(Math.random()*HANGMAN_WORDS.length));setUsed([])}} className='rounded-lg token-btn px-3 py-1 text-xs'>Restart</button>{won&&<p className='status-success text-sm'>Great job!</p>}{lost&&<p className='text-rose-300 text-sm'>Round over. Word: {item.word}</p>}</div></div>}
+
+const MYSTERY_ITEMS=[
+'Fun Fact: Honey never spoils when sealed well.', 'Quote: “The future depends on what you do today.” — Gandhi', 'Mini Challenge: Name 3 things you learned this week.', 'Riddle: What has keys but cannot open locks? (A keyboard)', 'Curiosity: Which innovation changed your daily life most?', 'Motivation: Small progress daily creates big outcomes.'
+];
+function MysteryBoxGame(){const [open,setOpen]=useState(false);const [item,setItem]=useState('');const reveal=()=>{setOpen(true);setItem(MYSTERY_ITEMS[Math.floor(Math.random()*MYSTERY_ITEMS.length)])};return <div className='space-y-3 text-center'><button onClick={reveal} className={`mx-auto rounded-2xl px-8 py-8 text-4xl transition ${open?'token-card':'token-btn hover:-translate-y-0.5'}`}>🎁</button><p className='text-sm text-muted'>{open?item:'Open the mystery box for a premium surprise.'}</p><button onClick={()=>{setOpen(false);setItem('')}} className='rounded-lg token-btn px-3 py-1 text-xs'>Open again</button></div>}
+
+const TRUTHS = Array.from({length:30},(_,i)=>['What is one dream you want to achieve?','What book, movie, or anime influenced you most?','What skill do you want to learn next?','What is your favorite memory with friends?','What motivates you on hard days?'][i%5]);
+const DARES = Array.from({length:30},(_,i)=>['Do your best robot voice for 10 seconds.','Describe yourself using only three words.','Say one positive thing about someone nearby.','Act like a movie trailer narrator for 15 seconds.','Create a superhero name for yourself.'][i%5]);
+function TruthOrDareX1(){const [mode,setMode]=useState<'truth'|'dare'>('truth');const [text,setText]=useState(TRUTHS[0]);const next=(m?:'truth'|'dare'|'random')=>{const md=m==='random'?(Math.random()>0.5?'truth':'dare'):(m||mode);setMode(md);const pool=md==='truth'?TRUTHS:DARES;setText(pool[Math.floor(Math.random()*pool.length)])};return <div className='space-y-3'><div className='flex flex-wrap gap-2'>{['truth','dare','random'].map(b=><button key={b} onClick={()=>next(b as any)} className='rounded-lg token-btn px-3 py-1 text-xs capitalize'>{b}</button>)}<button onClick={()=>next()} className='rounded-lg token-btn px-3 py-1 text-xs'>Next</button></div><div className='rounded-2xl border border-[color:var(--border)] token-card p-4'><p className='text-xs uppercase text-muted'>{mode}</p><p className='mt-2 text-base'>{text}</p></div></div>}

@@ -13,7 +13,6 @@ import { SearchBar } from '@/components/SearchBar';
 import { GamesHub } from '@/components/GamesHub';
 import { TopicFilterBar } from '@/components/TopicFilterBar';
 import { SecurityMindmapPage } from '@/pages/SecurityMindmapPage';
-import { AboutX1Page } from '@/pages/AboutX1Page';
 import { SiteAssistantLauncher } from '@/components/site-assistant/SiteAssistantLauncher';
 import { ProtectedRoute } from '@/routes/ProtectedRoute';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
@@ -68,7 +67,7 @@ function Landing() {
       </motion.section>
       <section className="x1-purpose glass mt-5 rounded-3xl p-5 md:p-6" aria-labelledby="x1-purpose-heading">
         <p className="x1-purpose-kicker">X1 Platform Purpose</p>
-        <h2 id="x1-purpose-heading" className="mt-2 text-2xl font-semibold md:text-3xl">Making complex knowledge clearer, practical, and accessible.</h2>
+        <h2 id="x1-purpose-heading" className="mt-2 text-2xl font-semibold md:text-3xl">Making complex knowledge clear, practical, and accessible to everyone.</h2>
         <p className="mt-3 max-w-4xl text-sm leading-7 text-muted md:text-base">
           X1 exists to make technology, cybersecurity, innovation, governance, compliance, science, books, anime,
           philosophy, and personal growth easier to understand regardless of generation, background, technical level,
@@ -76,8 +75,9 @@ function Landing() {
           complex knowledge open, inspiring, useful, and accessible to all.
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {[['Simplify Complexity','Clear explanations and structured summaries that reduce noise.'],['Share Knowledge','Actionable insights grounded in practice and governance realities.'],['Inspire Curiosity','A cross-universe perspective across technology, culture, and philosophy.'],['Connect Expertise','A bridge between executive priorities, resilience, and cyber maturity.']].map(([title,desc]) => (
-            <motion.article key={title} whileHover={{ y: -3 }} className="x1-purpose-card rounded-2xl p-4">
+          {[['◈','Simplify Complexity','Turn complex subjects into clear, structured, and easy-to-understand explanations.'],['◉','Share Knowledge','Provide practical insights, summaries, and lessons learned from research and real experience.'],['✦','Inspire Curiosity','Connect technology, cybersecurity, science, culture, books, anime, philosophy, and growth.'],['⬢','Connect Expertise','Bridge learning, governance, resilience, cybersecurity maturity, and executive-level thinking.']].map(([icon,title,desc],idx) => (
+            <motion.article key={String(title)} initial={{opacity:0,y:12}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{delay:idx*0.08,duration:0.35}} whileHover={{ y: -4 }} className="x1-purpose-card rounded-2xl p-4">
+              <p className="text-sm text-muted">{icon}</p>
               <h3 className="text-sm font-semibold">{title}</h3>
               <p className="mt-2 text-xs leading-6 text-muted">{desc}</p>
             </motion.article>
@@ -205,7 +205,7 @@ function TechnologyBook() {
 
   return (
     <section className="grid gap-6 lg:grid-cols-[260px_1fr]">
-      <div className="fixed left-0 top-0 z-40 h-1 bg-gradient-to-r from-cyan-400 via-violet-500 to-fuchsia-500" style={{ width: `${progress}%` }} />
+      <div className="fixed left-0 top-0 z-40 h-1 progress-accent" style={{ width: `${progress}%` }} />
       <aside className="glass sticky top-24 h-fit rounded-2xl p-4"><p className="text-xs uppercase tracking-[0.2em] text-muted">Table of contents</p><h2 className="mt-2 text-xl font-semibold">{topic.title}</h2><ul className="mt-3 space-y-2 text-sm">{chapters.map((c) => <li key={c.id}><a href={`#${c.slug}`} className="text-muted hover:text-white">{c.title}</a></li>)}</ul></aside>
       <div><div className="glass mb-6 rounded-3xl p-8"><p className="text-xs uppercase tracking-[0.2em] text-muted">Interactive guide · {topic.displayStyle}</p><h1 className="mt-2 text-4xl font-semibold">{topic.title}</h1><p className="mt-3 text-muted">{topic.description}</p></div><div className="space-y-8">{chapters.map((c) => <section key={c.id} id={c.slug} className="glass rounded-2xl p-5"><h3 className="mb-3 text-2xl font-semibold">{c.title}</h3><ArticleView item={c} /></section>)}</div></div>
     </section>
@@ -604,7 +604,7 @@ function NotFound() { return <section className="mx-auto max-w-xl py-24 text-cen
 function Shell() {
   const [mode, setMode] = useState<ThemeMode>(() => initTheme());
   const location = useLocation();
-  useEffect(() => { document.documentElement.classList.remove('theme-dark', 'theme-light', 'theme-purple', 'theme-rainbow'); document.documentElement.classList.add(themeMap[mode]); safeStorage.set('theme', mode); }, [mode]);
+  useEffect(() => { document.documentElement.classList.remove('theme-dark', 'theme-light', 'theme-purple', 'theme-rainbow', 'theme-gold-egyptian', 'theme-horror'); document.documentElement.classList.add(themeMap[mode]); safeStorage.set('theme', mode); }, [mode]);
   useEffect(() => {
     const labels: Record<string, string> = {
       '/': 'Landing', '/professional': 'Technology & Innovation', '/personal': 'Curiosities & Philosophy', '/security-mindmap': 'Security Map', '/Security_Mindmap': 'Security Map', '/search': 'Search', '/games': 'Games', '/submitting': 'Submitting', '/admin': 'Admin', '/login': 'Login',
@@ -645,7 +645,7 @@ function Shell() {
               <Route path="/personal" element={<CuriositiesHub />} />
               <Route path="/personal/post/:slug" element={<CuriosityPost />} />
               <Route path="/compliance-frameworks" element={<Suspense fallback={<div className="glass rounded-2xl p-6">Loading compliance frameworks…</div>}><ComplianceFrameworksPage /></Suspense>} />
-              <Route path="/about-x1" element={<AboutX1Page />} />
+              <Route path="/about-x1" element={<Navigate to="/" replace />} />
               <Route path="/submitting" element={<SubmittingPage />} />
               <Route path="/games" element={<GamesHub />} />
               <Route path="/Security_Mindmap" element={<SecurityMindmapPage />} />
