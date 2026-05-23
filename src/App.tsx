@@ -13,7 +13,6 @@ import { SearchBar } from '@/components/SearchBar';
 import { GamesHub } from '@/components/GamesHub';
 import { TopicFilterBar } from '@/components/TopicFilterBar';
 import { SecurityMindmapPage } from '@/pages/SecurityMindmapPage';
-import { AboutX1Page } from '@/pages/AboutX1Page';
 import { SiteAssistantLauncher } from '@/components/site-assistant/SiteAssistantLauncher';
 import { ProtectedRoute } from '@/routes/ProtectedRoute';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
@@ -68,7 +67,7 @@ function Landing() {
       </motion.section>
       <section className="x1-purpose glass mt-5 rounded-3xl p-5 md:p-6" aria-labelledby="x1-purpose-heading">
         <p className="x1-purpose-kicker">X1 Platform Purpose</p>
-        <h2 id="x1-purpose-heading" className="mt-2 text-2xl font-semibold md:text-3xl">Making complex knowledge clearer, practical, and accessible.</h2>
+        <h2 id="x1-purpose-heading" className="mt-2 text-2xl font-semibold md:text-3xl">Making complex knowledge clear, practical, and accessible to everyone.</h2>
         <p className="mt-3 max-w-4xl text-sm leading-7 text-muted md:text-base">
           X1 exists to make technology, cybersecurity, innovation, governance, compliance, science, books, anime,
           philosophy, and personal growth easier to understand regardless of generation, background, technical level,
@@ -76,8 +75,9 @@ function Landing() {
           complex knowledge open, inspiring, useful, and accessible to all.
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {[['Simplify Complexity','Clear explanations and structured summaries that reduce noise.'],['Share Knowledge','Actionable insights grounded in practice and governance realities.'],['Inspire Curiosity','A cross-universe perspective across technology, culture, and philosophy.'],['Connect Expertise','A bridge between executive priorities, resilience, and cyber maturity.']].map(([title,desc]) => (
-            <motion.article key={title} whileHover={{ y: -3 }} className="x1-purpose-card rounded-2xl p-4">
+          {[['◈','Simplify Complexity','Turn complex subjects into clear, structured, and easy-to-understand explanations.'],['◉','Share Knowledge','Provide practical insights, summaries, and lessons learned from research and real experience.'],['✦','Inspire Curiosity','Connect technology, cybersecurity, science, culture, books, anime, philosophy, and growth.'],['⬢','Connect Expertise','Bridge learning, governance, resilience, cybersecurity maturity, and executive-level thinking.']].map(([icon,title,desc],idx) => (
+            <motion.article key={String(title)} initial={{opacity:0,y:12}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{delay:idx*0.08,duration:0.35}} whileHover={{ y: -4 }} className="x1-purpose-card rounded-2xl p-4">
+              <p className="text-sm text-muted">{icon}</p>
               <h3 className="text-sm font-semibold">{title}</h3>
               <p className="mt-2 text-xs leading-6 text-muted">{desc}</p>
             </motion.article>
@@ -645,7 +645,7 @@ function Shell() {
               <Route path="/personal" element={<CuriositiesHub />} />
               <Route path="/personal/post/:slug" element={<CuriosityPost />} />
               <Route path="/compliance-frameworks" element={<Suspense fallback={<div className="glass rounded-2xl p-6">Loading compliance frameworks…</div>}><ComplianceFrameworksPage /></Suspense>} />
-              <Route path="/about-x1" element={<AboutX1Page />} />
+              <Route path="/about-x1" element={<Navigate to="/" replace />} />
               <Route path="/submitting" element={<SubmittingPage />} />
               <Route path="/games" element={<GamesHub />} />
               <Route path="/Security_Mindmap" element={<SecurityMindmapPage />} />

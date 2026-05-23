@@ -13,7 +13,7 @@ import { GamesZoneCategory } from '@/types/games';
 type GameKey =
   | 'full-ciso-qsa-pack' | 'security-awareness-qsm' | 'ai-topic-qsm' | 'otaku-general-culture-quiz' | 'countries-capitals-locations-quiz' | 'fc-barcelona-hardcore-fan-quiz'
   | 'snake' | 'tictactoe' | 'reaction' | 'rps' | 'pacman' | 'retro-car-racing'
-  | 'memory';
+  | 'memory' | 'hangman-x1' | 'mystery-box' | 'truth-or-dare-x1';
 
 type GameEntry = {
   key: GameKey;
@@ -36,6 +36,9 @@ const staticGames: GameEntry[] = [
   { key: 'reaction', title: 'Reaction Time', desc: 'Measure and improve your response speed.', color: 'from-amber-400/35 to-orange-400/25', icon: '⚡', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 28 },
   { key: 'pacman', title: 'Pac-Man Arcade', desc: 'Navigate the maze, collect pellets, and avoid ghosts.', color: 'from-yellow-400/35 to-orange-400/25', icon: '🟡', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 30 },
   { key: 'retro-car-racing', title: 'Retro Car Racing', desc: 'Nokia-style lane dodging challenge with arcade pacing.', color: 'from-emerald-500/35 to-lime-400/25', icon: '🏎️', category: 'Entertainment', typeLabel: 'Arcade', sortOrder: 31 },
+  { key: 'hangman-x1', title: 'Hangman X1', desc: 'Premium word-guessing with categories and hints.', color: 'from-indigo-500/35 to-cyan-400/25', icon: '🔤', category: 'Entertainment', typeLabel: 'Word Game', sortOrder: 32 },
+  { key: 'mystery-box', title: 'Mystery Box', desc: 'Open the glowing box to reveal facts, riddles, and mini challenges.', color: 'from-fuchsia-500/35 to-amber-400/25', icon: '🎁', category: 'Entertainment', typeLabel: 'Surprise', sortOrder: 33 },
+  { key: 'truth-or-dare-x1', title: 'Truth or Dare X1', desc: 'Safe, friendly prompts for everyone.', color: 'from-rose-500/35 to-violet-400/25', icon: '🎭', category: 'Entertainment', typeLabel: 'Party', sortOrder: 34 },
 ];
 
 const quizEntries: GameEntry[] = gamesZoneQuizzes.map((quiz) => ({
@@ -169,6 +172,9 @@ export function GamesHub() {
         {active === 'rps' && <RPSGame />}
         {active === 'pacman' && <PacmanGame />}
         {active === 'retro-car-racing' && <RetroCarRacingGame />}
+        {active === 'hangman-x1' && <HangmanX1 />}
+        {active === 'mystery-box' && <MysteryBoxGame />}
+        {active === 'truth-or-dare-x1' && <TruthOrDareX1 />}
       </section>
     </section>
   );
@@ -371,3 +377,24 @@ function RPSGame() {
     </div>
   );
 }
+
+
+const HANGMAN_WORDS = [
+  { word:'ZERO TRUST', category:'Cybersecurity', hint:'Security model: never trust, always verify.' },
+  { word:'ISO 27001', category:'Cybersecurity', hint:'Information security management standard.' },
+  { word:'QUANTUM', category:'Science', hint:'Computing paradigm using qubits.' },
+  { word:'MONONOKE', category:'Anime', hint:'Studio Ghibli classic with forest spirits.' },
+  { word:'PLATO', category:'Philosophy', hint:'Ancient Greek philosopher.' },
+  { word:'DUNE', category:'Books', hint:'Epic sci-fi saga by Frank Herbert.' },
+  { word:'NEURAL NETWORK', category:'Technology', hint:'Core AI architecture.' },
+];
+function HangmanX1(){const [idx,setIdx]=useState(()=>Math.floor(Math.random()*HANGMAN_WORDS.length));const [used,setUsed]=useState<string[]>([]);const item=HANGMAN_WORDS[idx];const misses=used.filter(c=>!item.word.includes(c)).length;const won=[...new Set(item.word.replace(/[^A-Z0-9]/g,'').split(''))].every(c=>used.includes(c));const lost=misses>=7;const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');const guess=(c:string)=>!won&&!lost&&setUsed(u=>u.includes(c)?u:[...u,c]);useEffect(()=>{const on=(e:KeyboardEvent)=>{const k=e.key.toUpperCase();if(letters.includes(k))guess(k)};window.addEventListener('keydown',on);return()=>window.removeEventListener('keydown',on)},[won,lost]);return <div className='space-y-3'><p className='text-sm text-muted'>Category: {item.category} · Misses: {misses}/7</p><p className='text-xs text-muted'>Hint: {item.hint}</p><p className='text-2xl tracking-[0.4em]'>{item.word.split('').map(ch=>/[A-Z0-9]/.test(ch)?(used.includes(ch)?ch:'_'):ch).join(' ')}</p><div className='grid grid-cols-6 gap-2'>{letters.map(l=><button key={l} onClick={()=>guess(l)} disabled={used.includes(l)||won||lost} className='rounded bg-white/10 px-2 py-1 text-xs disabled:opacity-40'>{l}</button>)}</div><div className='flex gap-2'><button onClick={()=>{setIdx(Math.floor(Math.random()*HANGMAN_WORDS.length));setUsed([])}} className='rounded-lg bg-white/10 px-3 py-1 text-xs'>Restart</button>{won&&<p className='text-emerald-300 text-sm'>Great job!</p>}{lost&&<p className='text-rose-300 text-sm'>Round over. Word: {item.word}</p>}</div></div>}
+
+const MYSTERY_ITEMS=[
+'Fun Fact: Honey never spoils when sealed well.', 'Quote: “The future depends on what you do today.” — Gandhi', 'Mini Challenge: Name 3 things you learned this week.', 'Riddle: What has keys but cannot open locks? (A keyboard)', 'Curiosity: Which innovation changed your daily life most?', 'Motivation: Small progress daily creates big outcomes.'
+];
+function MysteryBoxGame(){const [open,setOpen]=useState(false);const [item,setItem]=useState('');const reveal=()=>{setOpen(true);setItem(MYSTERY_ITEMS[Math.floor(Math.random()*MYSTERY_ITEMS.length)])};return <div className='space-y-3 text-center'><button onClick={reveal} className={`mx-auto rounded-2xl px-8 py-8 text-4xl transition ${open?'bg-fuchsia-500/30 shadow-[0_0_35px_rgba(236,72,153,0.45)]':'bg-white/10 hover:-translate-y-0.5'}`}>🎁</button><p className='text-sm text-muted'>{open?item:'Open the mystery box for a premium surprise.'}</p><button onClick={()=>{setOpen(false);setItem('')}} className='rounded-lg bg-white/10 px-3 py-1 text-xs'>Open again</button></div>}
+
+const TRUTHS = Array.from({length:30},(_,i)=>['What is one dream you want to achieve?','What book, movie, or anime influenced you most?','What skill do you want to learn next?','What is your favorite memory with friends?','What motivates you on hard days?'][i%5]);
+const DARES = Array.from({length:30},(_,i)=>['Do your best robot voice for 10 seconds.','Describe yourself using only three words.','Say one positive thing about someone nearby.','Act like a movie trailer narrator for 15 seconds.','Create a superhero name for yourself.'][i%5]);
+function TruthOrDareX1(){const [mode,setMode]=useState<'truth'|'dare'>('truth');const [text,setText]=useState(TRUTHS[0]);const next=(m?:'truth'|'dare'|'random')=>{const md=m==='random'?(Math.random()>0.5?'truth':'dare'):(m||mode);setMode(md);const pool=md==='truth'?TRUTHS:DARES;setText(pool[Math.floor(Math.random()*pool.length)])};return <div className='space-y-3'><div className='flex flex-wrap gap-2'>{['truth','dare','random'].map(b=><button key={b} onClick={()=>next(b as any)} className='rounded-lg bg-white/10 px-3 py-1 text-xs capitalize'>{b}</button>)}<button onClick={()=>next()} className='rounded-lg bg-white/10 px-3 py-1 text-xs'>Next</button></div><div className='rounded-2xl border border-white/10 bg-white/5 p-4'><p className='text-xs uppercase text-muted'>{mode}</p><p className='mt-2 text-base'>{text}</p></div></div>}
