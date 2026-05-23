@@ -66,17 +66,17 @@ export function CardSheddingGame() {
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted">{status}</p>
-      <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm">Top card: <strong className="uppercase">{top.color}</strong> {top.value}</div>
+      <div className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-bg)] p-3 text-sm">Top card: <strong className="uppercase">{top.color}</strong> {top.value}</div>
       <div className="flex flex-wrap gap-2">
         {hand.map((card, i) => (
-          <button key={`${card.color}-${card.value}-${i}`} onClick={() => play(i)} className={`rounded-lg border px-3 py-2 text-xs ${canPlay(card, top) ? 'border-cyan-300/50 bg-cyan-200/20' : 'border-white/15 bg-white/10'}`}>
+          <button key={`${card.color}-${card.value}-${i}`} onClick={() => play(i)} className={`rounded-lg border px-3 py-2 text-xs ${canPlay(card, top) ? 'border-[color:var(--active-border)] bg-[color:var(--accent-soft)]' : 'border-[color:var(--border)] bg-[color:var(--surface-bg)]'}`}>
             {card.color} {card.value}
           </button>
         ))}
       </div>
       <div className="flex items-center gap-2">
-        <button onClick={drawCard} className="rounded-lg bg-white/10 px-3 py-1 text-xs hover:bg-white/20">Draw</button>
-        <button onClick={restart} className="rounded-lg bg-white/10 px-3 py-1 text-xs hover:bg-white/20">Restart</button>
+        <button onClick={drawCard} className="rounded-lg bg-[color:var(--surface-bg)] px-3 py-1 text-xs hover:bg-[color:var(--card-hover)]">Draw</button>
+        <button onClick={restart} className="rounded-lg bg-[color:var(--surface-bg)] px-3 py-1 text-xs hover:bg-[color:var(--card-hover)]">Restart</button>
         <p className="text-xs text-muted">Your cards: {hand.length} · Computer cards: {bot.length} · Draw pile: {drawPile.length}</p>
       </div>
     </div>

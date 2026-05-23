@@ -53,7 +53,7 @@ export function MCQQuizEngine({ game }: Props) {
         <h3 className="text-2xl font-semibold">Quiz Complete</h3>
         <p className="text-sm text-muted">{game.title}</p>
         <p className="text-lg">Score: <span className="font-semibold">{score}</span> / {game.questions.length} ({pct}%)</p>
-        <button onClick={restart} className="rounded-xl bg-white/10 px-4 py-2 text-sm transition hover:bg-white/20">Restart Quiz</button>
+        <button onClick={restart} className="rounded-xl bg-[color:var(--surface-bg)] px-4 py-2 text-sm transition hover:bg-[color:var(--card-hover)]">Restart Quiz</button>
       </div>
     );
   }
@@ -65,8 +65,8 @@ export function MCQQuizEngine({ game }: Props) {
           <span>Question {index + 1} / {game.questions.length}</span>
           <span>Score {score}</span>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-white/10">
-          <div className="h-full bg-cyan-300 transition-all" style={{ width: `${progress}%` }} />
+        <div className="h-2 overflow-hidden rounded-full bg-[color:var(--surface-bg)]">
+          <div className="h-full theme-accent-gradient transition-all" style={{ width: `${progress}%` }} />
         </div>
       </header>
 
@@ -81,7 +81,7 @@ export function MCQQuizEngine({ game }: Props) {
             <button
               key={option}
               onClick={() => !locked && setSelected(option)}
-              className={`rounded-xl border px-4 py-3 text-left transition ${isSelected ? 'border-cyan-300 bg-cyan-500/10' : 'border-white/10 bg-white/5 hover:bg-white/10'} ${showCorrect ? 'border-emerald-300 bg-emerald-500/15' : ''} ${showIncorrect ? 'border-rose-300 bg-rose-500/15' : ''}`}
+              className={`rounded-xl border px-4 py-3 text-left transition ${isSelected ? 'border-[color:var(--active-border)] bg-[color:var(--accent-soft)]' : 'border-[color:var(--border)] bg-[color:var(--surface-bg)] hover:bg-[color:var(--surface-bg)]'} ${showCorrect ? 'border-emerald-300 bg-emerald-500/15' : ''} ${showIncorrect ? 'border-rose-300 bg-rose-500/15' : ''}`}
             >
               {option}
             </button>
@@ -98,11 +98,11 @@ export function MCQQuizEngine({ game }: Props) {
 
       <div className="flex flex-wrap gap-2">
         {!locked ? (
-          <button onClick={submit} disabled={!selected} className="rounded-xl bg-cyan-500/20 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50">Check Answer</button>
+          <button onClick={submit} disabled={!selected} className="rounded-xl bg-[color:var(--accent-soft)] px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50">Check Answer</button>
         ) : (
-          <button onClick={next} className="rounded-xl bg-white/10 px-4 py-2 text-sm hover:bg-white/20">{index === game.questions.length - 1 ? 'View Results' : 'Next Question'}</button>
+          <button onClick={next} className="rounded-xl bg-[color:var(--surface-bg)] px-4 py-2 text-sm hover:bg-[color:var(--card-hover)]">{index === game.questions.length - 1 ? 'View Results' : 'Next Question'}</button>
         )}
-        <button onClick={restart} className="rounded-xl bg-white/10 px-4 py-2 text-sm hover:bg-white/20">Restart</button>
+        <button onClick={restart} className="rounded-xl bg-[color:var(--surface-bg)] px-4 py-2 text-sm hover:bg-[color:var(--card-hover)]">Restart</button>
       </div>
     </div>
   );

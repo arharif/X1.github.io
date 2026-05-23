@@ -132,7 +132,7 @@ export function GamesHub() {
 
       <div className="flex flex-wrap gap-2">
         {(['All', 'Security', 'Culture', 'Entertainment'] as const).map((chip) => (
-          <button key={chip} onClick={() => setCategory(chip)} className={`rounded-full px-4 py-2 text-sm token-chip ${category === chip ? 'ring-1' : ''}`}>
+          <button key={chip} onClick={() => setCategory(chip)} className={`rounded-full px-4 py-2 text-sm token-chip ${category === chip ? 'ring-2 ring-[color:var(--active-border)]' : ''}`}>
             {chip}
           </button>
         ))}
@@ -141,7 +141,7 @@ export function GamesHub() {
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {filteredCatalog.map((game) => (
-          <button key={game.key} onClick={() => selectGame(game.key)} aria-pressed={active === game.key} className={`game-card token-card rounded-2xl p-5 text-left transition hover:-translate-y-0.5 ${active === game.key ? 'ring-2' : ''}`}>
+          <button key={game.key} onClick={() => selectGame(game.key)} aria-pressed={active === game.key} className={`game-card token-card rounded-2xl p-5 text-left transition hover:-translate-y-1 hover:shadow-[0_14px_28px_var(--glow)] ${active === game.key ? 'ring-2 ring-[color:var(--active-border)] shadow-[0_0_0_1px_var(--accent-soft)]' : ''}`}>
             <div className="flex items-center justify-between">
               <p className="text-xl">{game.icon}</p>
               <span className="rounded-full token-chip px-2 py-1 text-[11px] uppercase tracking-wide">{game.category}</span>
@@ -160,7 +160,7 @@ export function GamesHub() {
 
       <div className="glass rounded-2xl p-4">
         <p className="text-sm text-muted">Looking for the strategic cybersecurity landscape?</p>
-        <Link to="/Security_Mindmap" className="mt-2 inline-block rounded-xl token-chip px-4 py-2 text-sm hover:bg-white/25">Explore Security Map</Link>
+        <Link to="/Security_Mindmap" className="mt-2 inline-block rounded-xl token-chip px-4 py-2 text-sm hover:bg-[color:var(--card-hover)]">Explore Security Map</Link>
       </div>
 
       <section id="games-zone" ref={gamesZoneRef} tabIndex={-1} className="game-panel rounded-2xl p-4" aria-label="Interactive games zone">
@@ -234,7 +234,7 @@ function SnakeGame() {
   return (
     <div>
       <div className="mb-3 flex items-center justify-between text-sm text-muted"><p>Score: {score} · Best: {best}</p><button onClick={() => setRunning((v) => !v)} className="rounded-lg token-btn px-3 py-1 text-xs">{running ? 'Pause' : 'Start'}</button></div>
-      <div className="grid grid-cols-12 gap-1">{Array.from({ length: size * size }).map((_, i) => <div key={i} className={`h-4 rounded ${snake.includes(i) ? 'bg-emerald-300' : food === i ? 'bg-pink-300' : 'bg-white/8'}`} />)}</div>
+      <div className="grid grid-cols-12 gap-1">{Array.from({ length: size * size }).map((_, i) => <div key={i} className={`h-4 rounded ${snake.includes(i) ? 'bg-[color:var(--accent)]' : food === i ? 'bg-[color:var(--accent-secondary)]' : 'bg-[color:var(--surface-soft)]'}`} />)}</div>
     </div>
   );
 }
@@ -258,7 +258,7 @@ function TicTacToeGame() {
         {cells.map((cell, i) => (
           <button
             key={i}
-            className={`h-16 rounded text-xl font-semibold transition ${isWinningCell(i) ? 'bg-emerald-400/30 ring-2 ring-emerald-300/60 animate-pulse' : 'token-btn hover:token-chip'}`}
+            className={`h-16 rounded text-xl font-semibold transition ${isWinningCell(i) ? 'bg-[color:var(--accent-soft)] ring-2 ring-[color:var(--active-border)]' : 'token-btn hover:token-chip'}`}
             onClick={() => {
               if (cell || winner) return;
               const next = [...cells];
@@ -368,7 +368,7 @@ function RPSGame() {
             key={option}
             onClick={() => play(option)}
             disabled={phase === 'shake'}
-            className="rounded-xl border border-white/15 token-btn px-4 py-2 transition duration-150 hover:-translate-y-0.5 hover:bg-white/20 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-xl border border-[color:var(--border)] token-btn px-4 py-2 transition duration-150 hover:-translate-y-1 hover:shadow-[0_14px_28px_var(--glow)] hover:bg-[color:var(--card-hover)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {option}
           </button>
@@ -393,7 +393,7 @@ function HangmanX1(){const [idx,setIdx]=useState(()=>Math.floor(Math.random()*HA
 const MYSTERY_ITEMS=[
 'Fun Fact: Honey never spoils when sealed well.', 'Quote: “The future depends on what you do today.” — Gandhi', 'Mini Challenge: Name 3 things you learned this week.', 'Riddle: What has keys but cannot open locks? (A keyboard)', 'Curiosity: Which innovation changed your daily life most?', 'Motivation: Small progress daily creates big outcomes.'
 ];
-function MysteryBoxGame(){const [open,setOpen]=useState(false);const [item,setItem]=useState('');const reveal=()=>{setOpen(true);setItem(MYSTERY_ITEMS[Math.floor(Math.random()*MYSTERY_ITEMS.length)])};return <div className='space-y-3 text-center'><button onClick={reveal} className={`mx-auto rounded-2xl px-8 py-8 text-4xl transition ${open?'token-card':'token-btn hover:-translate-y-0.5'}`}>🎁</button><p className='text-sm text-muted'>{open?item:'Open the mystery box for a premium surprise.'}</p><button onClick={()=>{setOpen(false);setItem('')}} className='rounded-lg token-btn px-3 py-1 text-xs'>Open again</button></div>}
+function MysteryBoxGame(){const [open,setOpen]=useState(false);const [item,setItem]=useState('');const reveal=()=>{setOpen(true);setItem(MYSTERY_ITEMS[Math.floor(Math.random()*MYSTERY_ITEMS.length)])};return <div className='space-y-3 text-center'><button onClick={reveal} className={`mx-auto rounded-2xl px-8 py-8 text-4xl transition ${open?'token-card':'token-btn hover:-translate-y-1 hover:shadow-[0_14px_28px_var(--glow)]'}`}>🎁</button><p className='text-sm text-muted'>{open?item:'Open the mystery box for a premium surprise.'}</p><button onClick={()=>{setOpen(false);setItem('')}} className='rounded-lg token-btn px-3 py-1 text-xs'>Open again</button></div>}
 
 const TRUTHS = Array.from({length:30},(_,i)=>['What is one dream you want to achieve?','What book, movie, or anime influenced you most?','What skill do you want to learn next?','What is your favorite memory with friends?','What motivates you on hard days?'][i%5]);
 const DARES = Array.from({length:30},(_,i)=>['Do your best robot voice for 10 seconds.','Describe yourself using only three words.','Say one positive thing about someone nearby.','Act like a movie trailer narrator for 15 seconds.','Create a superhero name for yourself.'][i%5]);

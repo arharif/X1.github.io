@@ -165,24 +165,24 @@ export function PacmanGame() {
         <p className="text-muted">{status === 'idle' ? 'Press space to start' : status === 'playing' ? 'Use arrow keys' : status === 'won' ? 'You cleared the maze!' : 'Game over'}</p>
       </header>
 
-      <div className="mx-auto grid w-full max-w-[560px] gap-0.5 rounded-2xl border border-cyan-300/25 bg-slate-950/80 p-2" style={{ gridTemplateColumns: `repeat(${width}, minmax(0, 1fr))` }}>
+      <div className="mx-auto grid w-full max-w-[560px] gap-0.5 rounded-2xl border border-[color:var(--border-strong)] bg-[color:var(--surface-bg)] p-2" style={{ gridTemplateColumns: `repeat(${width}, minmax(0, 1fr))` }}>
         {grid.map((cell, idx) => {
           const isPacman = idx === pacman;
           const ghost = ghosts.find((g) => g.pos === idx);
           return (
-            <div key={idx} className="aspect-square rounded-[4px] flex items-center justify-center" style={{ background: cell === 1 ? '#1e3a8a' : '#020617' }}>
-              {cell === 0 && <span className="h-1.5 w-1.5 rounded-full bg-yellow-200/90" />}
+            <div key={idx} className="aspect-square rounded-[4px] flex items-center justify-center" style={{ background: cell === 1 ? 'color-mix(in srgb,var(--accent) 34%, var(--bg))' : 'color-mix(in srgb,var(--surface) 72%, var(--bg))' }}>
+              {cell === 0 && <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent)]" />}
               {cell === 3 && <span className="h-3 w-3 rounded-full bg-amber-300" />}
-              {isPacman && <span className="h-3.5 w-3.5 rounded-full bg-yellow-300" />}
-              {!isPacman && ghost && <span className="h-3.5 w-3.5 rounded-sm bg-rose-400" />}
+              {isPacman && <span className="h-3.5 w-3.5 rounded-full bg-[color:var(--accent)]" />}
+              {!isPacman && ghost && <span className="h-3.5 w-3.5 rounded-sm bg-[color:var(--accent-secondary)]" />}
             </div>
           );
         })}
       </div>
 
       <div className="flex gap-2">
-        {status === 'idle' && <button onClick={() => setStatus('playing')} className="rounded-lg bg-cyan-500/20 px-3 py-2 text-xs">Start</button>}
-        {(status === 'won' || status === 'lost' || status === 'playing') && <button onClick={reset} className="rounded-lg bg-white/10 px-3 py-2 text-xs">Restart</button>}
+        {status === 'idle' && <button onClick={() => setStatus('playing')} className="rounded-lg bg-[color:var(--accent-soft)] px-3 py-2 text-xs">Start</button>}
+        {(status === 'won' || status === 'lost' || status === 'playing') && <button onClick={reset} className="rounded-lg bg-[color:var(--surface-bg)] px-3 py-2 text-xs">Restart</button>}
       </div>
     </div>
   );

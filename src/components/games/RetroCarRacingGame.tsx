@@ -75,18 +75,18 @@ export function RetroCarRacingGame() {
         <p className="text-muted">{crashed ? 'Crash! Restart to race again.' : running ? 'Use ← → to avoid traffic' : 'Press Space or Start'}</p>
       </div>
 
-      <div className="mx-auto grid max-w-[360px] grid-cols-3 gap-1 rounded-2xl border border-emerald-300/25 bg-slate-950/80 p-2">
+      <div className="mx-auto grid max-w-[360px] grid-cols-3 gap-1 rounded-2xl border border-[color:var(--border-strong)] bg-[color:var(--surface-bg)] p-2">
         {cells.map((cell) => (
-          <div key={`${cell.row}-${cell.lane}`} className="aspect-[1/1.3] rounded-md border border-white/5 bg-slate-900/80">
-            {cell.player && <div className="mx-auto mt-1 h-8 w-8 rounded-md bg-cyan-300" />}
-            {cell.enemy && <div className="mx-auto mt-1 h-8 w-8 rounded-md bg-rose-400" />}
+          <div key={`${cell.row}-${cell.lane}`} className="aspect-[1/1.3] rounded-md border border-[color:var(--border)] bg-[color:var(--card-bg)]">
+            {cell.player && <div className="mx-auto mt-1 h-8 w-8 rounded-md bg-[color:var(--accent)]" />}
+            {cell.enemy && <div className="mx-auto mt-1 h-8 w-8 rounded-md bg-[color:var(--accent-secondary)]" />}
           </div>
         ))}
       </div>
 
       <div className="flex gap-2">
-        {!running && !crashed && <button onClick={() => setRunning(true)} className="rounded-lg bg-cyan-500/20 px-3 py-2 text-xs">Start</button>}
-        <button onClick={reset} className="rounded-lg bg-white/10 px-3 py-2 text-xs">Restart</button>
+        {!running && !crashed && <button onClick={() => setRunning(true)} className="rounded-lg bg-[color:var(--accent-soft)] px-3 py-2 text-xs">Start</button>}
+        <button onClick={reset} className="rounded-lg bg-[color:var(--surface-bg)] px-3 py-2 text-xs">Restart</button>
       </div>
     </div>
   );

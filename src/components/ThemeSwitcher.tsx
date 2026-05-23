@@ -1,4 +1,4 @@
-import { Check, ChevronDown, Sparkles } from 'lucide-react';
+import { Check, ChevronDown, Palette } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { ThemeMode } from '@/lib/theme';
 
@@ -35,7 +35,7 @@ export function ThemeSwitcher({ mode, onChange }: { mode: ThemeMode; onChange: (
   return (
     <div ref={wrapRef} className="relative" aria-label="Theme selector">
       <button type="button" className="theme-switcher-button" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-haspopup="menu" aria-label="Open theme selector" title={`Current theme: ${themeMeta[mode].label}`}>
-        <Sparkles size={13} aria-hidden="true" />
+        <Palette size={13} aria-hidden="true" />
         <ChevronDown size={13} className={`theme-switcher-chevron ${open ? 'is-open' : ''}`} aria-hidden="true" />
       </button>
       {open ? (
@@ -46,14 +46,13 @@ export function ThemeSwitcher({ mode, onChange }: { mode: ThemeMode; onChange: (
               <button
                 key={theme}
                 onClick={() => { onChange(theme); setOpen(false); }}
-                className={`theme-option-card ${selected ? 'is-selected' : ''}`}
+                className={`theme-palette-button ${selected ? 'is-selected' : ''}`}
                 role="menuitemradio"
                 aria-checked={selected}
                 aria-label={`Activate ${themeMeta[theme].label}`}
                 title={themeMeta[theme].label}
               >
-                <span className={themeMeta[theme].previewClass} aria-hidden="true" />
-                <span className="theme-option-label">{themeMeta[theme].label.replace(' theme', '')}</span>
+                <span className={`${themeMeta[theme].previewClass} theme-preview--circle`} aria-hidden="true" />
                 {selected ? <Check size={12} className="theme-swatch-check" aria-hidden="true" /> : null}
               </button>
             );
