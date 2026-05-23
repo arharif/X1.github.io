@@ -4,6 +4,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ThemeMode } from '@/lib/theme';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { X1Mark } from './branding/X1Mark';
+import { X1OnboardingPopover } from './branding/X1OnboardingPopover';
 
 type NavItem = { to: string; label: string; match: (path: string) => boolean };
 
@@ -28,9 +29,9 @@ export function Navbar({ mode, onTheme }: { mode: ThemeMode; onTheme: (m: ThemeM
   return (
     <header className="nav-shell nav-enter sticky top-0 z-50">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 p-3 md:gap-3 md:px-4">
-        <Link to="/" className="flex items-center" aria-label="Home">
+        <div className="relative flex items-center gap-2"><Link to="/" className="flex items-center" aria-label="Home">
           <X1Mark size="sm" mode={mode} />
-        </Link>
+        </Link><X1OnboardingPopover /></div>
 
         <nav className="hidden gap-1.5 lg:gap-2 md:flex md:flex-wrap md:justify-end" aria-label="Primary navigation">
           {links.map((link) => {
