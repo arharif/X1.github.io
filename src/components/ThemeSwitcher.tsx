@@ -2,14 +2,14 @@ import { Check, ChevronDown, Sparkles } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { ThemeMode } from '@/lib/theme';
 
-const themes: ThemeMode[] = ['dark', 'light', 'purple', 'rainbow', 'gold-egyptian', 'horror'];
+const themes: ThemeMode[] = ['dark', 'light', 'purple', 'rainbow', 'egyptian', 'horror'];
 
 const themeMeta: Record<ThemeMode, { label: string; previewClass: string }> = {
   dark: { label: 'Dark theme', previewClass: 'theme-preview theme-preview--dark' },
   light: { label: 'Light theme', previewClass: 'theme-preview theme-preview--light' },
   purple: { label: 'Purple theme', previewClass: 'theme-preview theme-preview--purple' },
   rainbow: { label: 'Rainbow theme', previewClass: 'theme-preview theme-preview--rainbow' },
-  'gold-egyptian': { label: 'Gold / Egyptian theme', previewClass: 'theme-preview theme-preview--gold-egyptian' },
+  'egyptian': { label: 'Egyptian theme', previewClass: 'theme-preview theme-preview--egyptian' },
   horror: { label: 'Horror theme', previewClass: 'theme-preview theme-preview--horror' },
 };
 

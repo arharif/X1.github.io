@@ -558,7 +558,7 @@ function SubmittingPage() {
         <div className="glass rounded-2xl p-5">
           <p className="text-xs uppercase tracking-[0.16em] text-muted">Where to send</p>
           <a
-            className="mt-2 inline-block rounded-xl bg-white/10 px-3 py-2 font-medium underline decoration-cyan-300/60 underline-offset-4"
+            className="mt-2 inline-block rounded-xl bg-white/10 px-3 py-2 font-medium underline decoration-[color:var(--accent)] underline-offset-4"
             href="mailto:rharifanass@gmail.com?subject=X1%20Article%20Submission%3A%20%5BTopic%20Title%5D"
           >
             rharifanass@gmail.com
@@ -604,7 +604,7 @@ function NotFound() { return <section className="mx-auto max-w-xl py-24 text-cen
 function Shell() {
   const [mode, setMode] = useState<ThemeMode>(() => initTheme());
   const location = useLocation();
-  useEffect(() => { document.documentElement.classList.remove('theme-dark', 'theme-light', 'theme-purple', 'theme-rainbow', 'theme-gold-egyptian', 'theme-horror'); document.documentElement.classList.add(themeMap[mode]); safeStorage.set('theme', mode); }, [mode]);
+  useEffect(() => { document.documentElement.classList.remove('theme-dark', 'theme-light', 'theme-purple', 'theme-rainbow', 'theme-egyptian', 'theme-horror'); document.documentElement.classList.add(themeMap[mode]); safeStorage.set('theme', mode); }, [mode]);
   useEffect(() => {
     const labels: Record<string, string> = {
       '/': 'Landing', '/professional': 'Technology & Innovation', '/personal': 'Curiosities & Philosophy', '/security-mindmap': 'Security Map', '/Security_Mindmap': 'Security Map', '/search': 'Search', '/games': 'Games', '/submitting': 'Submitting', '/admin': 'Admin', '/login': 'Login',

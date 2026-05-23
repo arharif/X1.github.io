@@ -79,7 +79,7 @@ export function CertificationArchitecture() {
                     id={`cert-${certification.id}`}
                     onClick={() => setSelectedId(certification.id)}
                     aria-label={`Select certification ${certification.name}`}
-                    className={`w-full rounded-xl border p-3 text-left ${selectedCertification?.id === certification.id ? 'border-cyan-300/60 bg-cyan-400/16' : 'border-white/20 bg-white/8 hover:bg-white/12'}`}
+                    className={`w-full rounded-xl border p-3 text-left ${selectedCertification?.id === certification.id ? 'border-[color:var(--active-border)] bg-[color:var(--active-bg)]' : 'border-white/20 bg-white/8 hover:bg-white/12'}`}
                   >
                     <p className="text-sm font-semibold">{certification.name}</p>
                     <p className="text-xs text-muted">{certification.area} · {certification.level}</p>
@@ -96,7 +96,7 @@ export function CertificationArchitecture() {
               <div className="space-y-3">
                 <div>
                   <h3 className="text-2xl font-semibold">{selectedCertification.name}</h3>
-                  <p className="mt-1 text-xs text-cyan-100">{selectedCertification.area} · {selectedCertification.level}</p>
+                  <p className="mt-1 text-xs theme-accent-text">{selectedCertification.area} · {selectedCertification.level}</p>
                 </div>
                 <p><strong>Best fit:</strong> {selectedCertification.bestFit}</p>
                 <p><strong>Career path:</strong> {selectedCertification.careerPath}</p>
@@ -105,13 +105,13 @@ export function CertificationArchitecture() {
                   <p><strong>Full domains / exam areas:</strong></p>
                   <ul className="mt-2 flex flex-wrap gap-2">
                     {safeArray(selectedCertification.domains).map((domain) => (
-                      <li key={domain} className="rounded-full border border-violet-300/30 bg-violet-400/15 px-2 py-1 text-xs">{domain}</li>
+                      <li key={domain} className="rounded-full border border-[color:var(--accent-secondary)] bg-[color:var(--accent-soft)] px-2 py-1 text-xs">{domain}</li>
                     ))}
                   </ul>
                 </div>
                 {recommendedSet.length > 0 && (
-                  <div className="rounded-xl border border-cyan-300/30 bg-cyan-400/10 p-3">
-                    <p className="text-sm font-semibold text-cyan-100">Recommended for this profile</p>
+                  <div className="rounded-xl border border-[color:var(--accent)] bg-[color:var(--accent-soft)] p-3">
+                    <p className="text-sm font-semibold theme-accent-text">Recommended for this profile</p>
                     <p className="mt-1 text-xs text-muted">
                       These certifications are recommended for professionals targeting governance, security leadership, audit, risk, privacy, resilience, AI governance, and senior cybersecurity roles.
                     </p>
@@ -125,7 +125,7 @@ export function CertificationArchitecture() {
                       {recommendedSet.map((id) => {
                         const item = safeCertifications.find((certification) => certification.id === id);
                         if (!item) return null;
-                        return <span key={id} className="rounded-full border border-cyan-300/30 bg-white/10 px-2 py-1 text-xs">{item.name}</span>;
+                        return <span key={id} className="rounded-full border border-[color:var(--accent)] bg-white/10 px-2 py-1 text-xs">{item.name}</span>;
                       })}
                     </div>
                   </div>
