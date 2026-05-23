@@ -55,7 +55,7 @@ export function SecurityRolesMap() {
           <div className="max-w-3xl">
             <p className="mindmap-chip">Security Career Architecture</p>
             <h1 className="mt-3 text-2xl font-semibold md:text-4xl">Security Mindmap</h1>
-            <p className="mt-2 text-sm text-slate-200/90">Explore cybersecurity roles with a cleaner, text-first role explorer and a premium organization structure view.</p>
+            <p className="mt-2 text-sm text-[color:var(--text-primary)]/90">Explore cybersecurity roles with a cleaner, text-first role explorer and a premium organization structure view.</p>
           </div>
           <button onClick={() => operatingModelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} className="mindmap-cta rounded-xl px-4 py-2 text-sm font-semibold">
             Cybersecurity Operating Model
@@ -73,7 +73,7 @@ export function SecurityRolesMap() {
             <span className="roles-field-label">Role family</span>
             <div className="flex flex-wrap gap-2">
               {['All', ...roleFamilies].map((item) => (
-                <button key={item} onClick={() => setFamily(item)} className={`rounded-full border px-3 py-1.5 text-xs transition ${family === item ? 'border-cyan-300/70 bg-cyan-500/20 text-cyan-100' : 'border-white/15 bg-white/5 text-slate-200 hover:bg-white/10'}`}>
+                <button key={item} onClick={() => setFamily(item)} className={`rounded-full border px-3 py-1.5 text-xs transition ${family === item ? 'border-[color:var(--active-border)] bg-[color:var(--active-bg)] text-[color:var(--text-primary)]' : 'border-[color:var(--border)] bg-[color:var(--surface-bg)] text-[color:var(--text-primary)] hover:bg-[color:var(--card-hover)]'}`}>
                   {item}
                 </button>
               ))}
@@ -115,13 +115,13 @@ export function SecurityRolesMap() {
           <p className="text-sm text-muted">{activeRole.shortDescription}</p>
 
           <section>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.1em] text-slate-300">Main responsibilities</h3>
-            <p className="mt-2 text-sm text-slate-200">{activeRole.mainResponsibilities}</p>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.1em] text-[color:var(--text-muted)]">Main responsibilities</h3>
+            <p className="mt-2 text-sm text-[color:var(--text-primary)]">{activeRole.mainResponsibilities}</p>
           </section>
 
           <section>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.1em] text-slate-300">Must-have domains</h3>
-            <ul className="mt-2 space-y-2 text-sm text-slate-200">
+            <h3 className="text-sm font-semibold uppercase tracking-[0.1em] text-[color:var(--text-muted)]">Must-have domains</h3>
+            <ul className="mt-2 space-y-2 text-sm text-[color:var(--text-primary)]">
               {activeRole.mustHaveDomains.map((domain) => (
                 <li key={domain} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">{domain}</li>
               ))}
@@ -129,12 +129,12 @@ export function SecurityRolesMap() {
           </section>
 
           <section className="rounded-xl border border-white/10 bg-white/5 p-3">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.1em] text-slate-300">Best certification path</h3>
-            <p className="mt-2 text-sm text-slate-100">{certificationPath}</p>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.1em] text-[color:var(--text-muted)]">Best certification path</h3>
+            <p className="mt-2 text-sm text-[color:var(--text-primary)]">{certificationPath}</p>
           </section>
 
           <section>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.1em] text-slate-300">Career progression path</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.1em] text-[color:var(--text-muted)]">Career progression path</h3>
             <div className="mt-2 grid gap-2">
               {[
                 { label: 'N-2', value: activeRole.careerPath.nMinus2 },
@@ -144,8 +144,8 @@ export function SecurityRolesMap() {
                 { label: 'N+2', value: activeRole.careerPath.nPlus2 },
               ].map((step) => (
                 <div key={step.label} className="rounded-xl border border-white/10 bg-white/5 p-3">
-                  <p className="text-[11px] uppercase tracking-[0.1em] text-slate-400">{step.label}</p>
-                  <p className="mt-1 text-sm text-slate-100">{step.value}</p>
+                  <p className="text-[11px] uppercase tracking-[0.1em] text-[color:var(--text-muted)]">{step.label}</p>
+                  <p className="mt-1 text-sm text-[color:var(--text-primary)]">{step.value}</p>
                 </div>
               ))}
             </div>
