@@ -1,8 +1,15 @@
-import { ChevronDown, Palette } from 'lucide-react';
+import { Check, ChevronDown, Sparkles } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { ThemeMode } from '@/lib/theme';
 
 const themes: ThemeMode[] = ['dark', 'light', 'purple', 'rainbow'];
+
+const themeMeta: Record<ThemeMode, { label: string; previewClass: string }> = {
+  dark: { label: 'Dark theme', previewClass: 'theme-preview theme-preview--dark' },
+  light: { label: 'Light theme', previewClass: 'theme-preview theme-preview--light' },
+  purple: { label: 'Purple theme', previewClass: 'theme-preview theme-preview--purple' },
+  rainbow: { label: 'Rainbow theme', previewClass: 'theme-preview theme-preview--rainbow' },
+};
 
 export function ThemeSwitcher({ mode, onChange }: { mode: ThemeMode; onChange: (m: ThemeMode) => void }) {
   const [open, setOpen] = useState(false);
@@ -12,24 +19,45 @@ export function ThemeSwitcher({ mode, onChange }: { mode: ThemeMode; onChange: (
     const onDocClick = (e: MouseEvent) => {
       if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
     };
+    const onEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
     document.addEventListener('mousedown', onDocClick);
-    return () => document.removeEventListener('mousedown', onDocClick);
+    document.addEventListener('keydown', onEscape);
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('keydown', onEscape);
+    };
   }, []);
 
   return (
     <div ref={wrapRef} className="relative" aria-label="Theme selector">
-      <button type="button" className="glass inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs capitalize" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-haspopup="menu" aria-label="Open theme menu">
-        <Palette size={13} /> {mode} <ChevronDown size={13} className={open ? 'rotate-180' : ''} />
+      <button type="button" className="theme-switcher-button" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-haspopup="menu" aria-label="Open theme selector" title={`Current theme: ${themeMeta[mode].label}`}>
+        <Sparkles size={13} aria-hidden="true" />
+        <ChevronDown size={13} className={`theme-switcher-chevron ${open ? 'is-open' : ''}`} aria-hidden="true" />
       </button>
-      {open && (
-        <div className="glass absolute right-0 z-50 mt-2 min-w-[140px] rounded-xl p-1.5" role="menu">
-          {themes.map((theme) => (
-            <button key={theme} onClick={() => { onChange(theme); setOpen(false); }} className={`block w-full rounded-lg px-2.5 py-1.5 text-left text-xs capitalize ${theme === mode ? 'bg-white/20' : 'hover:bg-white/10'}`} role="menuitem" aria-label={`Activate ${theme} theme`}>
-              {theme}
-            </button>
-          ))}
+      {open ? (
+        <div className="theme-switcher-menu" role="menu" aria-label="Theme options">
+          {themes.map((theme) => {
+            const selected = theme === mode;
+            return (
+              <button
+                key={theme}
+                onClick={() => { onChange(theme); setOpen(false); }}
+                className={`theme-option-card ${selected ? 'is-selected' : ''}`}
+                role="menuitemradio"
+                aria-checked={selected}
+                aria-label={`Activate ${themeMeta[theme].label}`}
+                title={themeMeta[theme].label}
+              >
+                <span className={themeMeta[theme].previewClass} aria-hidden="true" />
+                <span className="theme-option-label">{themeMeta[theme].label.replace(' theme', '')}</span>
+                {selected ? <Check size={12} className="theme-swatch-check" aria-hidden="true" /> : null}
+              </button>
+            );
+          })}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

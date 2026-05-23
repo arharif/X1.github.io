@@ -65,6 +65,24 @@ function Landing() {
         <EntryCard title="Security Map" description="Explore cybersecurity roles, skills, capabilities, and growth paths through an interactive security mindmap." onClick={() => nav('/security-mindmap')} label="Capability" />
         <EntryCard title="Compliance Frameworks" description="Explore cybersecurity, privacy, resilience, payment security, AI governance, and certification guidance in one structured compliance hub." onClick={() => nav('/compliance-frameworks')} label="Governance" />
       </motion.section>
+      <section className="x1-purpose glass mt-5 rounded-3xl p-5 md:p-6" aria-labelledby="x1-purpose-heading">
+        <p className="x1-purpose-kicker">X1 Platform Purpose</p>
+        <h2 id="x1-purpose-heading" className="mt-2 text-2xl font-semibold md:text-3xl">Making complex knowledge clearer, practical, and accessible.</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-muted md:text-base">
+          X1 exists to make technology, cybersecurity, innovation, governance, compliance, science, books, anime,
+          philosophy, and personal growth easier to understand regardless of generation, background, technical level,
+          or professional experience. It is where curiosity, creativity, learning, and expertise meet to keep
+          complex knowledge open, inspiring, useful, and accessible to all.
+        </p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[['Simplify Complexity','Clear explanations and structured summaries that reduce noise.'],['Share Knowledge','Actionable insights grounded in practice and governance realities.'],['Inspire Curiosity','A cross-universe perspective across technology, culture, and philosophy.'],['Connect Expertise','A bridge between executive priorities, resilience, and cyber maturity.']].map(([title,desc]) => (
+            <motion.article key={title} whileHover={{ y: -3 }} className="x1-purpose-card rounded-2xl p-4">
+              <h3 className="text-sm font-semibold">{title}</h3>
+              <p className="mt-2 text-xs leading-6 text-muted">{desc}</p>
+            </motion.article>
+          ))}
+        </div>
+      </section>
     </section>
   );
 }
