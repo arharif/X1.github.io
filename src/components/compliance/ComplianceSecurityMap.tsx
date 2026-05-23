@@ -41,12 +41,12 @@ export function ComplianceSecurityMap() {
       <div className="grid gap-4 lg:grid-cols-[1.25fr_1fr]">
         <div className="glass rounded-2xl p-4">
           <div className="mb-4 flex justify-center">
-            <button className={`rounded-full border px-4 py-2 text-sm font-semibold ${selected?.id===center?.id?'bg-[color:var(--active-bg)] border-[color:var(--active-border)]':'bg-white/10 border-white/20'}`} onClick={() => setSelectedId(center?.id ?? '')} aria-label="Select central unified compliance framework node">{center?.label ?? 'Unified Compliance Framework'}</button>
+            <button className={`rounded-full border px-4 py-2 text-sm font-semibold ${selected?.id===center?.id?'bg-[color:var(--active-bg)] border-[color:var(--active-border)]':'bg-[color:var(--surface-bg)] border-[color:var(--border)]'}`} onClick={() => setSelectedId(center?.id ?? '')} aria-label="Select central unified compliance framework node">{center?.label ?? 'Unified Compliance Framework'}</button>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {layers.map((layer) => (
-              <div key={layer.id} className="rounded-xl border border-white/15 bg-white/5 p-3">
-                <button onClick={() => setSelectedId(layer.id)} className={`w-full rounded-full px-3 py-1.5 text-left text-sm ${selected?.id===layer.id?'bg-violet-400/20':'bg-white/10 hover:bg-white/15'}`} aria-label={`Select ${layer.label} layer node`}>
+              <div key={layer.id} className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-bg)] p-3">
+                <button onClick={() => setSelectedId(layer.id)} className={`w-full rounded-full px-3 py-1.5 text-left text-sm ${selected?.id===layer.id?'bg-[color:var(--active-bg)]':'bg-[color:var(--surface-bg)] hover:bg-[color:var(--card-hover)]'}`} aria-label={`Select ${layer.label} layer node`}>
                   {layer.label}
                 </button>
                 <div className="mt-2 flex flex-wrap gap-1.5">
