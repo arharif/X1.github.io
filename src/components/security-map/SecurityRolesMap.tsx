@@ -4,16 +4,19 @@ import { cyberOperatingModelSections } from '@/data/cyberOperatingModel';
 import { roleFamilies, securityRoles } from '@/data/securityRoles';
 import { OrgNode } from '@/types/securityRoles';
 
-const hexToRgba = (hex: string, alpha: number) => {
-  const cleaned = hex.replace('#', '');
-  const bigint = Number.parseInt(cleaned, 16);
-  return `rgba(${(bigint >> 16) & 255}, ${(bigint >> 8) & 255}, ${bigint & 255}, ${alpha})`;
+const toThemeAlpha = (color: string, alpha: number) => {
+  if (color.startsWith('#')) {
+    const cleaned = color.replace('#', '');
+    const bigint = Number.parseInt(cleaned, 16);
+    return `rgba(${(bigint >> 16) & 255}, ${(bigint >> 8) & 255}, ${bigint & 255}, ${alpha})`;
+  }
+  return `color-mix(in srgb, ${color} ${Math.round(alpha * 100)}%, transparent)`;
 };
 
 function OrgTree({ node, accent }: { node: OrgNode; accent: string }) {
   return (
     <li className="relative pl-6">
-      <div className="rounded-xl border bg-[color:var(--surface-bg)] px-3 py-2 text-sm" style={{ borderColor: hexToRgba(accent, 0.4) }}>
+      <div className="rounded-xl border bg-[color:var(--surface-bg)] px-3 py-2 text-sm" style={{ borderColor: toThemeAlpha(accent, 0.4) }}>
         {node.title}
       </div>
       {node.children && node.children.length > 0 && (
@@ -95,9 +98,9 @@ export function SecurityRolesMap() {
                   onClick={() => setActiveRoleId(role.id)}
                   className="rounded-xl border p-3 text-left transition hover:-translate-y-0.5"
                   style={{
-                    borderColor: active ? role.color : 'rgba(148,163,184,0.3)',
-                    backgroundColor: active ? hexToRgba(role.color, 0.18) : 'rgba(15,23,42,0.28)',
-                    boxShadow: active ? `0 0 0 1px ${hexToRgba(role.color, 0.45)}` : 'none',
+                    borderColor: active ? role.color : 'color-mix(in srgb, var(--border-soft) 78%, transparent)',
+                    backgroundColor: active ? toThemeAlpha(role.color, 0.18) : 'color-mix(in srgb, var(--surface-soft) 84%, transparent)',
+                    boxShadow: active ? `0 0 0 1px ${toThemeAlpha(role.color, 0.45)}` : 'none',
                   }}
                 >
                   <p className="text-sm font-semibold">{role.title}</p>
@@ -110,7 +113,7 @@ export function SecurityRolesMap() {
         </article>
 
         <aside className="mindmap-panel space-y-4">
-          <span className="mindmap-chip" style={{ borderColor: hexToRgba(activeRole.color, 0.7), color: activeRole.color }}>{activeRole.family}</span>
+          <span className="mindmap-chip" style={{ borderColor: toThemeAlpha(activeRole.color, 0.7), color: activeRole.color }}>{activeRole.family}</span>
           <h2 className="text-2xl font-semibold">{activeRole.title}</h2>
           <p className="text-sm text-muted">{activeRole.shortDescription}</p>
 
@@ -160,7 +163,7 @@ export function SecurityRolesMap() {
 
         <div className="mt-4 grid gap-4 xl:grid-cols-2">
           {cyberOperatingModelSections.map((section, idx) => {
-            const accent = idx === 0 ? '#22d3ee' : '#f59e0b';
+            const accent = idx === 0 ? 'var(--accent)' : 'var(--accent-secondary)';
             return (
               <article key={section.title} className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-bg)] p-4">
                 <h3 className="text-lg font-semibold">{section.title}</h3>
