@@ -59,13 +59,13 @@ function Landing() {
         <span className="landing-orb landing-orb--c" />
       </div>
       <SearchBar />
-      <motion.section className="grid gap-5 py-4 md:grid-cols-2" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}>
+      <motion.section className="landing-grid grid gap-5 py-4 md:grid-cols-2" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}>
         <EntryCard title={universeMeta.professional.label} description={universeMeta.professional.description} onClick={() => nav('/professional')} label="Universe" />
         <EntryCard title={universeMeta.personal.label} description={universeMeta.personal.description} onClick={() => nav('/personal')} label="Universe" />
         <EntryCard title="Security Map" description="Explore cybersecurity roles, skills, capabilities, and growth paths through an interactive security mindmap." onClick={() => nav('/security-mindmap')} label="Capability" />
         <EntryCard title="Compliance Frameworks" description="Explore cybersecurity, privacy, resilience, payment security, AI governance, and certification guidance in one structured compliance hub." onClick={() => nav('/compliance-frameworks')} label="Governance" />
       </motion.section>
-      <section className="x1-purpose glass mt-5 rounded-3xl p-5 md:p-6" aria-labelledby="x1-purpose-heading">
+      <section className="x1-purpose mt-5 rounded-3xl p-5 md:p-6 theme-transition" aria-labelledby="x1-purpose-heading">
         <p className="x1-purpose-kicker">X1 Platform Purpose</p>
         <h2 id="x1-purpose-heading" className="mt-2 text-2xl font-semibold md:text-3xl">Making complex knowledge clear, practical, and accessible to everyone.</h2>
         <p className="mt-3 max-w-4xl text-sm leading-7 text-muted md:text-base">
