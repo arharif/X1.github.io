@@ -71,7 +71,7 @@ export function CertificationArchitecture() {
 
             <div className="max-h-[430px] space-y-2 overflow-y-auto pr-1">
               {filteredCertifications.length === 0 ? (
-                <p className="rounded-xl border border-white/15 bg-white/5 p-3 text-sm text-muted">No matching certifications found.</p>
+                <p className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-bg)] p-3 text-sm text-muted">No matching certifications found.</p>
               ) : (
                 filteredCertifications.map((certification) => (
                   <button
@@ -79,7 +79,7 @@ export function CertificationArchitecture() {
                     id={`cert-${certification.id}`}
                     onClick={() => setSelectedId(certification.id)}
                     aria-label={`Select certification ${certification.name}`}
-                    className={`w-full rounded-xl border p-3 text-left ${selectedCertification?.id === certification.id ? 'border-[color:var(--active-border)] bg-[color:var(--active-bg)]' : 'border-white/20 bg-white/8 hover:bg-white/12'}`}
+                    className={`w-full rounded-xl border p-3 text-left ${selectedCertification?.id === certification.id ? 'border-[color:var(--active-border)] bg-[color:var(--active-bg)]' : 'border-[color:var(--border)] bg-[color:var(--surface-bg)] hover:bg-[color:var(--card-hover)]'}`}
                   >
                     <p className="text-sm font-semibold">{certification.name}</p>
                     <p className="text-xs text-muted">{certification.area} · {certification.level}</p>
@@ -125,7 +125,7 @@ export function CertificationArchitecture() {
                       {recommendedSet.map((id) => {
                         const item = safeCertifications.find((certification) => certification.id === id);
                         if (!item) return null;
-                        return <span key={id} className="rounded-full border border-[color:var(--accent)] bg-white/10 px-2 py-1 text-xs">{item.name}</span>;
+                        return <span key={id} className="rounded-full border border-[color:var(--accent)] bg-[color:var(--badge-bg)] px-2 py-1 text-xs">{item.name}</span>;
                       })}
                     </div>
                   </div>

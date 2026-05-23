@@ -1,14 +1,29 @@
 import { Search } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchIndex } from '@/data/searchIndex';
 
 const safeIndex = Array.isArray(searchIndex) ? searchIndex : [];
+const contextualPlaceholders = [
+  'Search ISO 27001, NIST CSF, SOC 2 readiness…',
+  'Search Security Map roles, skills, and growth paths…',
+  'Search AI governance, privacy, and resilience insights…',
+  'Search innovation articles, games, and knowledge cards…',
+];
 
 export function SearchBar() {
   const [query, setQuery] = useState('');
   const [focused, setFocused] = useState(false);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const nav = useNavigate();
+
+  useEffect(() => {
+    if (focused || query.trim().length > 0) return;
+    const timer = window.setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % contextualPlaceholders.length);
+    }, 3200);
+    return () => window.clearInterval(timer);
+  }, [focused, query]);
 
   const results = useMemo(() => {
     const value = query.trim().toLowerCase();
@@ -22,7 +37,7 @@ export function SearchBar() {
 
   return (
     <div className="relative mx-auto mb-6 w-full max-w-2xl">
-      <div className="glass flex items-center gap-2 rounded-2xl px-3 py-2">
+      <div className="glass search-shell flex items-center gap-2 rounded-2xl px-3 py-2">
         <Search size={16} className="text-muted" />
         <input
           value={query}
@@ -31,8 +46,8 @@ export function SearchBar() {
           onBlur={() => window.setTimeout(() => setFocused(false), 120)}
           onKeyDown={(e) => { if (e.key === 'Escape') { setQuery(''); setFocused(false); } }}
           aria-label="Search content"
-          placeholder="Search frameworks, security concepts, articles, games…"
-          className="w-full border-0 bg-transparent text-sm outline-none"
+          placeholder={contextualPlaceholders[placeholderIndex]}
+          className="search-input-animated w-full border-0 bg-transparent text-sm outline-none"
         />
       </div>
       {showPanel && (
@@ -47,7 +62,7 @@ export function SearchBar() {
                 key={item.id}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => { nav(item.path || '/'); setFocused(false); setQuery(''); }}
-                className="mb-1 block w-full rounded-xl px-3 py-2 text-left hover:bg-white/10"
+                className="search-result-item mb-1 block w-full rounded-xl px-3 py-2 text-left"
               >
                 <p className="text-sm font-medium">{item.title || 'Untitled'}</p>
                 <p className="text-xs text-muted">{item.description || 'No description available'}</p>
