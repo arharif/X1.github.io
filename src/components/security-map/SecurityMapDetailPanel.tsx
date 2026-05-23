@@ -19,9 +19,9 @@ export function SecurityMapDetailPanel({ node }: { node?: SecurityMapNode }) {
       <p className="text-sm text-muted">{node.description}</p>
       {node.type === 'category' && (
         <>
-          <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3">
+          <div className="mt-3 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-bg)] p-3">
             <p className="text-xs uppercase tracking-[0.18em] text-muted">Why it matters</p>
-            <p className="mt-2 text-sm text-slate-200">{category?.whyItMatters}</p>
+            <p className="mt-2 text-sm text-[color:var(--text-primary)]">{category?.whyItMatters}</p>
           </div>
           <p className="mt-3 text-xs uppercase tracking-[0.18em] text-muted">Associated subdomains</p>
           <div className="mt-2 flex flex-wrap gap-2">{relatedSub.map((item) => <span key={item.id} className="mindmap-tag">{item.label}</span>)}</div>
@@ -31,9 +31,9 @@ export function SecurityMapDetailPanel({ node }: { node?: SecurityMapNode }) {
       )}
       {node.type === 'role' && (
         <>
-          <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3">
+          <div className="mt-3 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-bg)] p-3">
             <p className="text-xs uppercase tracking-[0.18em] text-muted">Best Certification Path</p>
-            <p className="mt-2 text-sm text-slate-200">{certificationPath}</p>
+            <p className="mt-2 text-sm text-[color:var(--text-primary)]">{certificationPath}</p>
           </div>
           <p className="mt-3 text-xs uppercase tracking-[0.18em] text-muted">Associated subdomains</p>
           <div className="mt-2 flex flex-wrap gap-2">{relatedSub.map((item) => <span key={item.id} className="mindmap-tag">{item.label}</span>)}</div>

@@ -16,7 +16,7 @@ export function SecurityMapToolbar({
   return (
     <div className="roles-toolbar glass rounded-2xl p-3 md:p-4" role="region" aria-label="Security map controls">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs uppercase tracking-[0.18em] text-slate-300">Explore by category or keyword</p>
+        <p className="text-xs uppercase tracking-[0.18em] text-muted">Explore by category or keyword</p>
         <button className="mindmap-btn" onClick={onReset} aria-label="Reset map filters and view">Reset</button>
       </div>
 

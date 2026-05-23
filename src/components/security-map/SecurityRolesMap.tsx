@@ -13,11 +13,11 @@ const hexToRgba = (hex: string, alpha: number) => {
 function OrgTree({ node, accent }: { node: OrgNode; accent: string }) {
   return (
     <li className="relative pl-6">
-      <div className="rounded-xl border bg-white/5 px-3 py-2 text-sm" style={{ borderColor: hexToRgba(accent, 0.4) }}>
+      <div className="rounded-xl border bg-[color:var(--surface-bg)] px-3 py-2 text-sm" style={{ borderColor: hexToRgba(accent, 0.4) }}>
         {node.title}
       </div>
       {node.children && node.children.length > 0 && (
-        <ul className="mt-3 space-y-3 border-l border-white/15 pl-4">
+        <ul className="mt-3 space-y-3 border-l border-[color:var(--border)] pl-4">
           {node.children.map((child) => (
             <OrgTree key={`${node.title}-${child.title}`} node={child} accent={accent} />
           ))}
@@ -106,7 +106,7 @@ export function SecurityRolesMap() {
               );
             })}
           </div>
-          {filteredRoles.length === 0 && <p className="mt-4 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-muted">No matching role found. Try a broader title.</p>}
+          {filteredRoles.length === 0 && <p className="mt-4 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-bg)] p-3 text-sm text-muted">No matching role found. Try a broader title.</p>}
         </article>
 
         <aside className="mindmap-panel space-y-4">
@@ -123,12 +123,12 @@ export function SecurityRolesMap() {
             <h3 className="text-sm font-semibold uppercase tracking-[0.1em] text-[color:var(--text-muted)]">Must-have domains</h3>
             <ul className="mt-2 space-y-2 text-sm text-[color:var(--text-primary)]">
               {activeRole.mustHaveDomains.map((domain) => (
-                <li key={domain} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">{domain}</li>
+                <li key={domain} className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-bg)] px-3 py-2">{domain}</li>
               ))}
             </ul>
           </section>
 
-          <section className="rounded-xl border border-white/10 bg-white/5 p-3">
+          <section className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-bg)] p-3">
             <h3 className="text-sm font-semibold uppercase tracking-[0.1em] text-[color:var(--text-muted)]">Best certification path</h3>
             <p className="mt-2 text-sm text-[color:var(--text-primary)]">{certificationPath}</p>
           </section>
@@ -143,7 +143,7 @@ export function SecurityRolesMap() {
                 { label: 'N+1', value: activeRole.careerPath.nPlus1 },
                 { label: 'N+2', value: activeRole.careerPath.nPlus2 },
               ].map((step) => (
-                <div key={step.label} className="rounded-xl border border-white/10 bg-white/5 p-3">
+                <div key={step.label} className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-bg)] p-3">
                   <p className="text-[11px] uppercase tracking-[0.1em] text-[color:var(--text-muted)]">{step.label}</p>
                   <p className="mt-1 text-sm text-[color:var(--text-primary)]">{step.value}</p>
                 </div>
@@ -162,9 +162,9 @@ export function SecurityRolesMap() {
           {cyberOperatingModelSections.map((section, idx) => {
             const accent = idx === 0 ? '#22d3ee' : '#f59e0b';
             return (
-              <article key={section.title} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <article key={section.title} className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-bg)] p-4">
                 <h3 className="text-lg font-semibold">{section.title}</h3>
-                <ul className="mt-3 space-y-3 border-l border-white/15 pl-2">
+                <ul className="mt-3 space-y-3 border-l border-[color:var(--border)] pl-2">
                   <OrgTree node={section.root} accent={accent} />
                 </ul>
               </article>

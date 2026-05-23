@@ -101,9 +101,9 @@ export function CertificationExplorer() {
 
             {recommendedForProfile.length > 0 && (
               <div className="mt-4 rounded-xl border border-[color:var(--accent-secondary)] bg-[color:var(--accent-soft)] p-3">
-                <p className="text-xs uppercase tracking-[0.16em] text-violet-100">Recommended for this profile</p>
-                <p className="mt-2 text-xs text-slate-100/90">Based on a GRC, PCI, SOC 2, PCA/DR Drill, privacy, AI governance, NIST, ISO, and CISO-track profile, prioritize:</p>
-                <ol className="mt-2 list-decimal space-y-1 pl-4 text-xs text-slate-100/90">
+                <p className="text-xs uppercase tracking-[0.16em] theme-accent-text">Recommended for this profile</p>
+                <p className="mt-2 text-xs text-[color:var(--text-primary)]/90">Based on a GRC, PCI, SOC 2, PCA/DR Drill, privacy, AI governance, NIST, ISO, and CISO-track profile, prioritize:</p>
+                <ol className="mt-2 list-decimal space-y-1 pl-4 text-xs text-[color:var(--text-primary)]/90">
                   {recommendedForProfile.map((cert) => <li key={`recommended-${cert.id}`}>{cert.name}</li>)}
                 </ol>
               </div>
