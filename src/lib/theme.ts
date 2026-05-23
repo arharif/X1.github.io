@@ -1,6 +1,6 @@
 import { safeStorage } from '@/lib/storage';
 
-export type ThemeMode = 'dark' | 'light' | 'purple' | 'rainbow' | 'egyptian' | 'horror';
+export type ThemeMode = 'dark' | 'light' | 'purple' | 'rainbow' | 'egyptian' | 'horror' | 'elite-green';
 
 export const themeMap: Record<ThemeMode, string> = {
   dark: 'theme-dark',
@@ -9,6 +9,7 @@ export const themeMap: Record<ThemeMode, string> = {
   rainbow: 'theme-rainbow',
   'egyptian': 'theme-egyptian',
   horror: 'theme-horror',
+  'elite-green': 'theme-elite-green',
 };
 
 export const initTheme = (): ThemeMode => {

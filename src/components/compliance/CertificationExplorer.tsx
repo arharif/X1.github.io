@@ -61,14 +61,14 @@ export function CertificationExplorer() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search certifications..."
               aria-label="Search certifications"
-              className="w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm outline-none"
+              className="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-bg)] px-3 py-2 text-sm outline-none"
             />
             <div className="mt-3 flex flex-wrap gap-2">
               {certificationCategories.map((category) => (
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
-                  className={`rounded-full px-3 py-1.5 text-xs ${activeCategory === category ? 'bg-[color:var(--active-bg)] ring-1 ring-[color:var(--active-border)]' : 'bg-white/10 hover:bg-white/15'}`}
+                  className={`rounded-full px-3 py-1.5 text-xs ${activeCategory === category ? 'bg-[color:var(--active-bg)] ring-1 ring-[color:var(--active-border)]' : 'bg-[color:var(--badge-bg)] hover:bg-[color:var(--surface-strong)]'}`}
                 >
                   {category}
                 </button>
@@ -77,7 +77,7 @@ export function CertificationExplorer() {
 
             <div className="mt-4 space-y-2">
               {filteredCertifications.length === 0 ? (
-                <div className="rounded-xl border border-white/15 bg-white/5 px-3 py-3 text-sm text-muted">No matching certifications found.</div>
+                <div className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-bg)] px-3 py-3 text-sm text-muted">No matching certifications found.</div>
               ) : (
                 filteredCertifications.map((cert) => {
                   const active = selectedCertification?.id === cert.id;
@@ -85,7 +85,7 @@ export function CertificationExplorer() {
                     <button
                       key={cert.id}
                       onClick={() => setSelectedId(cert.id)}
-                      className={`w-full rounded-xl border px-3 py-2 text-left ${active ? 'border-[color:var(--active-border)] bg-[color:var(--active-bg)]' : 'border-white/15 bg-white/5 hover:bg-white/10'}`}
+                      className={`w-full rounded-xl border px-3 py-2 text-left ${active ? 'border-[color:var(--active-border)] bg-[color:var(--active-bg)]' : 'border-[color:var(--border)] bg-[color:var(--surface-bg)] hover:bg-[color:var(--badge-bg)]'}`}
                       aria-label={`Select certification ${cert.name}`}
                     >
                       <div className="flex items-center justify-between gap-2">
@@ -101,9 +101,9 @@ export function CertificationExplorer() {
 
             {recommendedForProfile.length > 0 && (
               <div className="mt-4 rounded-xl border border-[color:var(--accent-secondary)] bg-[color:var(--accent-soft)] p-3">
-                <p className="text-xs uppercase tracking-[0.16em] text-violet-100">Recommended for this profile</p>
-                <p className="mt-2 text-xs text-slate-100/90">Based on a GRC, PCI, SOC 2, PCA/DR Drill, privacy, AI governance, NIST, ISO, and CISO-track profile, prioritize:</p>
-                <ol className="mt-2 list-decimal space-y-1 pl-4 text-xs text-slate-100/90">
+                <p className="text-xs uppercase tracking-[0.16em] theme-accent-text">Recommended for this profile</p>
+                <p className="mt-2 text-xs text-[color:var(--text-primary)]/90">Based on a GRC, PCI, SOC 2, PCA/DR Drill, privacy, AI governance, NIST, ISO, and CISO-track profile, prioritize:</p>
+                <ol className="mt-2 list-decimal space-y-1 pl-4 text-xs text-[color:var(--text-primary)]/90">
                   {recommendedForProfile.map((cert) => <li key={`recommended-${cert.id}`}>{cert.name}</li>)}
                 </ol>
               </div>
@@ -117,7 +117,7 @@ export function CertificationExplorer() {
               <>
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-xl font-semibold">{selectedCertification.name}</h3>
-                  <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs">{selectedCertification.category}</span>
+                  <span className="rounded-full bg-[color:var(--badge-bg)] px-2 py-0.5 text-xs">{selectedCertification.category}</span>
                 </div>
                 <div className="mt-3 space-y-3">
                   <div><p className="text-xs uppercase tracking-[0.14em] text-muted">Definition</p><p className="mt-1">{selectedCertification.definition}</p></div>
@@ -126,7 +126,7 @@ export function CertificationExplorer() {
                   <div>
                     <p className="text-xs uppercase tracking-[0.14em] text-muted">Domains / chapters covered</p>
                     <div className="mt-2 flex flex-wrap gap-1.5">
-                      {safeArray(selectedCertification.domainsCovered).map((domain) => <span key={domain} className="rounded-full border border-white/20 bg-white/5 px-2 py-0.5 text-xs">{domain}</span>)}
+                      {safeArray(selectedCertification.domainsCovered).map((domain) => <span key={domain} className="rounded-full border border-[color:var(--border)] bg-[color:var(--surface-bg)] px-2 py-0.5 text-xs">{domain}</span>)}
                     </div>
                   </div>
                   <div><p className="text-xs uppercase tracking-[0.14em] text-muted">Practical value</p><p className="mt-1">{selectedCertification.practicalValue}</p></div>

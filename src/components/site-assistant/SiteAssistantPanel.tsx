@@ -27,6 +27,7 @@ function useThemeClass() {
       else if (root.contains('theme-rainbow')) setThemeClass('theme-rainbow');
       else if (root.contains('theme-egyptian')) setThemeClass('theme-egyptian');
       else if (root.contains('theme-horror')) setThemeClass('theme-horror');
+      else if (root.contains('theme-elite-green')) setThemeClass('theme-elite-green');
       else setThemeClass('theme-dark');
     };
 

@@ -37,7 +37,7 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
       const href = safeLinkUrl(m?.[2]);
       if (m && href) {
         out.push(
-          <a key={`${keyPrefix}-a-${idx++}`} href={href} target="_blank" rel="noopener noreferrer" className="underline decoration-cyan-400/70 underline-offset-4 hover:text-cyan-200">
+          <a key={`${keyPrefix}-a-${idx++}`} href={href} target="_blank" rel="noopener noreferrer" className="underline decoration-[color:var(--accent)] underline-offset-4 hover:text-[color:var(--text-primary)]">
             {m[1]}
           </a>,
         );

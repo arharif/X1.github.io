@@ -20,12 +20,12 @@ export function NodeDetailPanel({ node, related }: { node?: MindmapNode; related
       <p className="mindmap-chip" style={{ borderColor: color.fill, color: color.text }}>{node.cluster}</p>
       <h3 className="mindmap-panel-title">{node.label}</h3>
       <p className="text-sm text-muted">{node.description}</p>
-      <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3">
+      <div className="mt-3 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-bg)] p-3">
         <p className="text-xs uppercase tracking-[0.18em] text-muted">Why it matters</p>
-        <p className="mt-2 text-sm text-slate-200">{node.whyItMatters}</p>
+        <p className="mt-2 text-sm text-[color:var(--text-primary)]">{node.whyItMatters}</p>
       </div>
       {node.journeyStage && (
-        <p className="mt-3 text-xs text-cyan-200/90">Journey stage #{node.journeyStage} · From curiosity to CISO-grade strategy.</p>
+        <p className="mt-3 text-xs theme-accent-text">Journey stage #{node.journeyStage} · From curiosity to CISO-grade strategy.</p>
       )}
       {related.length > 0 && (
         <div className="mt-4">
