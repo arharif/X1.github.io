@@ -198,8 +198,8 @@ export function SecurityMindmapExperience() {
                 className="roles-result-chip"
                 title={role.title}
                 style={{
-                  borderColor: selected ? role.color : 'rgba(148,163,184,0.35)',
-                  background: selected ? toRgba(role.color, 0.2) : undefined,
+                  borderColor: selected ? 'var(--accent)' : 'var(--border-soft)',
+                  background: selected ? 'color-mix(in srgb, var(--accent) 18%, transparent)' : undefined,
                 }}
               >
                 {role.title}
@@ -268,7 +268,7 @@ export function SecurityMindmapExperience() {
         </article>
 
         <aside className="mindmap-panel space-y-4">
-          <span className="mindmap-chip" style={{ borderColor: toRgba(activeRole.color, 0.8), color: activeRole.color }}>{activeRole.family}</span>
+          <span className="mindmap-chip">{activeRole.family}</span>
           <h2 className="text-2xl font-semibold">{activeRole.title}</h2>
           <p className="text-sm text-muted">{activeRole.shortDescription}</p>
 

@@ -4,6 +4,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { querySiteAssistant } from '@/lib/siteAssistant';
 import { getAssistantWelcome } from './assistantContext';
 
+interface QuickAction { label: string; route?: string; prompt?: string }
+
 interface Message {
   id: string;
   role: 'user' | 'assistant';
@@ -11,6 +13,7 @@ interface Message {
   sources?: Array<{ title: string; route: string }>;
   kind?: 'welcome' | 'default';
   section?: string;
+  quickActions?: QuickAction[];
 }
 
 function useThemeClass() {
@@ -74,13 +77,14 @@ export function SiteAssistantPanel({ open, onClose }: { open: boolean; onClose: 
     setInput('');
     setLoading(true);
     try {
-      const reply = await querySiteAssistant(q);
+      const reply = await querySiteAssistant(q, location.pathname);
       const replyMessage: Message = {
         id: mkId(),
         role: 'assistant',
         text: reply.text,
         sources: reply.sources?.map((s) => ({ title: s.title, route: s.route })),
         kind: 'default',
+        quickActions: reply.quickActions,
       };
       setMessages((m) => [...m, replyMessage].slice(-18));
     } catch {
@@ -132,6 +136,15 @@ export function SiteAssistantPanel({ open, onClose }: { open: boolean; onClose: 
                   <div className="mt-2 flex flex-wrap gap-2">
                     {m.sources.slice(0, 4).map((s) => (
                       <Link key={`${m.id}-${s.route}`} to={s.route} className="assistant-source" onClick={onClose}>{s.title}</Link>
+                    ))}
+                  </div>
+                )}
+                {m.quickActions && m.quickActions.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {m.quickActions.slice(0, 4).map((a) => a.route ? (
+                      <Link key={`${m.id}-${a.label}`} to={a.route} className="assistant-source" onClick={onClose}>{a.label}</Link>
+                    ) : (
+                      <button key={`${m.id}-${a.label}`} type="button" className="assistant-source" onClick={() => setInput(a.prompt || a.label)}>{a.label}</button>
                     ))}
                   </div>
                 )}

@@ -1314,3 +1314,26 @@ iframe { border: 0; }
 .mindmap-surface{border:1px solid var(--border-soft);background:linear-gradient(160deg,color-mix(in srgb,var(--surface) 84%, transparent),color-mix(in srgb,var(--surface-soft) 80%, transparent));}
 .mindmap-soft{border:1px solid var(--border-soft);background:color-mix(in srgb,var(--surface) 82%, transparent);}
 .theme-transition{transition:background-color .35s ease,border-color .35s ease,color .3s ease,box-shadow .3s ease;}
+
+/* Premium assistant + security map + onboarding tokenized styling */
+.assistant-launcher-badge { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 38%, transparent); }
+.assistant-panel,.assistant-launcher,.assistant-welcome-card,.assistant-source,.assistant-input,.assistant-send,.assistant-icon-btn{transition:all .24s ease}
+.assistant-panel{border:1px solid var(--border-soft);background:color-mix(in srgb,var(--surface) 95%, transparent);box-shadow:0 18px 46px color-mix(in srgb,var(--accent) 18%, transparent)}
+.assistant-send:hover,.assistant-source:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--accent) 55%, var(--border-soft))}
+
+.mindmap-hero{background:linear-gradient(145deg,color-mix(in srgb,var(--surface) 90%, transparent),color-mix(in srgb,var(--accent) 14%, transparent));border:1px solid var(--border-soft);box-shadow:0 16px 38px color-mix(in srgb,var(--accent) 16%, transparent)}
+.roles-toolbar,.mindmap-canvas,.mindmap-panel,.mindmap-soft,.mindmap-surface,.mindmap-chip,.mindmap-cta,.mindmap-btn,.mindmap-input,.roles-result-chip,.mindmap-tree-node,.mindmap-tree-toggle{border-color:var(--border-soft)!important}
+.roles-result-chip{background:var(--surface-soft);color:var(--text);border:1px solid var(--border-soft);transition:all .2s ease}
+.roles-result-chip:hover{background:var(--card-hover);transform:translateY(-1px)}
+.mindmap-cta{background:color-mix(in srgb,var(--accent) 18%, transparent);border:1px solid color-mix(in srgb,var(--accent) 45%, var(--border-soft))}
+
+.x1-onboarding-wrap{position:relative}
+.x1-logo-trigger{position:absolute;inset:0;opacity:0;cursor:pointer}
+.x1-onboarding-mini{position:absolute;left:2.4rem;top:-0.2rem;z-index:70;max-width:220px;padding:.45rem .55rem;border-radius:.8rem;border:1px solid var(--border-soft);background:color-mix(in srgb,var(--surface) 92%, transparent);box-shadow:0 10px 30px color-mix(in srgb,var(--accent) 18%, transparent);animation:mini-in .28s ease}
+.x1-onboarding-mini button{position:absolute;top:.2rem;right:.2rem;border:1px solid var(--border-soft);background:var(--surface-soft);border-radius:999px;padding:.15rem}
+.x1-onboarding-popover{position:absolute;left:2.4rem;top:2rem;z-index:72;width:min(320px,92vw);padding:.7rem;border-radius:1rem;border:1px solid var(--border-soft);background:color-mix(in srgb,var(--surface) 95%, transparent);box-shadow:0 20px 44px color-mix(in srgb,var(--accent) 22%, transparent);animation:mini-in .22s ease}
+.x1-onboarding-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.x1-onboarding-grid{margin-top:.5rem;display:grid;gap:.4rem}
+.x1-onboarding-option{display:flex;align-items:center;gap:.4rem;padding:.42rem .5rem;border-radius:.68rem;border:1px solid var(--border-soft);background:var(--surface-soft);font-size:.78rem}
+.x1-onboarding-option:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--accent) 55%, var(--border-soft));background:color-mix(in srgb,var(--accent) 12%, var(--surface-soft))}
+@keyframes mini-in{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
