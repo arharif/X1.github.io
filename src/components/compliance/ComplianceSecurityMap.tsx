@@ -51,7 +51,7 @@ export function ComplianceSecurityMap() {
                 </button>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {safeNodes.filter((n) => n.layer === layer.label).map((child) => (
-                    <button key={child.id} onClick={() => setSelectedId(child.id)} className={`rounded-full border px-2 py-1 text-xs ${selected?.id===child.id?'border-[color:var(--active-border)] bg-[color:var(--active-bg)]':'border-white/20 bg-white/5 hover:bg-white/10'}`} aria-label={`Select ${child.label} ${child.type} node`}>
+                    <button key={child.id} onClick={() => setSelectedId(child.id)} className={`rounded-full border px-2 py-1 text-xs ${selected?.id===child.id?'border-[color:var(--active-border)] bg-[color:var(--active-bg)]':'border-[color:var(--border)] bg-[color:var(--surface-bg)] hover:bg-[color:var(--badge-bg)]'}`} aria-label={`Select ${child.label} ${child.type} node`}>
                       {child.label}
                     </button>
                   ))}

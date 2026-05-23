@@ -98,7 +98,7 @@ export function ComplianceFrameworksPage() {
                   className={`glass compliance-panel rounded-2xl p-5 text-left transition theme-transition hover:-translate-y-1 hover:shadow-[0_14px_28px_var(--glow)] ${selectedFramework?.id === item.id ? 'border-[color:var(--active-border)] bg-[color:var(--active-bg)] shadow-[0_10px_30px_var(--glow)]' : ''}`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs">{item.category}</span>
+                    <span className="rounded-full bg-[color:var(--badge-bg)] px-2.5 py-1 text-xs">{item.category}</span>
                     <Scale size={17} className="theme-accent-text" />
                   </div>
                   <h3 className="mt-3 text-lg font-semibold">{item.name}</h3>

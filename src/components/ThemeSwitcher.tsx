@@ -2,7 +2,7 @@ import { Check, ChevronDown, Palette } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { ThemeMode } from '@/lib/theme';
 
-const themes: ThemeMode[] = ['dark', 'light', 'purple', 'rainbow', 'egyptian', 'horror'];
+const themes: ThemeMode[] = ['dark', 'light', 'purple', 'rainbow', 'egyptian', 'horror', 'elite-green'];
 
 const themeMeta: Record<ThemeMode, { label: string; previewClass: string }> = {
   dark: { label: 'Dark theme', previewClass: 'theme-preview theme-preview--dark' },
@@ -11,6 +11,7 @@ const themeMeta: Record<ThemeMode, { label: string; previewClass: string }> = {
   rainbow: { label: 'Rainbow theme', previewClass: 'theme-preview theme-preview--rainbow' },
   'egyptian': { label: 'Egyptian theme', previewClass: 'theme-preview theme-preview--egyptian' },
   horror: { label: 'Horror theme', previewClass: 'theme-preview theme-preview--horror' },
+  'elite-green': { label: 'Elite Green', previewClass: 'theme-preview theme-preview--elite-green' },
 };
 
 export function ThemeSwitcher({ mode, onChange }: { mode: ThemeMode; onChange: (m: ThemeMode) => void }) {
