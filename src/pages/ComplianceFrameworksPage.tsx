@@ -41,7 +41,7 @@ export function ComplianceFrameworksPage() {
           Explore cybersecurity, privacy, resilience, AI governance, payment security, audit, and IT governance
           frameworks through structured summaries, implementation guidance, KPIs, and certification paths.
         </p>
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-5 flex flex-wrap gap-2">
           <button
             onClick={() => document.getElementById('frameworks-library')?.scrollIntoView({ behavior: 'smooth' })}
             className="compliance-cta compliance-cta--primary"
@@ -59,7 +59,12 @@ export function ComplianceFrameworksPage() {
         </div>
       </div>
 
-      <section id="frameworks-library" className="space-y-3">
+      <div className="compliance-anchor-nav" role="navigation" aria-label="Compliance sections">
+        <a href="#frameworks-library" className="compliance-anchor-link">Frameworks</a>
+        <a href="#certification-explorer" className="compliance-anchor-link">Certifications</a>
+      </div>
+
+      <section id="frameworks-library" className="space-y-4">
         <div className="space-y-1">
           <h2 className="text-2xl font-semibold">Frameworks Library</h2>
           <p className="text-sm text-muted">
@@ -91,7 +96,7 @@ export function ComplianceFrameworksPage() {
                   key={item.id}
                   id={item.id}
                   onClick={() => setActiveId(item.id)}
-                  className={`glass compliance-panel rounded-2xl p-5 text-left ${selectedFramework?.id === item.id ? 'border-cyan-300/55 bg-cyan-300/10' : ''}`}
+                  className={`glass compliance-panel rounded-2xl p-5 text-left transition ${selectedFramework?.id === item.id ? 'border-cyan-300/55 bg-cyan-300/10 shadow-[0_10px_30px_rgba(56,189,248,0.2)]' : ''}`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs">{item.category}</span>
@@ -111,7 +116,7 @@ export function ComplianceFrameworksPage() {
             <aside className="glass compliance-panel rounded-2xl p-5">
               <h2 className="text-2xl font-semibold">{selectedFramework?.name ?? 'Framework details'}</h2>
               <p className="mt-2 text-sm text-muted">{selectedFramework?.fullName ?? 'No framework selected.'}</p>
-              <div className="mt-4 space-y-3 text-sm">
+              <div className="mt-4 space-y-3 text-sm leading-7">
                 <p>
                   <strong>Definition:</strong> {selectedFramework?.definition ?? 'No data available.'}
                 </p>

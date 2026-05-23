@@ -13,6 +13,7 @@ import { SearchBar } from '@/components/SearchBar';
 import { GamesHub } from '@/components/GamesHub';
 import { TopicFilterBar } from '@/components/TopicFilterBar';
 import { SecurityMindmapPage } from '@/pages/SecurityMindmapPage';
+import { AboutX1Page } from '@/pages/AboutX1Page';
 import { SiteAssistantLauncher } from '@/components/site-assistant/SiteAssistantLauncher';
 import { ProtectedRoute } from '@/routes/ProtectedRoute';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
@@ -626,6 +627,7 @@ function Shell() {
               <Route path="/personal" element={<CuriositiesHub />} />
               <Route path="/personal/post/:slug" element={<CuriosityPost />} />
               <Route path="/compliance-frameworks" element={<Suspense fallback={<div className="glass rounded-2xl p-6">Loading compliance frameworks…</div>}><ComplianceFrameworksPage /></Suspense>} />
+              <Route path="/about-x1" element={<AboutX1Page />} />
               <Route path="/submitting" element={<SubmittingPage />} />
               <Route path="/games" element={<GamesHub />} />
               <Route path="/Security_Mindmap" element={<SecurityMindmapPage />} />
