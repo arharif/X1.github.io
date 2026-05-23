@@ -66,10 +66,10 @@ export function CardSheddingGame() {
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted">{status}</p>
-      <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm">Top card: <strong className="uppercase">{top.color}</strong> {top.value}</div>
+      <div className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-bg)] p-3 text-sm">Top card: <strong className="uppercase">{top.color}</strong> {top.value}</div>
       <div className="flex flex-wrap gap-2">
         {hand.map((card, i) => (
-          <button key={`${card.color}-${card.value}-${i}`} onClick={() => play(i)} className={`rounded-lg border px-3 py-2 text-xs ${canPlay(card, top) ? 'border-[color:var(--active-border)] bg-[color:var(--accent-soft)]' : 'border-white/15 bg-[color:var(--surface-bg)]'}`}>
+          <button key={`${card.color}-${card.value}-${i}`} onClick={() => play(i)} className={`rounded-lg border px-3 py-2 text-xs ${canPlay(card, top) ? 'border-[color:var(--active-border)] bg-[color:var(--accent-soft)]' : 'border-[color:var(--border)] bg-[color:var(--surface-bg)]'}`}>
             {card.color} {card.value}
           </button>
         ))}

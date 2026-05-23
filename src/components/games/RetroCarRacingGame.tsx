@@ -75,11 +75,11 @@ export function RetroCarRacingGame() {
         <p className="text-muted">{crashed ? 'Crash! Restart to race again.' : running ? 'Use ← → to avoid traffic' : 'Press Space or Start'}</p>
       </div>
 
-      <div className="mx-auto grid max-w-[360px] grid-cols-3 gap-1 rounded-2xl border border-emerald-300/25 bg-[color:var(--surface-bg)] p-2">
+      <div className="mx-auto grid max-w-[360px] grid-cols-3 gap-1 rounded-2xl border border-[color:var(--border-strong)] bg-[color:var(--surface-bg)] p-2">
         {cells.map((cell) => (
-          <div key={`${cell.row}-${cell.lane}`} className="aspect-[1/1.3] rounded-md border border-white/5 bg-[color:var(--card-bg)]">
+          <div key={`${cell.row}-${cell.lane}`} className="aspect-[1/1.3] rounded-md border border-[color:var(--border)] bg-[color:var(--card-bg)]">
             {cell.player && <div className="mx-auto mt-1 h-8 w-8 rounded-md bg-[color:var(--accent)]" />}
-            {cell.enemy && <div className="mx-auto mt-1 h-8 w-8 rounded-md bg-rose-400" />}
+            {cell.enemy && <div className="mx-auto mt-1 h-8 w-8 rounded-md bg-[color:var(--accent-secondary)]" />}
           </div>
         ))}
       </div>

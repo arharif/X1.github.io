@@ -170,11 +170,11 @@ export function PacmanGame() {
           const isPacman = idx === pacman;
           const ghost = ghosts.find((g) => g.pos === idx);
           return (
-            <div key={idx} className="aspect-square rounded-[4px] flex items-center justify-center" style={{ background: cell === 1 ? '#1e3a8a' : '#020617' }}>
-              {cell === 0 && <span className="h-1.5 w-1.5 rounded-full bg-yellow-200/90" />}
+            <div key={idx} className="aspect-square rounded-[4px] flex items-center justify-center" style={{ background: cell === 1 ? 'color-mix(in srgb,var(--accent) 34%, var(--bg))' : 'color-mix(in srgb,var(--surface) 72%, var(--bg))' }}>
+              {cell === 0 && <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent)]" />}
               {cell === 3 && <span className="h-3 w-3 rounded-full bg-amber-300" />}
-              {isPacman && <span className="h-3.5 w-3.5 rounded-full bg-yellow-300" />}
-              {!isPacman && ghost && <span className="h-3.5 w-3.5 rounded-sm bg-rose-400" />}
+              {isPacman && <span className="h-3.5 w-3.5 rounded-full bg-[color:var(--accent)]" />}
+              {!isPacman && ghost && <span className="h-3.5 w-3.5 rounded-sm bg-[color:var(--accent-secondary)]" />}
             </div>
           );
         })}

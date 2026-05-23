@@ -81,7 +81,7 @@ export function MCQQuizEngine({ game }: Props) {
             <button
               key={option}
               onClick={() => !locked && setSelected(option)}
-              className={`rounded-xl border px-4 py-3 text-left transition ${isSelected ? 'border-[color:var(--active-border)] bg-[color:var(--accent-soft)]' : 'border-white/10 bg-white/5 hover:bg-[color:var(--surface-bg)]'} ${showCorrect ? 'border-emerald-300 bg-emerald-500/15' : ''} ${showIncorrect ? 'border-rose-300 bg-rose-500/15' : ''}`}
+              className={`rounded-xl border px-4 py-3 text-left transition ${isSelected ? 'border-[color:var(--active-border)] bg-[color:var(--accent-soft)]' : 'border-[color:var(--border)] bg-[color:var(--surface-bg)] hover:bg-[color:var(--surface-bg)]'} ${showCorrect ? 'border-emerald-300 bg-emerald-500/15' : ''} ${showIncorrect ? 'border-rose-300 bg-rose-500/15' : ''}`}
             >
               {option}
             </button>
