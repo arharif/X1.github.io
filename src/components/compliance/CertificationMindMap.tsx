@@ -30,7 +30,7 @@ export function CertificationMindMap() {
                     onClick={() => setSelectedCertId(cert.id)}
                     aria-label={`Select certification ${cert.name}`}
                     className={`rounded-full border px-3 py-1.5 text-xs focus-visible:outline-none ${
-                      active ? 'border-cyan-300/60 bg-cyan-300/20' : 'border-white/20 bg-white/5 hover:bg-white/10'
+                      active ? 'border-[color:var(--active-border)] bg-[color:var(--active-bg)]' : 'border-white/20 bg-white/5 hover:bg-white/10'
                     }`}
                   >
                     {cert.name}

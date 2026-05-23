@@ -22,7 +22,7 @@ function useThemeClass() {
       if (root.contains('theme-light')) setThemeClass('theme-light');
       else if (root.contains('theme-purple')) setThemeClass('theme-purple');
       else if (root.contains('theme-rainbow')) setThemeClass('theme-rainbow');
-      else if (root.contains('theme-gold-egyptian')) setThemeClass('theme-gold-egyptian');
+      else if (root.contains('theme-egyptian')) setThemeClass('theme-egyptian');
       else if (root.contains('theme-horror')) setThemeClass('theme-horror');
       else setThemeClass('theme-dark');
     };

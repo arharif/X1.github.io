@@ -68,7 +68,7 @@ export function CertificationExplorer() {
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
-                  className={`rounded-full px-3 py-1.5 text-xs ${activeCategory === category ? 'bg-cyan-300/25 ring-1 ring-cyan-300/50' : 'bg-white/10 hover:bg-white/15'}`}
+                  className={`rounded-full px-3 py-1.5 text-xs ${activeCategory === category ? 'bg-[color:var(--active-bg)] ring-1 ring-[color:var(--active-border)]' : 'bg-white/10 hover:bg-white/15'}`}
                 >
                   {category}
                 </button>
@@ -85,7 +85,7 @@ export function CertificationExplorer() {
                     <button
                       key={cert.id}
                       onClick={() => setSelectedId(cert.id)}
-                      className={`w-full rounded-xl border px-3 py-2 text-left ${active ? 'border-cyan-300/60 bg-cyan-300/15' : 'border-white/15 bg-white/5 hover:bg-white/10'}`}
+                      className={`w-full rounded-xl border px-3 py-2 text-left ${active ? 'border-[color:var(--active-border)] bg-[color:var(--active-bg)]' : 'border-white/15 bg-white/5 hover:bg-white/10'}`}
                       aria-label={`Select certification ${cert.name}`}
                     >
                       <div className="flex items-center justify-between gap-2">
@@ -100,7 +100,7 @@ export function CertificationExplorer() {
             </div>
 
             {recommendedForProfile.length > 0 && (
-              <div className="mt-4 rounded-xl border border-violet-300/25 bg-violet-400/10 p-3">
+              <div className="mt-4 rounded-xl border border-[color:var(--accent-secondary)] bg-[color:var(--accent-soft)] p-3">
                 <p className="text-xs uppercase tracking-[0.16em] text-violet-100">Recommended for this profile</p>
                 <p className="mt-2 text-xs text-slate-100/90">Based on a GRC, PCI, SOC 2, PCA/DR Drill, privacy, AI governance, NIST, ISO, and CISO-track profile, prioritize:</p>
                 <ol className="mt-2 list-decimal space-y-1 pl-4 text-xs text-slate-100/90">
