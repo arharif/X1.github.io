@@ -154,7 +154,7 @@ export function SecurityMindmapExperience() {
           <div className="max-w-3xl">
             <p className="mindmap-chip">Career Architecture Explorer</p>
             <h1 className="mt-2 text-3xl font-semibold">Security Mindmap</h1>
-            <p className="mt-2 text-sm text-slate-200/90">A premium role-based explorer for cybersecurity capabilities, certifications, and growth pathways.</p>
+            <p className="mt-2 text-sm text-muted">A premium role-based explorer for cybersecurity capabilities, certifications, and growth pathways.</p>
           </div>
           <button
             onClick={() => operatingModelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
@@ -222,7 +222,7 @@ export function SecurityMindmapExperience() {
             </div>
           </div>
 
-          <div ref={mapViewportRef} className="relative mx-auto min-h-[620px] max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/70 to-slate-950/65 p-4">
+          <div ref={mapViewportRef} className="relative mx-auto min-h-[620px] max-w-6xl overflow-hidden rounded-2xl mindmap-surface theme-transition p-4">
             <div
               key={activeRole.id}
               className="absolute left-1/2 top-1/2 h-full w-full"
@@ -247,7 +247,7 @@ export function SecurityMindmapExperience() {
                   }}
                 >
                   <div
-                    className="rounded-xl border px-3 py-2 text-center text-xs font-medium leading-relaxed text-slate-100 shadow-lg"
+                    className="rounded-xl border px-3 py-2 text-center text-xs font-medium leading-relaxed text-[color:var(--text-primary)] shadow-lg"
                     style={{ borderColor: toRgba(activeRole.color, 0.6), background: toRgba(activeRole.color, 0.2) }}
                   >
                     {node.skill}
@@ -259,9 +259,9 @@ export function SecurityMindmapExperience() {
                 className="absolute left-1/2 top-1/2 z-20 w-[24rem] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-5 text-center shadow-2xl"
                 style={{ borderColor: activeRole.color, background: toRgba(activeRole.color, 0.2), transition: 'all 260ms ease' }}
               >
-                <p className="text-[11px] uppercase tracking-[0.14em] text-slate-100/90">Selected Role</p>
-                <h3 className="mt-2 text-xl font-semibold text-white">{activeRole.title}</h3>
-                <p className="mt-1 text-xs text-slate-200">{activeRole.family}</p>
+                <p className="text-[11px] uppercase tracking-[0.14em] text-[color:var(--text-primary)]/90">Selected Role</p>
+                <h3 className="mt-2 text-xl font-semibold text-[color:var(--text-primary)]">{activeRole.title}</h3>
+                <p className="mt-1 text-xs text-muted">{activeRole.family}</p>
               </div>
             </div>
           </div>
@@ -274,7 +274,7 @@ export function SecurityMindmapExperience() {
 
           <section>
             <h3 className="text-xs uppercase tracking-[0.14em] text-muted">Main responsibilities</h3>
-            <p className="mt-2 text-sm text-slate-200">{activeRole.mainResponsibilities}</p>
+            <p className="mt-2 text-sm text-muted">{activeRole.mainResponsibilities}</p>
           </section>
 
           <section>
@@ -288,7 +288,7 @@ export function SecurityMindmapExperience() {
 
           <section>
             <h3 className="text-xs uppercase tracking-[0.14em] text-muted">Best certification path</h3>
-            <p className="mt-2 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-100">{activeRole.certification}</p>
+            <p className="mt-2 rounded-xl mindmap-soft theme-transition p-3 text-sm text-[color:var(--text-primary)]">{activeRole.certification}</p>
           </section>
 
           <section>
@@ -300,9 +300,9 @@ export function SecurityMindmapExperience() {
                 { label: 'N+1', value: activeRole.careerPath.nPlus1 },
                 { label: 'N+2', value: activeRole.careerPath.nPlus2 },
               ].map((step) => (
-                <div key={step.label} className="rounded-xl border border-white/10 bg-white/5 p-3">
-                  <p className="text-[11px] uppercase tracking-[0.1em] text-slate-400">{step.label}</p>
-                  <p className="mt-1 text-sm text-slate-100">{step.value}</p>
+                <div key={step.label} className="rounded-xl mindmap-soft theme-transition p-3">
+                  <p className="text-[11px] uppercase tracking-[0.1em] text-muted">{step.label}</p>
+                  <p className="mt-1 text-sm text-[color:var(--text-primary)]">{step.value}</p>
                 </div>
               ))}
             </div>
@@ -319,7 +319,7 @@ export function SecurityMindmapExperience() {
 
         <div className="grid gap-4 xl:grid-cols-2">
           {cyberOperatingModelSections.map((section, sectionIndex) => (
-            <article key={section.title} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <article key={section.title} className="rounded-2xl mindmap-soft theme-transition p-4">
               <h3 className="text-base font-semibold">{section.title}</h3>
               <ul className="mt-3 space-y-2 border-l border-white/10 pl-2">
                 <OrgBranch node={section.root} path={`${sectionIndex}-root`} expanded={expandedTree} onToggle={onToggleTree} />

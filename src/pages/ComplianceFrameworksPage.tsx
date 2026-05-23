@@ -95,7 +95,7 @@ export function ComplianceFrameworksPage() {
                   key={item.id}
                   id={item.id}
                   onClick={() => setActiveId(item.id)}
-                  className={`glass compliance-panel rounded-2xl p-5 text-left transition ${selectedFramework?.id === item.id ? 'border-[color:var(--active-border)] bg-[color:var(--active-bg)] shadow-[0_10px_30px_var(--glow)]' : ''}`}
+                  className={`glass compliance-panel rounded-2xl p-5 text-left transition theme-transition hover:-translate-y-1 hover:shadow-[0_14px_28px_var(--glow)] ${selectedFramework?.id === item.id ? 'border-[color:var(--active-border)] bg-[color:var(--active-bg)] shadow-[0_10px_30px_var(--glow)]' : ''}`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs">{item.category}</span>
@@ -103,7 +103,7 @@ export function ComplianceFrameworksPage() {
                   </div>
                   <h3 className="mt-3 text-lg font-semibold">{item.name}</h3>
                   <p className="mt-2 text-sm text-muted">{item.shortDescription}</p>
-                  <p className="mt-2 text-xs text-slate-300">Why it matters: {item.definition?.slice(0, 96) ?? 'Helps structure security and compliance decisions.'}...</p>
+                  <p className="mt-2 text-xs text-muted">Why it matters: {item.definition?.slice(0, 96) ?? 'Helps structure security and compliance decisions.'}...</p>
                   <p className="mt-2 text-xs text-muted">
                     Domains: {safeArray(item.domains).slice(0, 2).map((d) => d.name).join(' · ') || 'N/A'}
                   </p>

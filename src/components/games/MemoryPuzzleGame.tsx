@@ -42,14 +42,14 @@ export function MemoryPuzzleGame() {
     <div className="space-y-3">
       <div className="flex items-center justify-between text-sm text-muted">
         <p>Moves: {moves}</p>
-        <button className="rounded-lg bg-white/10 px-3 py-1 text-xs hover:bg-white/20" onClick={() => { setDeck(makeDeck()); setMoves(0); }}>Restart</button>
+        <button className="rounded-lg bg-[color:var(--surface-bg)] px-3 py-1 text-xs hover:bg-[color:var(--card-hover)]" onClick={() => { setDeck(makeDeck()); setMoves(0); }}>Restart</button>
       </div>
       <div className="grid grid-cols-4 gap-2">
         {deck.map((card) => (
           <button
             key={card.id}
             onClick={() => flip(card.id)}
-            className={`h-14 rounded-lg border text-lg ${card.open || card.solved ? 'border-cyan-300/50 bg-cyan-200/20' : 'border-white/10 bg-white/10 hover:bg-white/20'}`}
+            className={`h-14 rounded-lg border text-lg ${card.open || card.solved ? 'border-[color:var(--active-border)] bg-[color:var(--accent-soft)]' : 'border-[color:var(--border)] bg-[color:var(--surface-bg)] hover:bg-[color:var(--card-hover)]'}`}
             aria-label="Flip memory card"
           >
             {card.open || card.solved ? card.icon : '•'}

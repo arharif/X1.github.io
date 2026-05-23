@@ -165,7 +165,7 @@ export function PacmanGame() {
         <p className="text-muted">{status === 'idle' ? 'Press space to start' : status === 'playing' ? 'Use arrow keys' : status === 'won' ? 'You cleared the maze!' : 'Game over'}</p>
       </header>
 
-      <div className="mx-auto grid w-full max-w-[560px] gap-0.5 rounded-2xl border border-cyan-300/25 bg-slate-950/80 p-2" style={{ gridTemplateColumns: `repeat(${width}, minmax(0, 1fr))` }}>
+      <div className="mx-auto grid w-full max-w-[560px] gap-0.5 rounded-2xl border border-[color:var(--border-strong)] bg-[color:var(--surface-bg)] p-2" style={{ gridTemplateColumns: `repeat(${width}, minmax(0, 1fr))` }}>
         {grid.map((cell, idx) => {
           const isPacman = idx === pacman;
           const ghost = ghosts.find((g) => g.pos === idx);
@@ -181,8 +181,8 @@ export function PacmanGame() {
       </div>
 
       <div className="flex gap-2">
-        {status === 'idle' && <button onClick={() => setStatus('playing')} className="rounded-lg bg-cyan-500/20 px-3 py-2 text-xs">Start</button>}
-        {(status === 'won' || status === 'lost' || status === 'playing') && <button onClick={reset} className="rounded-lg bg-white/10 px-3 py-2 text-xs">Restart</button>}
+        {status === 'idle' && <button onClick={() => setStatus('playing')} className="rounded-lg bg-[color:var(--accent-soft)] px-3 py-2 text-xs">Start</button>}
+        {(status === 'won' || status === 'lost' || status === 'playing') && <button onClick={reset} className="rounded-lg bg-[color:var(--surface-bg)] px-3 py-2 text-xs">Restart</button>}
       </div>
     </div>
   );
