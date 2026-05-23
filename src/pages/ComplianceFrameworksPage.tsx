@@ -38,20 +38,20 @@ export function ComplianceFrameworksPage() {
       <div className="compliance-panel rounded-2xl p-5 md:p-6">
         <h1 className="text-3xl font-semibold">Compliance Frameworks</h1>
         <p className="mt-2 text-sm text-muted">
-          Explore cybersecurity, privacy, resilience, AI governance, payment security, audit, and IT governance
-          frameworks through structured summaries, implementation guidance, KPIs, and certification paths.
+          Understand cybersecurity, privacy, resilience, AI governance, payment security, audit, and IT governance
+          frameworks with simple summaries, practical context, and guided certification pathways.
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
           <button
             onClick={() => document.getElementById('frameworks-library')?.scrollIntoView({ behavior: 'smooth' })}
-            className="compliance-cta compliance-cta--primary"
+            className="compliance-cta compliance-cta--solid"
             aria-label="Explore frameworks section"
           >
             Explore Frameworks
           </button>
           <button
             onClick={() => document.getElementById('certification-explorer')?.scrollIntoView({ behavior: 'smooth' })}
-            className="compliance-cta compliance-cta--secondary"
+            className="compliance-cta compliance-cta--ghost"
             aria-label="View certifications section"
           >
             View Certifications
@@ -68,8 +68,7 @@ export function ComplianceFrameworksPage() {
         <div className="space-y-1">
           <h2 className="text-2xl font-semibold">Frameworks Library</h2>
           <p className="text-sm text-muted">
-            Compare international security, privacy, resilience, payment, AI governance, and IT governance frameworks
-            using a consistent structure.
+            Browse frameworks with clear context on what they are, why they matter, who uses them, and when to apply them.
           </p>
         </div>
 
@@ -86,7 +85,7 @@ export function ComplianceFrameworksPage() {
         </div>
 
         {filteredFrameworks.length === 0 ? (
-          <div className="glass rounded-2xl p-4 text-sm text-muted">No frameworks available.</div>
+          <div className="glass rounded-2xl p-4 text-sm text-muted">No frameworks are available for this category yet. Try another filter.</div>
         ) : (
           <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
             <div className="grid gap-4 md:grid-cols-2">
@@ -104,17 +103,18 @@ export function ComplianceFrameworksPage() {
                   </div>
                   <h3 className="mt-3 text-lg font-semibold">{item.name}</h3>
                   <p className="mt-2 text-sm text-muted">{item.shortDescription}</p>
+                  <p className="mt-2 text-xs text-slate-300">Why it matters: {item.definition?.slice(0, 96) ?? 'Helps structure security and compliance decisions.'}...</p>
                   <p className="mt-2 text-xs text-muted">
                     Domains: {safeArray(item.domains).slice(0, 2).map((d) => d.name).join(' · ') || 'N/A'}
                   </p>
                   <p className="mt-2 text-xs text-muted">{item.cheatSheet}</p>
-                  <span className="mt-3 inline-block text-sm text-cyan-200">Explore</span>
+                  <span className="mt-3 inline-block text-sm text-cyan-200">View guidance</span>
                 </motion.button>
               ))}
             </div>
 
             <aside className="glass compliance-panel rounded-2xl p-5">
-              <h2 className="text-2xl font-semibold">{selectedFramework?.name ?? 'Framework details'}</h2>
+              <h2 className="text-2xl font-semibold">{selectedFramework?.name ?? 'Framework overview'}</h2>
               <p className="mt-2 text-sm text-muted">{selectedFramework?.fullName ?? 'No framework selected.'}</p>
               <div className="mt-4 space-y-3 text-sm leading-7">
                 <p>
